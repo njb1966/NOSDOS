@@ -112,6 +112,45 @@ void nos_cfg_save(int sort_mode)
 }
 
 /* -----------------------------------------------------------------------
+ * NOS-HW.CFG reader (network present check)
+ * ----------------------------------------------------------------------- */
+
+#define HWCFG_PATH "C:\\NOS\\SYSTEM\\NOS-HW.CFG"
+
+int nos_hwcfg_net_present(void)
+{
+    FILE *fp;
+    char  line[64];
+    int   in_net = 0;
+
+    fp = fopen(HWCFG_PATH, "r");
+    if (!fp) return 0;
+
+    while (fgets(line, (int)sizeof(line), fp)) {
+        /* Strip trailing whitespace */
+        int len = (int)strlen(line);
+        while (len > 0 && (line[len-1] == '\n' || line[len-1] == '\r'
+                           || line[len-1] == ' '))
+            line[--len] = '\0';
+
+        if (strcmp(line, "[NETWORK]") == 0) {
+            in_net = 1;
+            continue;
+        }
+        if (line[0] == '[') {
+            in_net = 0;
+            continue;
+        }
+        if (in_net && strcmp(line, "PRESENT=1") == 0) {
+            fclose(fp);
+            return 1;
+        }
+    }
+    fclose(fp);
+    return 0;
+}
+
+/* -----------------------------------------------------------------------
  * Sort selection dialog
  * ----------------------------------------------------------------------- */
 

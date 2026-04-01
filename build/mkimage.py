@@ -240,6 +240,7 @@ def install_nos_system_files(img_path: Path) -> bool:
     optional = [
         (ROOT_DIR / "src" / "detect" / "bin" / "DETECT.EXE", "NOS/SYSTEM/"),
         (ROOT_DIR / "src" / "mem"    / "bin" / "NOSMEM.EXE",  "NOS/SYSTEM/"),
+        (ROOT_DIR / "src" / "net"    / "bin" / "NNET.EXE",    "NOS/SYSTEM/"),
     ]
 
     for src, dst in required:

@@ -178,7 +178,33 @@ def install_system_files(img_path: Path) -> bool:
         (ROOT_DIR / "src" / "detect" / "bin" / "DETECT.EXE", "NOS/SYSTEM/"),
         (ROOT_DIR / "src" / "mem"    / "bin" / "NOSMEM.EXE",  "NOS/SYSTEM/"),
         (ROOT_DIR / "src" / "shell"  / "bin" / "SHELL.EXE",   "NOS/SHELL/"),
+        (ROOT_DIR / "src" / "net"    / "bin" / "NNET.EXE",    "NOS/SYSTEM/"),
     ]
+    # mTCP networking suite (present after fetch_deps.py)
+    mtcp_tools = [
+        "DHCP.EXE", "PING.EXE", "HTGET.EXE", "FTP.EXE",
+        "IRCJR.EXE", "TELNET.EXE", "DNSTEST.EXE", "SNTP.EXE",
+    ]
+    for tool in mtcp_tools:
+        src = THIRDPARTY / "mtcp" / tool
+        if src.exists():
+            optional.append((src, "NOS/SYSTEM/"))
+        else:
+            log(f"  INFO: mTCP tool not found (fetch_deps.py needed?): {tool}")
+    # Batch file wrappers for common commands
+    bat_optional = [
+        (ROOT_DIR / "dist" / "bat" / "NPING.BAT",   "NOS/SHELL/"),
+        (ROOT_DIR / "dist" / "bat" / "NWEB.BAT",    "NOS/SHELL/"),
+        (ROOT_DIR / "dist" / "bat" / "NFTP.BAT",    "NOS/SHELL/"),
+        (ROOT_DIR / "dist" / "bat" / "NIRC.BAT",    "NOS/SHELL/"),
+        (ROOT_DIR / "dist" / "bat" / "NTELNET.BAT", "NOS/SHELL/"),
+        (ROOT_DIR / "dist" / "bat" / "NTIME.BAT",   "NOS/SHELL/"),
+    ]
+    for src, dst in bat_optional:
+        if src.exists():
+            optional.append((src, dst))
+        else:
+            log(f"  INFO: batch wrapper not found: {src.name}")
     # FreeDOS kernel — for future HDD-boot capability
     freedos_files = [
         (FREEDOS_DIR / "KERNEL.SYS",  ""),

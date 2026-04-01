@@ -6,6 +6,71 @@ Format: `[version/milestone] — date` with Added / Changed / Fixed sections.
 
 ---
 
+## [Phase 3 — Tasks 3.1/3.2/3.3/3.4/3.5/3.6 — NNET + networking integration] — 2026-04-01
+
+### Added
+
+**NNET (`src/net/`)**
+
+- `mtcpcfg.h/c` — MTCP.CFG reader:
+  - `nos_mtcpcfg_t` struct: ipaddr, netmask, gateway, nameserver (each 20 chars), hostname (64), packetint
+  - `nos_mtcpcfg_read(path, cfg)` — space-delimited KEY VALUE parser; PACKETINT parsed as hex
+  - `MTCPCFG_PATH` constant: `C:\NOS\SYSTEM\MTCP.CFG`
+- `status.h/c` — `NNET STATUS` subcommand (task 3.1):
+  - Scans INT 60h–80h for Crynwr packet driver signature (`"PKT DRVR"` at handler+2)
+  - Reads MTCP.CFG via nos_mtcpcfg_read(); displays IP/netmask/gateway/DNS/hostname
+  - Three states: `CONNECTED`, driver present but no IP (run DHCP), `NO NETWORK`
+- `nnet.c` — command router (task 3.2):
+  - Routes 10 subcommands: STATUS, DHCP, TIME, PING, WEB, FTP, TELNET, IRC, LOOKUP, CONFIG
+  - `spawn_tool()` builds `C:\NOS\SYSTEM\<exe> <args>` and calls `system()`
+  - Passes argv[2..] as space-joined args string to tools that take arguments
+- `Makefile` — wmake rules: mtcpcfg.obj + status.obj + nnet.obj → NNET.EXE
+
+**Batch wrappers (`dist/bat/`)** (task 3.3):
+
+- `NPING.BAT`, `NWEB.BAT`, `NFTP.BAT`, `NIRC.BAT`, `NTELNET.BAT`, `NTIME.BAT`
+  — each calls `C:\NOS\SYSTEM\NNET.EXE <subcommand> %1 %2 %3`
+
+### Changed
+
+**NOS-DETECT (`src/detect/`)**
+
+- `genconf.c` — Phase 3 networking integration (tasks 3.4/3.6):
+  - `build_pkt_driver_line()` — when network present, now emits a three-line block:
+    `SET MTCPCFG=C:\NOS\SYSTEM\MTCP.CFG\r\nDHCP.EXE >NUL\r\nSNTP.EXE >NUL`
+    so the generated AUTOEXEC.BAT configures networking and syncs time automatically
+    on every boot; when no driver found, emits empty string (line disappears)
+  - `write_mtcpcfg()` — new; writes `C:\NOS\SYSTEM\MTCP.CFG` with `PACKETINT XX\r\nHOSTNAME NOS-DOS\r\n`
+    when a packet driver was detected; called from `nos_genconf()` after NOS-HW.CFG is written
+
+**Config templates (`dist/config/`)**
+
+- `AUTOEXEC.TPL` — removed standalone `C:\NOS\SYSTEM\SNTP.EXE >NUL` line; SNTP
+  is now part of the `{{PKT_DRIVER_LINE}}` expansion, so it only runs when a
+  network adapter is present
+
+**NOS-SHELL (`src/shell/`)**
+
+- `shellcfg.h/c` — added `nos_hwcfg_net_present()` (task 3.5):
+  - Opens `C:\NOS\SYSTEM\NOS-HW.CFG`, scans for `[NETWORK]` section, returns 1 if `PRESENT=1`
+- `shell.c` — network indicator in header (task 3.5):
+  - `g_net_present` global initialised from `nos_hwcfg_net_present()` at startup
+  - `draw_header()` appends `"  NET"` before the clock when network is configured;
+    `"     "` (5 spaces) when not, keeping header width consistent at 80 chars
+  - Ctrl+R now also refreshes `g_net_present` (picks up post-DETECT changes)
+
+**Build system**
+
+- `build/mkhdd.py` — Phase 3 file installs:
+  - `src/net/bin/NNET.EXE` added to optional installs (NOS/SYSTEM/)
+  - mTCP suite added to optional installs (NOS/SYSTEM/): DHCP, PING, HTGET, FTP, IRCJR, TELNET, DNSTEST, SNTP
+  - Batch wrappers (NPING/NWEB/NFTP/NIRC/NTELNET/NTIME.BAT) installed to NOS/SHELL/
+- `build/mkimage.py` — `src/net/bin/NNET.EXE` added to optional floppy installs (NOS/SYSTEM/)
+
+**Result:** NNET.EXE = ~8 KB, SHELL.EXE = 31 KB, zero warnings.  Boot test passes in 2.4s.  Phase 3 tasks 3.1–3.6 complete; 3.7 (VM platform testing) deferred.
+
+---
+
 ## [Phase 2 — Tasks 2.6/2.7/2.8 — launcher, config, status bar] — 2026-04-01
 
 ### Added

@@ -55,8 +55,9 @@
 
 static nos_panel_t g_left;
 static nos_panel_t g_right;
-static int         g_active = 0;  /* 0=left, 1=right */
+static int         g_active = 0;      /* 0=left, 1=right */
 static int         g_running = 1;
+static int         g_net_present = 0; /* 1 if packet driver detected */
 
 /* Copy I/O staging buffer -- static to avoid stack pressure */
 static unsigned char g_copy_buf[1024];
@@ -139,13 +140,17 @@ static void draw_header(void)
     mins  = (unsigned int)r.h.cl;
     secs  = (unsigned int)r.h.dh;
 
-    /* Right side: conv KB, drive free (MB or KB), clock */
+    /* Right side: conv KB, drive free (MB or KB), NET indicator, clock */
     if (free_kb >= 1024)
-        sprintf(buf, " NOS-DOS         %3uKB  %luMB free  %02u:%02u:%02u ",
-                conv_kb, free_kb >> 10, hours, mins, secs);
+        sprintf(buf, " NOS-DOS         %3uKB  %luMB free%s  %02u:%02u:%02u ",
+                conv_kb, free_kb >> 10,
+                g_net_present ? "  NET" : "     ",
+                hours, mins, secs);
     else
-        sprintf(buf, " NOS-DOS         %3uKB  %luKB free  %02u:%02u:%02u ",
-                conv_kb, free_kb, hours, mins, secs);
+        sprintf(buf, " NOS-DOS         %3uKB  %luKB free%s  %02u:%02u:%02u ",
+                conv_kb, free_kb,
+                g_net_present ? "  NET" : "     ",
+                hours, mins, secs);
     nos_scr_putn(0, HDR_ROW, buf, 80, attr);
 
     /* Overwrite centre with active panel path */
@@ -472,6 +477,7 @@ static void dispatch(nos_event_t *evt)
 
         /* Refresh (Ctrl+R) */
         case NOS_KEY_CTRL_R:
+            g_net_present = nos_hwcfg_net_present();
             nos_panel_read_dir(&g_left);
             nos_panel_read_dir(&g_right);
             break;
@@ -494,6 +500,9 @@ int main(void)
 
     nos_scr_init();
     nos_inp_init();
+
+    /* Check network status from NOS-HW.CFG */
+    g_net_present = nos_hwcfg_net_present();
 
     /* Initialise panels */
     if (nos_panel_init(&g_left,  LEFT_COL,  PANEL_TOP, LEFT_W,  PANEL_H) != 0 ||

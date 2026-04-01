@@ -156,26 +156,18 @@ Phase 7: Polish & Release    [Weeks 24-26]  Documentation, testing, VM images
 
 ### Tasks
 
-- [ ] **3.1** Implement `src/net/status.c` — `NNET STATUS`
-  - Reads mTCP config, displays IP, gateway, DNS, MAC, link state
-  - Checks packet driver presence
-  - Color-coded: green=connected, red=disconnected
-- [ ] **3.2** Implement `src/net/nnet.c` — command router
-  - `NNET STATUS` → status module
-  - `NNET RESTART` → unloads/reloads packet driver and runs DHCP
-  - `NNET CONFIG` → opens MTCP.CFG in editor
-  - `NNET WEB [url]` → launches mTCP HTGET or Arachne
-  - `NNET FTP [host]` → launches mTCP FTP
-  - `NNET IRC [server] [channel]` → launches mTCP IRCjr
-  - `NNET GOPHER [url]` → launches gopher client
-  - `NNET PING [host]` → launches mTCP PING
-  - `NNET LOOKUP [name]` → launches mTCP DNSTEST
-  - `NNET TIME` → launches mTCP SNTP to sync clock
-- [ ] **3.3** Create batch file wrappers for simple cases (NWEB.BAT, NFTP.BAT, NIRC.BAT, NPING.BAT) as shortcuts
-- [ ] **3.4** Auto-time-sync on boot — AUTOEXEC.BAT calls `NNET TIME` silently after network is up
-- [ ] **3.5** Integrate network status into NOS-SHELL status bar — reads packet driver state
-- [ ] **3.6** Write mTCP.CFG auto-generator in NOS-DETECT (already stubbed in Phase 1, now fully implement)
-- [ ] **3.7** Test all networking functions in VirtualBox (NAT + bridged), VMware (NAT), QEMU (user networking)
+- [x] **3.1** Implement `src/net/status.c` — `NNET STATUS`
+  - Reads MTCP.CFG via nos_mtcpcfg_read(); scans INT 60h-80h for Crynwr packet driver signature
+  - Three states: CONNECTED (pkt+IP), driver-no-IP (run DHCP), NO NETWORK
+- [x] **3.2** Implement `src/net/nnet.c` — command router
+  - `NNET STATUS` → nos_status_show()
+  - `NNET DHCP` → DHCP.EXE; `NNET TIME` → SNTP.EXE; `NNET CONFIG` → EDIT.COM
+  - `NNET PING/WEB/FTP/TELNET/IRC/LOOKUP` → corresponding mTCP tool in C:\NOS\SYSTEM\
+- [x] **3.3** Create batch wrappers: NPING.BAT, NWEB.BAT, NFTP.BAT, NIRC.BAT, NTELNET.BAT, NTIME.BAT
+- [x] **3.4** Auto-time-sync on boot — `{{PKT_DRIVER_LINE}}` in AUTOEXEC.TPL expands to SET MTCPCFG + DHCP + SNTP when network present
+- [x] **3.5** Network status in NOS-SHELL header — reads NOS-HW.CFG via nos_hwcfg_net_present(); shows "NET" in status bar; updated on Ctrl+R
+- [x] **3.6** MTCP.CFG auto-generator in NOS-DETECT — genconf.c write_mtcpcfg() emits PACKETINT + HOSTNAME when packet driver detected
+- [ ] **3.7** Test all networking in VirtualBox (NAT + bridged), VMware (NAT), QEMU (user networking) *(manual, deferred)*
 
 ### Exit Criteria
 

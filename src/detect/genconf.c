@@ -186,9 +186,13 @@ static void build_blaster_line(const nos_soundinfo_t *snd, char *val)
         val[0] = '\0'; /* safety: truncate to empty rather than overflow */
 }
 
-/* PKT_DRIVER_LINE: note the detected INT, or empty if no packet driver.
- * We cannot auto-configure the driver binary name from detection alone;
- * that is set up manually or by Phase 3 (NNET) integration. */
+/* PKT_DRIVER_LINE: when network present, set MTCPCFG env var, run DHCP and
+ * SNTP.  All three lines are embedded in the substitution value so the
+ * template needs only one {{PKT_DRIVER_LINE}} marker.  The trailing CR+LF
+ * between lines is part of the value; the template line's own CR+LF provides
+ * the terminator for the last line.
+ * When no packet driver is found, emit an empty string so the template line
+ * disappears completely from the generated AUTOEXEC.BAT. */
 static void build_pkt_driver_line(const nos_netinfo_t *net, char *val)
 {
     char tmp[MAX_VAL_LEN];
@@ -198,13 +202,38 @@ static void build_pkt_driver_line(const nos_netinfo_t *net, char *val)
         return;
     }
 
-    sprintf(tmp, "REM Packet driver detected at INT %02Xh - load here if needed",
-            (unsigned)net->intr);
+    /* Three-line block:
+     *   SET MTCPCFG=C:\NOS\SYSTEM\MTCP.CFG
+     *   C:\NOS\SYSTEM\DHCP.EXE >NUL
+     *   C:\NOS\SYSTEM\SNTP.EXE >NUL      <- template line CR+LF terminates this */
+    sprintf(tmp,
+            "SET MTCPCFG=C:\\NOS\\SYSTEM\\MTCP.CFG\r\n"
+            "C:\\NOS\\SYSTEM\\DHCP.EXE >NUL\r\n"
+            "C:\\NOS\\SYSTEM\\SNTP.EXE >NUL");
 
     if (strlen(tmp) < MAX_VAL_LEN)
         strcpy(val, tmp);
     else
         val[0] = '\0';
+}
+
+/* Write a minimal MTCP.CFG so mTCP tools know which packet driver INT to use.
+ * DHCP.EXE will add IPADDR/NETMASK/GATEWAY/NAMESERVER on first run.
+ * Path is fixed: C:\NOS\SYSTEM\MTCP.CFG */
+static void write_mtcpcfg(const nos_netinfo_t *net)
+{
+    FILE *f;
+
+    if (!net->present)
+        return;
+
+    f = fopen("C:\\NOS\\SYSTEM\\MTCP.CFG", "w");
+    if (!f)
+        return;
+
+    fprintf(f, "PACKETINT %02X\r\n", (unsigned)net->intr);
+    fprintf(f, "HOSTNAME NOS-DOS\r\n");
+    fclose(f);
 }
 
 /* -----------------------------------------------------------------------
@@ -322,5 +351,11 @@ int nos_genconf(
 
     /* Write hardware profile */
     rc = write_hwcfg(hwcfg_out, mem, vid, mou, snd, net);
-    return rc;
+    if (rc != 0)
+        return rc;
+
+    /* Write minimal MTCP.CFG when a packet driver was detected */
+    write_mtcpcfg(net);
+
+    return 0;
 }

@@ -32,4 +32,11 @@ void nos_cfg_save(int sort_mode);
  */
 int nos_cfg_sort_dialog(int current);
 
+/*
+ * nos_hwcfg_net_present -- check NOS-HW.CFG for a detected network adapter.
+ * Returns 1 if [NETWORK] PRESENT=1 is in C:\NOS\SYSTEM\NOS-HW.CFG,
+ * 0 if absent, unreadable, or no network detected.
+ */
+int nos_hwcfg_net_present(void);
+
 #endif /* NOS_SHELLCFG_H */
