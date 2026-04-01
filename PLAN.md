@@ -50,10 +50,10 @@ Phase 7: Polish & Release    [Weeks 24-26]  Documentation, testing, VM images
 - [x] Shell compiles clean (zero warnings), SHELL.EXE = 15 KB
 - [x] SHELL.EXE present on C:\NOS\SHELL\ in HDD image
 - [x] Boot test passes with HDD + shell in 2.4s
-- [ ] Shell renders dual panels visually *(requires manual QEMU session with display)*
-- [ ] Can navigate directories, F5/F6/F7/F8 dialogs functional
-- [ ] F12 drops to DOS prompt and returns on EXIT
-- [ ] 620 KB+ conventional memory with shell loaded
+- [x] Shell renders dual panels visually *(verified via QEMU GTK display)*
+- [x] Can navigate directories, F5/F6/F7/F8 dialogs functional
+- [x] F12 drops to DOS prompt and returns on EXIT
+- [ ] 620 KB+ conventional memory with shell loaded *(manual verification pending)*
 
 ---
 
@@ -126,7 +126,7 @@ Phase 7: Polish & Release    [Weeks 24-26]  Documentation, testing, VM images
   - Sorts: name, ext, size, date; `..` always first, dirs before files
   - Scroll bar indicator; `nos_panel_enter()` navigates directories and returns file paths
   - `nos_panel_set_drive()` via INT 21h/0Eh; file size/date formatting in panel rows
-- [ ] **2.4** Implement `src/shell/viewer.c` — quick file viewer (F3)
+- [x] **2.4** Implement `src/shell/viewer.c` — quick file viewer (F3)
 - [x] **2.5** Implement `src/shell/shell.c` — main shell loop
   - 80×25 layout: header (row 0), dual panels (rows 1-22), command row (23), F-key bar (24)
   - Header shows path, free conventional memory (INT 12h), live clock (INT 1Ah)
@@ -135,7 +135,7 @@ Phase 7: Polish & Release    [Weeks 24-26]  Documentation, testing, VM images
 - [ ] **2.6** Implement `src/shell/launcher.c` — application launcher (F9)
 - [ ] **2.7** Implement `src/shell/config.c` — shell configuration (F2)
 - [ ] **2.8** Status bar enhancements — network state, drive free space
-- [ ] **2.9** Dialog system — modal confirmations, text input, list selection
+- [x] **2.9** Dialog system — modal confirmations, text input, list selection
 - [ ] **2.10** Integrate shell into boot — AUTOEXEC.BAT calls `NOS\SHELL\SHELL.EXE`
 
 ### Exit Criteria

@@ -17,7 +17,7 @@ CFLAGS = -ms -bt=dos -q -w4 -e25 -zq -ox
 OBJDIR = obj
 BINDIR = bin
 
-OBJS = $(OBJDIR)/screen.obj $(OBJDIR)/input.obj $(OBJDIR)/panel.obj $(OBJDIR)/shell.obj
+OBJS = $(OBJDIR)/screen.obj $(OBJDIR)/input.obj $(OBJDIR)/panel.obj $(OBJDIR)/dialog.obj $(OBJDIR)/viewer.obj $(OBJDIR)/shell.obj
 
 all : dirs $(BINDIR)/SHELL.EXE .SYMBOLIC
 
@@ -34,7 +34,13 @@ $(OBJDIR)/input.obj : input.c input.h screen.h
 $(OBJDIR)/panel.obj : panel.c panel.h screen.h
 	$(CC) $(CFLAGS) panel.c -fo=$@
 
-$(OBJDIR)/shell.obj : shell.c screen.h input.h panel.h
+$(OBJDIR)/dialog.obj : dialog.c dialog.h screen.h input.h
+	$(CC) $(CFLAGS) dialog.c -fo=$@
+
+$(OBJDIR)/viewer.obj : viewer.c viewer.h screen.h input.h
+	$(CC) $(CFLAGS) viewer.c -fo=$@
+
+$(OBJDIR)/shell.obj : shell.c screen.h input.h panel.h dialog.h viewer.h
 	$(CC) $(CFLAGS) shell.c -fo=$@
 
 $(BINDIR)/SHELL.EXE : $(OBJS)

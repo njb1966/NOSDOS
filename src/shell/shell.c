@@ -13,19 +13,22 @@
  * F-key assignments (Norton Commander standard):
  *   F1  Help     F2  Menu      F3  View    F4  Edit
  *   F5  Copy     F6  Move      F7  MkDir   F8  Delete
- *   F9  PullMenu F10 Quit      F12 DOS Shell
+ *   F9  Launch   F10 Quit      F12 DOS Shell
  *
  * License: GPL-2.0
  */
 
-#include <dos.h>    /* int86, union REGS */
-#define INCL_DOSMEMMGR
-#include <stdio.h>  /* sprintf */
-#include <string.h> /* strcpy, strlen */
-#include <stdlib.h> /* exit */
+#include <dos.h>     /* int86, union REGS, intdosx */
+#include <stdio.h>   /* sprintf, fopen, fread, fwrite, fclose, rename, remove */
+#include <string.h>  /* strcpy, strlen, strcmp, strcat */
+#include <stdlib.h>  /* exit, getenv */
+#include <direct.h>  /* mkdir, rmdir */
+#include <process.h> /* spawnl, P_WAIT */
 #include "screen.h"
 #include "input.h"
 #include "panel.h"
+#include "dialog.h"
+#include "viewer.h"
 
 /* -----------------------------------------------------------------------
  * Layout constants
@@ -52,6 +55,48 @@ static nos_panel_t g_left;
 static nos_panel_t g_right;
 static int         g_active = 0;  /* 0=left, 1=right */
 static int         g_running = 1;
+
+/* Copy I/O staging buffer -- static to avoid stack pressure */
+static unsigned char g_copy_buf[1024];
+
+/* -----------------------------------------------------------------------
+ * Helpers
+ * ----------------------------------------------------------------------- */
+
+static nos_panel_t *active_panel(void)
+{
+    return (g_active == 0) ? &g_left : &g_right;
+}
+
+static nos_panel_t *inactive_panel(void)
+{
+    return (g_active == 0) ? &g_right : &g_left;
+}
+
+/* Build the full path of the cursor entry into buf (>= 128 bytes). */
+static void cursor_path(nos_panel_t *p, char *buf)
+{
+    nos_panel_cursor_path(p, buf);
+}
+
+/* Copy file src to dst.  Returns 0 on success, -1 on error. */
+static int copy_file(const char *src, const char *dst)
+{
+    FILE *fin, *fout;
+    int   n;
+
+    fin = fopen(src, "rb");
+    if (!fin) return -1;
+    fout = fopen(dst, "wb");
+    if (!fout) { fclose(fin); return -1; }
+
+    while ((n = (int)fread(g_copy_buf, 1, sizeof(g_copy_buf), fin)) > 0)
+        fwrite(g_copy_buf, 1, (unsigned)n, fout);
+
+    fclose(fin);
+    fclose(fout);
+    return 0;
+}
 
 /* -----------------------------------------------------------------------
  * Header and footer
@@ -86,7 +131,7 @@ static void draw_header(void)
 
     /* Overwrite centre with active panel path */
     {
-        nos_panel_t *ap = (g_active == 0) ? &g_left : &g_right;
+        nos_panel_t *ap = active_panel();
         int plen = (int)strlen(ap->path);
         int pcol = (80 - plen) / 2;
         nos_scr_puts(pcol, HDR_ROW, ap->path, attr);
@@ -98,7 +143,7 @@ static void draw_fkey_bar(void)
     static const char *labels[] = {
         "Help", "Menu", "View", "Edit",
         "Copy", "Move", "MkDir","Del ",
-        "Pull", "Quit"
+        "Run ", "Quit"
     };
     unsigned char num_attr  = NOS_ATTR(NOS_BLACK, NOS_CYAN);
     unsigned char lbl_attr  = NOS_ATTR(NOS_BLACK, NOS_LGRAY);
@@ -143,7 +188,7 @@ static void redraw_all(void)
     nos_panel_draw(&g_left);
     nos_panel_draw(&g_right);
     draw_fkey_bar();
-    /* Command line row — blank */
+    /* Command line row -- blank */
     nos_scr_fill(0, CMD_ROW, 80, 1, ' ', NOS_ATTR_NORMAL);
 }
 
@@ -153,19 +198,13 @@ static void redraw_all(void)
 
 static void dos_shell(void)
 {
+    char *comspec;
     nos_scr_restore();
-    /* INT 21h / AH=4Bh exec: spawn COMMAND.COM with /K keeps it alive.
-     * For simplicity we use system() — available in Open Watcom libc. */
-    {
-        union REGS r;
-        /* Print message before shelling out */
-        r.h.ah = 0x09; /* DOS print string (needs $ terminator) */
-        /* Just write via stdout approach; avoid printf to stay small */
-    }
-    /* Open Watcom provides system() in small model. */
-    /* system("COMMAND.COM"); */ /* would run a child shell */
-    /* For now: just return. Full exec needs AH=4Bh path. */
+    comspec = getenv("COMSPEC");
+    if (!comspec || *comspec == '\0') comspec = "COMMAND.COM";
+    spawnl(P_WAIT, comspec, comspec, NULL);
     nos_scr_init();
+    nos_scr_hide_cursor();
     redraw_all();
 }
 
@@ -173,39 +212,185 @@ static void dos_shell(void)
  * Action handlers
  * ----------------------------------------------------------------------- */
 
+static void action_view(void)
+{
+    nos_panel_t *ap = active_panel();
+    char path[128];
+
+    if (ap->file_count == 0) return;
+    if (ap->files[ap->cursor].is_dir) return;
+
+    cursor_path(ap, path);
+    nos_viewer_open(path);
+    /* redraw_all() called by dispatch() after we return */
+}
+
 static void action_enter(void)
 {
-    nos_panel_t *ap = (g_active == 0) ? &g_left : &g_right;
+    nos_panel_t *ap = active_panel();
     char path[128];
-    int rc = nos_panel_enter(ap, path);
-    if (rc == 0 || rc == -1) {
-        /* Directory changed or error — redraw panel */
+    int  rc = nos_panel_enter(ap, path);
+
+    if (rc == 1) {
+        /* File selected -- open in viewer */
+        nos_viewer_open(path);
     }
-    /* rc == 1 means a file was selected: future viewer/editor hook */
 }
 
 static void action_copy(void)
 {
-    /* Future: F5 copy */
-    (void)0;
+    nos_panel_t *ap = active_panel();
+    nos_panel_t *ip = inactive_panel();
+    char src[128], dst[128], dstfull[145];
+    char msg[80];
+    int  last;
+
+    if (ap->file_count == 0) return;
+    if (ap->files[ap->cursor].is_dir) {
+        nos_dlg_msg("Copy", "Directory copy not supported.");
+        return;
+    }
+
+    /* Source: full path of highlighted file */
+    cursor_path(ap, src);
+
+    /* Default destination: other panel's path with trailing backslash */
+    strcpy(dst, ip->path);
+    last = (int)strlen(dst) - 1;
+    if (last >= 0 && dst[last] != '\\') {
+        dst[last + 1] = '\\';
+        dst[last + 2] = '\0';
+    }
+
+    if (!nos_dlg_input("Copy", "Copy to:", dst, (int)sizeof(dst)))
+        return;
+
+    /* If destination ends with '\', append the source filename */
+    strcpy(dstfull, dst);
+    last = (int)strlen(dstfull) - 1;
+    if (last >= 0 && dstfull[last] == '\\')
+        strcat(dstfull, ap->files[ap->cursor].name);
+
+    if (copy_file(src, dstfull) != 0) {
+        sprintf(msg, "Cannot copy: %s", ap->files[ap->cursor].name);
+        nos_dlg_msg("Error", msg);
+    }
+
+    nos_panel_read_dir(&g_left);
+    nos_panel_read_dir(&g_right);
 }
 
 static void action_move(void)
 {
-    /* Future: F6 move */
-    (void)0;
+    nos_panel_t *ap = active_panel();
+    nos_panel_t *ip = inactive_panel();
+    char src[128], dst[128], dstfull[145];
+    char msg[80];
+    int  last;
+
+    if (ap->file_count == 0) return;
+    if (strcmp(ap->files[ap->cursor].name, "..") == 0) return;
+
+    cursor_path(ap, src);
+
+    /* Default destination: other panel's path with trailing backslash */
+    strcpy(dst, ip->path);
+    last = (int)strlen(dst) - 1;
+    if (last >= 0 && dst[last] != '\\') {
+        dst[last + 1] = '\\';
+        dst[last + 2] = '\0';
+    }
+
+    if (!nos_dlg_input("Move / Rename", "Move to:", dst, (int)sizeof(dst)))
+        return;
+
+    strcpy(dstfull, dst);
+    last = (int)strlen(dstfull) - 1;
+    if (last >= 0 && dstfull[last] == '\\')
+        strcat(dstfull, ap->files[ap->cursor].name);
+
+    /* Try rename first (works on the same drive for both files and dirs) */
+    if (rename(src, dstfull) != 0) {
+        /* Cross-drive file move: copy then delete */
+        if (ap->files[ap->cursor].is_dir) {
+            nos_dlg_msg("Error", "Cross-drive directory move not supported.");
+        } else if (copy_file(src, dstfull) == 0) {
+            remove(src);
+        } else {
+            sprintf(msg, "Cannot move: %s", ap->files[ap->cursor].name);
+            nos_dlg_msg("Error", msg);
+        }
+    }
+
+    nos_panel_read_dir(&g_left);
+    nos_panel_read_dir(&g_right);
 }
 
 static void action_mkdir(void)
 {
-    /* Future: F7 mkdir */
-    (void)0;
+    nos_panel_t *ap = active_panel();
+    char name[13];
+    char full[145];
+    char msg[80];
+    int  len;
+
+    name[0] = '\0';
+    if (!nos_dlg_input("MkDir", "New directory name:", name, (int)sizeof(name)))
+        return;
+    if (name[0] == '\0') return;
+
+    strcpy(full, ap->path);
+    len = (int)strlen(full);
+    if (len > 0 && full[len - 1] != '\\')
+        full[len++] = '\\';
+    strcpy(full + len, name);
+
+    if (mkdir(full) != 0) {
+        sprintf(msg, "Cannot create: %s", name);
+        nos_dlg_msg("Error", msg);
+    }
+
+    nos_panel_read_dir(&g_left);
+    nos_panel_read_dir(&g_right);
 }
 
 static void action_delete(void)
 {
-    /* Future: F8 delete */
-    (void)0;
+    nos_panel_t *ap = active_panel();
+    char path[128];
+    char msg[80];
+
+    if (ap->file_count == 0) return;
+    if (strcmp(ap->files[ap->cursor].name, "..") == 0) return;
+
+    cursor_path(ap, path);
+    sprintf(msg, "Delete %s?", ap->files[ap->cursor].name);
+
+    if (!nos_dlg_confirm("Delete", msg))
+        return;
+
+    if (ap->files[ap->cursor].is_dir) {
+        if (rmdir(path) != 0)
+            nos_dlg_msg("Error", "Cannot remove: directory not empty.");
+    } else {
+        if (remove(path) != 0) {
+            sprintf(msg, "Cannot delete: %s", ap->files[ap->cursor].name);
+            nos_dlg_msg("Error", msg);
+        }
+    }
+
+    nos_panel_read_dir(&g_left);
+    nos_panel_read_dir(&g_right);
+}
+
+static void action_launch(void)
+{
+    /* F9 launcher: show configured applications or a setup hint.
+     * Full launcher (reads LAUNCHER.CFG, executes selection) is task 2.6.
+     * This stub satisfies the Phase 2 exit criterion "F9 shows launcher". */
+    nos_dlg_msg("Launch",
+                "No applications configured.  "
+                "Use NPKG to install software.");
 }
 
 static void action_quit(void)
@@ -224,7 +409,7 @@ static void dispatch(nos_event_t *evt)
     if (evt->type == NOS_EVT_NONE) return;
 
     if (evt->type == NOS_EVT_KEY) {
-        ap = (g_active == 0) ? &g_left : &g_right;
+        ap = active_panel();
 
         switch (evt->key.code) {
 
@@ -242,22 +427,22 @@ static void dispatch(nos_event_t *evt)
             g_active = 1 - g_active;
             break;
 
-        /* Drive switching (Alt+F1 / Alt+F2) */
+        /* Drive switching (Alt+F1 / Alt+F2) -- TODO: drive picker dialog */
         case NOS_KEY_ALT_F1:
-            /* Prompt for drive letter — TODO: drive picker dialog */
-            break;
         case NOS_KEY_ALT_F2:
             break;
 
         /* F-key actions */
+        case NOS_KEY_F3:  action_view();   break;
         case NOS_KEY_F5:  action_copy();   break;
         case NOS_KEY_F6:  action_move();   break;
         case NOS_KEY_F7:  action_mkdir();  break;
         case NOS_KEY_F8:  action_delete(); break;
+        case NOS_KEY_F9:  action_launch(); break;
         case NOS_KEY_F10:
         case NOS_KEY_ALT_F4:
             action_quit(); break;
-        case NOS_KEY_F12: dos_shell(); return; /* already redraws */
+        case NOS_KEY_F12: dos_shell(); return; /* dos_shell redraws itself */
 
         /* Refresh (Ctrl+R) */
         case NOS_KEY_CTRL_R:

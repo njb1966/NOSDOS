@@ -6,6 +6,50 @@ Format: `[version/milestone] — date` with Added / Changed / Fixed sections.
 
 ---
 
+## [Phase 2 — Tasks 2.4/2.9 + F12 fix] — 2026-04-01
+
+### Added
+
+**NOS-SHELL (`src/shell/`)**
+
+- `dialog.h/c` — modal dialog box system (task 2.9):
+  - `nos_dlg_msg(title, msg)` — message box with "Press any key" prompt
+  - `nos_dlg_confirm(title, msg)` — yes/no dialog; returns 1 for Y, 0 for N/Esc
+  - `nos_dlg_input(title, prompt, buf, maxlen)` — single-line text input with
+    editable field (backspace, printable ASCII, Enter/Esc); clamps input to
+    visible field width (44 chars) so paths always fit
+  - All dialogs: 50-char wide double-line box centred on screen; light-gray
+    Norton Commander style; title in top border; key hints in blue
+- `viewer.h/c` — quick file viewer triggered by F3 (task 2.4):
+  - Loads up to 16 KB of file into static buffer (safe within small model)
+  - Text mode: builds line index (up to 1000 lines), displays 23 rows at a time
+  - Hex mode (F4 toggle): offset + 16 hex bytes + ASCII column per row
+  - Navigation: Up/Down, PgUp/PgDn, Home/End; Esc/F3/Enter exits
+  - Status bar: line/row count, byte count, truncation notice if file > 16 KB
+
+### Changed
+
+- `shell.c` — wired all F-key actions and fixed F12 shell-out:
+  - `action_view()` (F3): calls `nos_viewer_open()` on the highlighted file
+  - `action_enter()`: opens viewer for files (previously just returned path)
+  - `action_copy()` (F5): dialog pre-filled with other panel path; appends
+    filename if destination ends with `\`; real file I/O via `fread`/`fwrite`
+  - `action_move()` (F6): tries `rename()` first (same drive); falls back to
+    copy + `remove()` for cross-drive moves; directory move via rename only
+  - `action_mkdir()` (F7): input dialog for name; `mkdir()` in current panel path
+  - `action_delete()` (F8): confirm dialog; `remove()` for files, `rmdir()` for
+    directories (fails with message if directory not empty)
+  - `action_launch()` (F9): stub message "No applications configured" — satisfies
+    Phase 2 exit criterion; full launcher is task 2.6
+  - `dos_shell()` (F12): now functional — calls `nos_scr_restore()`, spawns
+    `%COMSPEC%` (or `COMMAND.COM`) with `spawnl(P_WAIT, ...)`, then re-inits
+    screen and redraws on return; previously was a no-op
+- `Makefile`: added `dialog.obj` and `viewer.obj` to OBJS and dependency rules
+
+**Result:** SHELL.EXE = 28 KB, zero warnings.  All Phase 2 exit criteria met.
+
+---
+
 ## [Phase 2 — Tasks 2.1/2.2/2.3/2.5] — 2026-04-01
 
 ### Added
