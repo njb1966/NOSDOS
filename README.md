@@ -22,15 +22,16 @@ NOS-DOS wraps FreeDOS with:
 The build pipeline runs end-to-end:
 
 ```
-fetch_deps.py → compile.py → mkimage.py → mkiso.py → boot_test.py PASS (~2s)
+fetch_deps.py → compile.py → mkimage.py → mkhdd.py → mkiso.py → boot_test.py PASS (~2.4s)
 ```
 
 What works today:
 - Bootable El Torito ISO (1.44 MB FAT12 floppy emulation)
+- 31.5 MB FAT16 hard disk image (C: drive) with full directory skeleton and system files pre-installed
 - FreeDOS kernel + COMMAND.COM + JEMMEX memory manager
 - **NOS-DETECT**: probes conventional/XMS/EMS memory, VGA/VESA, mouse, Sound Blaster, packet driver; writes `NOS-HW.CFG`, generates `CONFIG.SYS`/`AUTOEXEC.BAT` from templates
 - **NOS-MEM**: switches between STD/MAX/EMS/GAME memory profiles at runtime
-- Headless QEMU boot test with serial sentinel + hardware detection result verification
+- Headless QEMU boot test (ISO + HDD) with serial sentinel + hardware detection result verification
 - GitHub Actions CI (build + boot test on every push)
 
 ## Building from Source
@@ -84,6 +85,7 @@ python3 tests/boot_test.py --verbose   # show serial output in real time
 ```bash
 python3 build/compile.py    # Cross-compile DOS components (requires Open Watcom)
 python3 build/mkimage.py    # Create FAT12 floppy image
+python3 build/mkhdd.py      # Create FAT16 hard disk image (C: drive)
 python3 build/mkiso.py      # Wrap into bootable ISO
 python3 tests/boot_test.py  # Boot in QEMU, assert ready in <10s
 ```
@@ -97,6 +99,7 @@ NOSDOS/
 │   ├── compile.py          # Open Watcom cross-compiler driver
 │   ├── fetch_deps.py       # Downloads FreeDOS, JEMMEX, CTMOUSE, mTCP
 │   ├── mkimage.py          # Creates FAT12 floppy image
+│   ├── mkhdd.py            # Creates FAT16 hard disk image (C: drive)
 │   ├── mkiso.py            # Creates El Torito ISO
 │   └── config.ini          # Version pins and paths
 ├── dist/

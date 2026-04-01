@@ -36,18 +36,19 @@ jobs:
       - name: Fetch dependencies
         run: python3 build/fetch_deps.py
 
-      - name: Build (image + ISO)
+      - name: Build (floppy + HDD + ISO)
         run: python3 build/build.py --skip-fetch --skip-compile
 
-      # Allow 15s — 50% buffer over the local 10s target.
-      # CI runners are occasionally slower than a local machine.
+      # Allow 20s — CI runners can be slower; HDD adds a small extra delay.
       - name: Boot test
-        run: python3 tests/boot_test.py --timeout 15 --verbose
+        run: python3 tests/boot_test.py --timeout 20 --verbose
 
-      - name: Upload ISO artifact
+      - name: Upload artifacts
         if: success()
         uses: actions/upload-artifact@v4
         with:
-          name: nosdos-iso
-          path: out/nosdos.iso
+          name: nosdos-disk-images
+          path: |
+            out/nosdos.iso
+            out/nosdos.hdd
           retention-days: 7

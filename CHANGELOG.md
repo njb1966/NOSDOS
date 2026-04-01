@@ -6,6 +6,29 @@ Format: `[version/milestone] — date` with Added / Changed / Fixed sections.
 
 ---
 
+## [Pre-Phase-2 HDD infrastructure] — 2026-04-01
+
+### Added
+
+- `build/mkhdd.py` — creates a 31.5 MB FAT16 hard disk image (C: drive) without requiring root:
+  - Writes MBR partition table in Python (`struct.pack`): single FAT16 partition at sector 63 (LBA)
+  - Formats with `mformat -i image@@32256` (mtools `@@offset` syntax targets the partition area)
+  - Geometry: 64 cyl × 16 heads × 63 spt = 64,512 sectors, auto-selects FAT16 (no `-F` flag; that means FAT32 in mtools)
+  - Creates directory skeleton: `NOS/SYSTEM/`, `NOS/SHELL/`, `NOS/DOCS/`, `APPS/`, `GAMES/`, `USER/`, `TEMP/`
+  - Pre-installs all system files: JEMMEX.EXE, CTMOUSE.EXE, DETECT.EXE (optional), NOSMEM.EXE (optional), CONFIG.TPL, AUTOEXEC.TPL, KERNEL.SYS, COMMAND.COM
+  - KERNEL.SYS gets `mattrib +s +h +r` (future HDD-boot support)
+- `build/build.py` — added `hdd` stage between `image` and `iso`; `--skip-hdd` flag; updated summary output to show HDD path and size
+- `build/config.ini` — added `[hdd]` section with geometry note
+- `tests/boot_test.py` — `build_qemu_cmd()` accepts optional `hdd` path; attaches as `-drive file=...,format=raw,index=0,media=disk` (BIOS drive 0x80 → FreeDOS C:); `--hdd`/`--no-hdd` CLI flags; prints HDD status in header
+- `build/mkimage.py` — floppy AUTOEXEC.BAT now includes `IF EXIST C:\NOS\SHELL\SHELL.EXE ...` hook so Phase 2 shell launches automatically when present on C:
+- `.github/workflows/ci.yml` — boot test timeout raised to 20s; artifact now uploads both `nosdos.iso` and `nosdos.hdd`
+
+### Fixed
+
+- `build/mkhdd.py`: mtools `-F` flag means FAT32, not "force FAT16" — removed; mformat auto-selects FAT16 for ~31 MB volume
+
+---
+
 ## [Phase 1 complete] — 2026-04-01
 
 ### Added

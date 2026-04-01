@@ -5,16 +5,18 @@ build.py - Master build orchestrator.
 Stages (in order):
   1. fetch   - Download third-party dependencies (fetch_deps.py)
   2. compile - Cross-compile DOS components with Open Watcom (compile.py)
-  3. image   - Create bootable floppy disk image (mkimage.py)
-  4. iso     - Create bootable El Torito ISO (mkiso.py)
+  3. image   - Create bootable FAT12 floppy disk image (mkimage.py)
+  4. hdd     - Create FAT16 hard disk image for C: drive (mkhdd.py)
+  5. iso     - Create bootable El Torito ISO (mkiso.py)
 
 Usage:
   python build/build.py [options]
 
 Options:
   --skip-fetch     Skip dependency download (assumes dist/thirdparty/ is populated)
-  --skip-compile   Skip Open Watcom compilation (no DOS source built yet)
-  --only <stage>   Run only the named stage (fetch|compile|image|iso)
+  --skip-compile   Skip Open Watcom compilation
+  --skip-hdd       Skip HDD image creation (keep existing nosdos.hdd)
+  --only <stage>   Run only the named stage (fetch|compile|image|hdd|iso)
   --verbose        Show full subprocess output (default: summary only)
 """
 
@@ -76,6 +78,7 @@ STAGES = {
     "fetch":   BUILD_DIR / "fetch_deps.py",
     "compile": BUILD_DIR / "compile.py",
     "image":   BUILD_DIR / "mkimage.py",
+    "hdd":     BUILD_DIR / "mkhdd.py",
     "iso":     BUILD_DIR / "mkiso.py",
 }
 
@@ -84,6 +87,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="NOS-DOS master build script")
     parser.add_argument("--skip-fetch",   action="store_true", help="Skip fetch stage")
     parser.add_argument("--skip-compile", action="store_true", help="Skip compile stage")
+    parser.add_argument("--skip-hdd",     action="store_true", help="Skip HDD image stage")
     parser.add_argument("--only", choices=STAGES.keys(), metavar="STAGE",
                         help="Run only this stage: " + "|".join(STAGES.keys()))
     args = parser.parse_args()
@@ -97,6 +101,8 @@ def main() -> int:
         skip.add("fetch")
     if args.skip_compile:
         skip.add("compile")
+    if args.skip_hdd:
+        skip.add("hdd")
 
     if args.only:
         stages_to_run = [args.only]
@@ -135,14 +141,19 @@ def main() -> int:
     log("")
     log(f"Total: {total_elapsed:.1f}s")
 
-    iso = ROOT_DIR / "out" / "nosdos.iso"
+    out = ROOT_DIR / "out"
+    iso = out / "nosdos.iso"
+    hdd = out / "nosdos.hdd"
     if iso.exists():
-        size_mb = iso.stat().st_size / (1024 * 1024)
-        log(f"Output: {iso} ({size_mb:.1f} MB)")
+        log(f"Output: {iso} ({iso.stat().st_size / (1024*1024):.1f} MB)")
+    if hdd.exists():
+        log(f"Output: {hdd} ({hdd.stat().st_size / (1024*1024):.1f} MB)")
+    if iso.exists():
         log("")
         log("To test:")
         log(f"  python tests/boot_test.py")
-        log(f"  qemu-system-i386 -cdrom {iso} -boot d -m 16")
+        hdd_arg = f" --hdd {hdd}" if hdd.exists() else ""
+        log(f"  python tests/boot_test.py{hdd_arg} --verbose")
 
     return 0
 

@@ -188,15 +188,18 @@ def write_config_files(img_path: Path) -> bool:
         "@ECHO OFF\r\n"
         "SET PROMPT=$P$G\r\n"
         "ECHO.\r\n"
-        "ECHO  NOS-DOS (NostalgicDOS) - Phase 1 Boot\r\n"
+        "ECHO  NOS-DOS (NostalgicDOS)\r\n"
         "ECHO.\r\n"
         # Redirect DETECT.EXE stdout to COM1 so the boot test can parse
-        # the detection results. Genconf will fail (floppy = A:, not C:)
-        # but AUTOEXEC.BAT continues regardless (DOS ignores exit codes).
+        # the detection results. Writes generated CONFIG.SYS/AUTOEXEC.BAT
+        # to C:\ if a hard disk is attached; silently skipped if not.
         "A:\\NOS\\SYSTEM\\DETECT.EXE /NOREBOOT > COM1\r\n"
         "ECHO.\r\n"
         # Boot sentinel written to COM1 (QEMU -serial stdio captures this)
         "ECHO NOS-DOS-READY > COM1\r\n"
+        # Phase 2+: launch shell from C: if present
+        # IF EXIST is safe — DOS ignores the line silently when file is absent
+        "IF EXIST C:\\NOS\\SHELL\\SHELL.EXE C:\\NOS\\SHELL\\SHELL.EXE\r\n"
     )
 
     for filename, content in [("CONFIG.SYS", config_sys), ("AUTOEXEC.BAT", autoexec_bat)]:

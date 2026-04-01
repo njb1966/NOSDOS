@@ -77,8 +77,21 @@ Phase 7: Polish & Release    [Weeks 24-26]  Documentation, testing, VM images
 - [x] First boot: NOS-DETECT runs, detects VM hardware, generates configs; output visible on COM1
 - [x] JEMMEX loads successfully; 639 KB conventional memory free in QEMU (exceeds 560 KB minimum)
 - [x] Boot test parses and reports: conventional KB, XMS KB, VGA adapter, mouse/sound/network status
-- [ ] `NOSMEM /MAX` reconfigures and achieves 635 KB+ *(requires hard disk image / C: drive; deferred)*
+- [ ] `NOSMEM /MAX` reconfigures and achieves 635 KB+ *(manual verification, deferred to Phase 2 milestone)*
 - [ ] All detection works in VirtualBox and VMware *(not yet tested)*
+
+### Pre-Phase-2 Infrastructure
+
+- [x] **1.x** Create `build/mkhdd.py` — 31.5 MB FAT16 hard disk image with MBR partition table
+  - Python-written MBR (struct-packed partition entry, LBA addressing)
+  - `mformat @@offset` for in-place FAT16 format without root access
+  - Directory skeleton: `NOS/SYSTEM/`, `NOS/SHELL/`, `NOS/DOCS/`, `APPS/`, `GAMES/`, `USER/`, `TEMP/`
+  - Pre-installs: JEMMEX.EXE, CTMOUSE.EXE, DETECT.EXE, NOSMEM.EXE, CONFIG.TPL, AUTOEXEC.TPL, KERNEL.SYS, COMMAND.COM
+  - QEMU: attached as `-drive index=0,media=disk` → BIOS drive 0x80 → FreeDOS C:
+- [x] Integrated `hdd` stage into `build/build.py` (between `image` and `iso`); added `--skip-hdd` flag
+- [x] Updated `tests/boot_test.py` — auto-detects and attaches HDD; `--no-hdd` escapes to floppy-only mode
+- [x] Updated `build/mkimage.py` AUTOEXEC.BAT — adds `IF EXIST C:\NOS\SHELL\SHELL.EXE` launch hook for Phase 2+
+- [x] Boot test passes in 2.4s with HDD attached; DETECT.EXE writes to C:\ during the session
 
 ---
 

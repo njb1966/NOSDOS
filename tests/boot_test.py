@@ -40,6 +40,7 @@ config = configparser.ConfigParser()
 config.read(BUILD_DIR / "config.ini")
 
 DEFAULT_ISO = ROOT_DIR / "out" / "nosdos.iso"
+DEFAULT_HDD = ROOT_DIR / "out" / "nosdos.hdd"
 DEFAULT_TIMEOUT = int(config.get("qemu", "boot_timeout_s", fallback="10"))
 QEMU_BIN = config.get("qemu", "binary", fallback="qemu-system-i386")
 
@@ -79,14 +80,17 @@ def log(msg: str, verbose: bool = False, force: bool = False) -> None:
         print(msg, flush=True)
 
 
-def build_qemu_cmd(iso: Path) -> list[str]:
+def build_qemu_cmd(iso: Path, hdd: Path | None = None) -> list[str]:
     """Build the QEMU command line for headless boot testing.
 
     AUTOEXEC.BAT writes "NOS-DOS-READY" to COM1 at end of boot.
     QEMU captures COM1 via -serial stdio, which this process reads from stdout.
     The VGA display is suppressed (no window needed for CI).
+
+    When hdd is provided and exists, it is attached as the primary IDE hard disk.
+    FreeDOS assigns this as C: when booting from the El Torito floppy emulation.
     """
-    return [
+    cmd = [
         QEMU_BIN,
         "-cdrom", str(iso),
         "-boot", "d",           # boot from CD-ROM
@@ -96,6 +100,10 @@ def build_qemu_cmd(iso: Path) -> list[str]:
         "-display", "none",     # headless — no graphical window
         "-serial", "stdio",     # COM1 → this process's stdout
     ]
+    if hdd and hdd.exists():
+        # index=0 → primary IDE master (hda) → BIOS drive 0x80 → FreeDOS C:
+        cmd += ["-drive", f"file={hdd},format=raw,index=0,media=disk"]
+    return cmd
 
 
 def scan_output(proc: subprocess.Popen, timeout: float, verbose: bool) -> tuple[bool, str]:
@@ -189,6 +197,10 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="NOS-DOS QEMU boot test")
     parser.add_argument("--iso", type=Path, default=DEFAULT_ISO,
                         help=f"ISO to test (default: {DEFAULT_ISO})")
+    parser.add_argument("--hdd", type=Path, default=DEFAULT_HDD,
+                        help=f"HDD image to attach as C: (default: {DEFAULT_HDD})")
+    parser.add_argument("--no-hdd", action="store_true",
+                        help="Do not attach a hard disk (floppy-only mode)")
     parser.add_argument("--timeout", type=int, default=DEFAULT_TIMEOUT,
                         help=f"Seconds to wait for prompt (default: {DEFAULT_TIMEOUT})")
     parser.add_argument("--verbose", "-v", action="store_true",
@@ -206,11 +218,18 @@ def main() -> int:
         print("Run: python build/build.py", file=sys.stderr)
         return 2
 
+    hdd = None if args.no_hdd else args.hdd
+
     size_mb = args.iso.stat().st_size / (1024 * 1024)
     print(f"[boot_test] Testing: {args.iso} ({size_mb:.1f} MB)")
+    if hdd and hdd.exists():
+        hdd_mb = hdd.stat().st_size / (1024 * 1024)
+        print(f"[boot_test] HDD:     {hdd} ({hdd_mb:.1f} MB) → C:")
+    else:
+        print(f"[boot_test] HDD:     not attached (floppy-only)")
     print(f"[boot_test] Timeout: {args.timeout}s | QEMU: {QEMU_BIN}")
 
-    cmd = build_qemu_cmd(args.iso)
+    cmd = build_qemu_cmd(args.iso, hdd)
     if args.verbose:
         print(f"[boot_test] Command: {' '.join(str(c) for c in cmd)}")
 
