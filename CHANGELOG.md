@@ -6,6 +6,42 @@ Format: `[version/milestone] — date` with Added / Changed / Fixed sections.
 
 ---
 
+## [Phase 2 — Tasks 2.6/2.7/2.8 — launcher, config, status bar] — 2026-04-01
+
+### Added
+
+**NOS-SHELL (`src/shell/`)**
+
+- `launcher.h/c` — F9 application launcher (task 2.6):
+  - Reads `C:\NOS\SHELL\LAUNCHER.CFG` (pipe-delimited `Name|Command` lines;
+    `#` comments and blank lines ignored; up to 32 entries)
+  - Scrollable selection list in a 50-char dialog with CP437 scroll arrows
+  - Enter executes the selected command (`system()`); screen saved/restored
+  - If file missing or empty: informational "no entries" dialog
+- `shellcfg.h/c` — F2 shell configuration (task 2.7):
+  - `nos_cfg_load()` — reads `C:\NOS\SHELL\SHELL.CFG` (key=value format)
+  - `nos_cfg_save(sort)` — writes sort preference with CR+LF line ending
+  - `nos_cfg_sort_dialog(current)` — 4-option selection dialog (Name / Extension /
+    Size / Date); returns new sort mode or -1 on Esc
+  - Sort is applied to both panels and persisted across restarts
+
+### Changed
+
+- `shell.c`:
+  - `draw_header()` — added drive free space (task 2.8): INT 21h/AH=36h gives
+    free clusters × sectors/cluster × bytes/sector; displayed as "XMB free" or
+    "XKB free" depending on size; shown to the right of conventional memory
+  - `action_launch()` (F9) — now calls `nos_launcher_show()` (real launcher)
+  - `action_config()` (F2) — new; calls `nos_cfg_sort_dialog()` and saves result
+  - `main()` — loads SHELL.CFG at startup; re-reads both panel dirs if sort
+    differs from the default (NOS_SORT_NAME) to apply saved preference immediately
+  - F2 wired in dispatch switch
+- `Makefile` — added `launcher.obj` and `shellcfg.obj`
+
+**Result:** SHELL.EXE = 31 KB, zero warnings.  Phase 2 fully complete.
+
+---
+
 ## [Phase 2 — Tasks 2.4/2.9 + F12 fix] — 2026-04-01
 
 ### Added

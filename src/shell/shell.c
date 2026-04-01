@@ -29,6 +29,8 @@
 #include "panel.h"
 #include "dialog.h"
 #include "viewer.h"
+#include "launcher.h"
+#include "shellcfg.h"
 
 /* -----------------------------------------------------------------------
  * Layout constants
@@ -105,10 +107,12 @@ static int copy_file(const char *src, const char *dst)
 static void draw_header(void)
 {
     union REGS r;
-    unsigned int conv_kb = 0;
-    unsigned char attr   = NOS_ATTR(NOS_BLACK, NOS_CYAN);
+    unsigned int  conv_kb = 0;
+    unsigned long free_kb = 0;
+    unsigned char attr    = NOS_ATTR(NOS_BLACK, NOS_CYAN);
     char buf[82];
     unsigned int hours, mins, secs;
+    nos_panel_t *ap;
 
     /* Clear header */
     nos_scr_fill(0, HDR_ROW, 80, 1, ' ', attr);
@@ -118,6 +122,16 @@ static void draw_header(void)
     int86(0x12, &r, &r);
     conv_kb = (unsigned int)r.x.ax;
 
+    /* Drive free space via INT 21h / AH=36h
+     * AX=sectors/cluster, BX=free clusters, CX=bytes/sector, DX=total clusters
+     * AX=FFFFh = invalid drive */
+    ap = active_panel();
+    r.h.ah = 0x36;
+    r.h.al = (unsigned char)(ap->drive - 'A' + 1);
+    int86(0x21, &r, &r);
+    if (r.x.ax != 0xFFFF)
+        free_kb = ((unsigned long)r.x.bx * r.x.ax * r.x.cx) >> 10;
+
     /* Time via INT 1Ah / AH=00h: CH=hours, CL=mins, DH=secs */
     r.h.ah = 0x00;
     int86(0x1A, &r, &r);
@@ -125,13 +139,17 @@ static void draw_header(void)
     mins  = (unsigned int)r.h.cl;
     secs  = (unsigned int)r.h.dh;
 
-    sprintf(buf, " NOS-DOS                       %3uKB  %02u:%02u:%02u ",
-            conv_kb, hours, mins, secs);
+    /* Right side: conv KB, drive free (MB or KB), clock */
+    if (free_kb >= 1024)
+        sprintf(buf, " NOS-DOS         %3uKB  %luMB free  %02u:%02u:%02u ",
+                conv_kb, free_kb >> 10, hours, mins, secs);
+    else
+        sprintf(buf, " NOS-DOS         %3uKB  %luKB free  %02u:%02u:%02u ",
+                conv_kb, free_kb, hours, mins, secs);
     nos_scr_putn(0, HDR_ROW, buf, 80, attr);
 
     /* Overwrite centre with active panel path */
     {
-        nos_panel_t *ap = active_panel();
         int plen = (int)strlen(ap->path);
         int pcol = (80 - plen) / 2;
         nos_scr_puts(pcol, HDR_ROW, ap->path, attr);
@@ -385,12 +403,19 @@ static void action_delete(void)
 
 static void action_launch(void)
 {
-    /* F9 launcher: show configured applications or a setup hint.
-     * Full launcher (reads LAUNCHER.CFG, executes selection) is task 2.6.
-     * This stub satisfies the Phase 2 exit criterion "F9 shows launcher". */
-    nos_dlg_msg("Launch",
-                "No applications configured.  "
-                "Use NPKG to install software.");
+    nos_launcher_show();
+}
+
+static void action_config(void)
+{
+    int new_sort = nos_cfg_sort_dialog(g_left.sort);
+    if (new_sort >= 0) {
+        g_left.sort  = new_sort;
+        g_right.sort = new_sort;
+        nos_panel_read_dir(&g_left);
+        nos_panel_read_dir(&g_right);
+        nos_cfg_save(new_sort);
+    }
 }
 
 static void action_quit(void)
@@ -433,6 +458,7 @@ static void dispatch(nos_event_t *evt)
             break;
 
         /* F-key actions */
+        case NOS_KEY_F2:  action_config(); break;
         case NOS_KEY_F3:  action_view();   break;
         case NOS_KEY_F5:  action_copy();   break;
         case NOS_KEY_F6:  action_move();   break;
@@ -474,6 +500,17 @@ int main(void)
         nos_panel_init(&g_right, RIGHT_COL, PANEL_TOP, RIGHT_W, PANEL_H) != 0) {
         nos_scr_restore();
         return 1;
+    }
+
+    /* Apply saved sort order (overrides panel_init default of NOS_SORT_NAME) */
+    {
+        int saved_sort = nos_cfg_load();
+        if (saved_sort != NOS_SORT_NAME) {
+            g_left.sort  = saved_sort;
+            g_right.sort = saved_sort;
+            nos_panel_read_dir(&g_left);
+            nos_panel_read_dir(&g_right);
+        }
     }
 
     g_left.active  = 1;

@@ -132,11 +132,11 @@ Phase 7: Polish & Release    [Weeks 24-26]  Documentation, testing, VM images
   - Header shows path, free conventional memory (INT 12h), live clock (INT 1Ah)
   - F-key bar: F1-F10 labels; F5 Copy, F6 Move, F7 MkDir, F8 Del (stubs), F10/Alt+F4 Quit, F12 shell-out
   - Tab switches active panel; Ctrl+R refreshes; arrow/PgUp/PgDn/Home/End navigate
-- [ ] **2.6** Implement `src/shell/launcher.c` — application launcher (F9)
-- [ ] **2.7** Implement `src/shell/config.c` — shell configuration (F2)
-- [ ] **2.8** Status bar enhancements — network state, drive free space
+- [x] **2.6** Implement `src/shell/launcher.c` — application launcher (F9)
+- [x] **2.7** Implement `src/shell/shellcfg.c` — shell configuration (F2): sort order dialog + SHELL.CFG persistence
+- [x] **2.8** Status bar enhancements — drive free space in header (INT 21h/36h)
 - [x] **2.9** Dialog system — modal confirmations, text input, list selection
-- [ ] **2.10** Integrate shell into boot — AUTOEXEC.BAT calls `NOS\SHELL\SHELL.EXE`
+- [x] **2.10** Integrate shell into boot — AUTOEXEC.BAT IF EXIST hook for C:\NOS\SHELL\SHELL.EXE
 
 ### Exit Criteria
 
