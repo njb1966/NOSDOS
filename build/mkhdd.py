@@ -177,6 +177,7 @@ def install_system_files(img_path: Path) -> bool:
     optional = [
         (ROOT_DIR / "src" / "detect" / "bin" / "DETECT.EXE", "NOS/SYSTEM/"),
         (ROOT_DIR / "src" / "mem"    / "bin" / "NOSMEM.EXE",  "NOS/SYSTEM/"),
+        (ROOT_DIR / "src" / "shell"  / "bin" / "SHELL.EXE",   "NOS/SHELL/"),
     ]
     # FreeDOS kernel — for future HDD-boot capability
     freedos_files = [

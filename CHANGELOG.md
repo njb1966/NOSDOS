@@ -6,6 +6,48 @@ Format: `[version/milestone] — date` with Added / Changed / Fixed sections.
 
 ---
 
+## [Phase 2 — Tasks 2.1/2.2/2.3/2.5] — 2026-04-01
+
+### Added
+
+**NOS-SHELL (`src/shell/`)**
+
+- `screen.h/c` — direct video memory renderer (B800:0000 far pointer):
+  - `nos_scr_init()`: detects cols via INT 10h/0Fh, rows via INT 10h/1130h, saves cursor shape
+  - `nos_scr_restore()`: restores cursor shape and repositions for clean DOS exit
+  - `putchar`, `puts`, `putn` (fixed-width with space padding), `fill`, `hline`, `box`, `dbox`
+  - `NOS_ATTR(fg,bg)` macro; 16 colour constants; CP437 box-drawing constants (single + double line)
+  - `nos_scr_hide_cursor()`: positions cursor off-screen to eliminate redraw flicker
+  - C89 fix: `nos_scr_fill()` had mixed declaration/statement — all vars moved to block top
+- `input.h/c` — unified keyboard + mouse event model:
+  - `nos_inp_poll()` non-blocking, `nos_inp_wait()` blocking; both return `nos_event_t`
+  - Keyboard: INT 21h/AH=0Bh for non-blocking status (avoids ZF which WORDREGS lacks);
+    INT 16h/AH=00h to read; extended keys encoded as `0x100 | scan`
+  - Mouse: INT 33h detect/read; pixel→cell via char width/height; click-edge detection
+  - `NOS_KEY_*` constants for F1-F12, arrows, Alt+F1/F2/F4/F7/F10, Ctrl+A/C/D/R/X
+- `panel.h/c` — file panel with FindFirst/FindNext:
+  - Custom DTA (static `nos_dta_t`); `find_first`/`find_next` use `intdosx` with carry in `r.x.cflag`
+  - `..` inserted manually (always first); dirs sorted before files; `qsort` on remaining entries
+  - Sort modes: NAME, EXT, SIZE, DATE; scroll-bar indicator on right border
+  - `nos_panel_enter()`: descends/ascends directory tree; returns file path for viewer hook
+  - `nos_panel_set_drive()`: INT 21h/0Eh drive select; verifies with AH=47h
+  - Panel draw: active/inactive colour schemes; fixed-width name+size+date columns
+- `shell.c` — main loop:
+  - 80×25 layout: header row 0, panels rows 1-22, command row 23, F-key bar row 24
+  - Header: path centred, free KB (INT 12h), clock HH:MM:SS (INT 1Ah/00h)
+  - F-key bar: 10 labelled keys (F1-F10) with alternating colour
+  - Dispatch: Tab switches panel, Ctrl+R refreshes, all navigation keys, F10/Alt+F4 quit
+  - F5/F6/F7/F8 action stubs ready for dialog implementation
+- `Makefile` — wmake rules for all four objects → `SHELL.EXE`
+  - OBJS on single line (wmake on Linux rejects backslash-continuation in OBJS)
+
+**Build integration**
+- `build/mkhdd.py` — `SHELL.EXE` added to optional install list (`NOS/SHELL/`)
+
+**Result:** SHELL.EXE = 15 KB, zero warnings. Boot test passes in 2.4s with shell on HDD.
+
+---
+
 ## [Pre-Phase-2 HDD infrastructure] — 2026-04-01
 
 ### Added

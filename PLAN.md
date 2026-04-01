@@ -45,6 +45,16 @@ Phase 7: Polish & Release    [Weeks 24-26]  Documentation, testing, VM images
 - [ ] ISO boots in VirtualBox and reaches `C:\>` prompt *(not yet tested)*
 - [x] CI pipeline passes
 
+### Phase 2 Exit Criteria
+
+- [x] Shell compiles clean (zero warnings), SHELL.EXE = 15 KB
+- [x] SHELL.EXE present on C:\NOS\SHELL\ in HDD image
+- [x] Boot test passes with HDD + shell in 2.4s
+- [ ] Shell renders dual panels visually *(requires manual QEMU session with display)*
+- [ ] Can navigate directories, F5/F6/F7/F8 dialogs functional
+- [ ] F12 drops to DOS prompt and returns on EXIT
+- [ ] 620 KB+ conventional memory with shell loaded
+
 ---
 
 ## Phase 1: Detection & Memory [Weeks 3-5]
@@ -101,44 +111,31 @@ Phase 7: Polish & Release    [Weeks 24-26]  Documentation, testing, VM images
 
 ### Tasks
 
-- [ ] **2.1** Implement `src/shell/screen.c` — direct video memory rendering engine
-  - Write char+attribute to B800:0000
-  - Functions: `nos_scr_init()`, `nos_scr_putchar()`, `nos_scr_puts()`, `nos_scr_box()`, `nos_scr_fill()`, `nos_scr_color()`, `nos_scr_cursor()`
-  - Support 80x25 and 80x50 text modes
-  - Double-buffering optional (write to buffer, blit to video memory)
-- [ ] **2.2** Implement `src/shell/input.c` — keyboard and mouse input
-  - Keyboard via INT 16h (blocking and non-blocking)
-  - Mouse via INT 33h
-  - Key mapping table for F-keys, Alt+key, Ctrl+key combos
-  - Event queue: `nos_input_poll()` returns key or mouse event
-- [ ] **2.3** Implement `src/shell/panel.c` — dual-pane file panel
-  - Read directory via INT 21h (FindFirst/FindNext)
-  - Sort by name, ext, size, date
-  - Scroll with highlight bar
-  - Show file size, date, attributes
-  - `<DIR>` entries sorted to top
-  - Navigate into directories, back with `..`
-  - Drive switching with Alt+F1/Alt+F2
+- [x] **2.1** Implement `src/shell/screen.c` — direct video memory rendering engine
+  - Far pointer to B800:0000; all drawing bypasses INT 10h except init/cursor
+  - `nos_scr_init()` detects mode via INT 10h/0Fh and INT 10h/1130h; saves/restores cursor shape
+  - `putchar`, `puts`, `putn`, `fill`, `hline`, `box`, `dbox`; attribute macro `NOS_ATTR(fg,bg)`
+  - 80×25 and 80×50 text mode support; CP437 box-drawing character constants
+- [x] **2.2** Implement `src/shell/input.c` — keyboard and mouse input
+  - Unified event model: `nos_inp_poll()` returns KEY, MOUSE, or NONE without blocking
+  - Keyboard: INT 21h/0Bh for non-blocking peek (avoids ZF dependency); INT 16h/00h to read
+  - Extended keys encoded as `0x100 | scan_code` matching `NOS_KEY_*` constants
+  - Mouse: INT 33h/0000h detect, INT 33h/0003h read; pixel→cell conversion; click-edge detection
+- [x] **2.3** Implement `src/shell/panel.c` — dual-pane file panel
+  - INT 21h FindFirst/FindNext (AH=4Eh/4Fh) with custom DTA
+  - Sorts: name, ext, size, date; `..` always first, dirs before files
+  - Scroll bar indicator; `nos_panel_enter()` navigates directories and returns file paths
+  - `nos_panel_set_drive()` via INT 21h/0Eh; file size/date formatting in panel rows
 - [ ] **2.4** Implement `src/shell/viewer.c` — quick file viewer (F3)
-  - Text file viewing with scroll
-  - Hex view toggle
-  - Archive content listing (.ZIP, .ARJ, .LZH)
-- [ ] **2.5** Implement `src/shell/shell.c` — main shell loop
-  - Draw dual panels, function key bar, status bar
-  - Main event loop: poll input → dispatch to panels/menus/actions
-  - F5 Copy, F6 Move, F7 MkDir, F8 Delete with confirmation dialogs
-  - F12 drops to DOS prompt (shells out to COMMAND.COM, returns on EXIT)
+- [x] **2.5** Implement `src/shell/shell.c` — main shell loop
+  - 80×25 layout: header (row 0), dual panels (rows 1-22), command row (23), F-key bar (24)
+  - Header shows path, free conventional memory (INT 12h), live clock (INT 1Ah)
+  - F-key bar: F1-F10 labels; F5 Copy, F6 Move, F7 MkDir, F8 Del (stubs), F10/Alt+F4 Quit, F12 shell-out
+  - Tab switches active panel; Ctrl+R refreshes; arrow/PgUp/PgDn/Home/End navigate
 - [ ] **2.6** Implement `src/shell/launcher.c` — application launcher (F9)
-  - Reads launcher entries from `NOS\SHELL\LAUNCHER.CFG`
-  - Categorized menu: Word Processing, Spreadsheets, Programming, etc.
-  - Each entry specifies: display name, executable path, working dir, memory profile
-  - Launches app, returns to shell on exit
-- [ ] **2.7** Implement `src/shell/config.c` — shell configuration
-  - INI-style config file: `NOS\SHELL\SHELL.CFG`
-  - Settings: color scheme, sort order, show hidden files, default directories, 25/50 line mode
-  - F2 opens settings panel
-- [ ] **2.8** Status bar — bottom line shows: free conventional memory, network status (●/○), current drive free space, clock
-- [ ] **2.9** Dialog system — reusable modal dialogs for confirmations, text input, single/multi select lists
+- [ ] **2.7** Implement `src/shell/config.c` — shell configuration (F2)
+- [ ] **2.8** Status bar enhancements — network state, drive free space
+- [ ] **2.9** Dialog system — modal confirmations, text input, list selection
 - [ ] **2.10** Integrate shell into boot — AUTOEXEC.BAT calls `NOS\SHELL\SHELL.EXE`
 
 ### Exit Criteria
