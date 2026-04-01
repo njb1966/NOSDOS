@@ -1,0 +1,12 @@
+# NOS-DOS build system uses Python stdlib only.
+# No third-party packages required.
+#
+# Host tools required (not Python packages):
+#   nasm          - assembles boot sector and TSR sources
+#   mtools        - creates and populates FAT disk images without root
+#   genisoimage   - creates El Torito bootable ISOs
+#   qemu-system-i386 - boots disk images for testing
+#   qemu-img      - creates and converts disk images
+#
+# Future (DOS cross-compilation):
+#   Open Watcom   - https://open-watcom.github.io/

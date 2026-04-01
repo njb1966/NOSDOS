@@ -1,0 +1,25 @@
+# Build output
+out/
+
+# Downloaded third-party dependencies (reproduced by fetch_deps.py)
+dist/thirdparty/
+
+# Open Watcom compiler installation
+open-watcom-*/
+
+# Object files and intermediate build artifacts
+src/*/obj/
+src/*/bin/
+
+# Python bytecode
+__pycache__/
+*.pyc
+*.pyo
+
+# Editor / OS
+.DS_Store
+*.swp
+*.swo
+*~
+.vscode/
+.idea/

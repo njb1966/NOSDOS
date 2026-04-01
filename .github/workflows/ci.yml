@@ -1,0 +1,53 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  build-and-test:
+    name: Build and boot test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install host tools
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends \
+            nasm \
+            mtools \
+            genisoimage \
+            qemu-system-x86
+
+      # Cache downloaded third-party binaries (FreeDOS, JEMMEX, mTCP, etc.).
+      # Key is derived from the files that contain all version pins and download
+      # URLs, so a cache miss fires only when a dependency is actually updated.
+      - name: Cache third-party dependencies
+        uses: actions/cache@v4
+        with:
+          path: dist/thirdparty
+          key: thirdparty-${{ hashFiles('build/config.ini', 'build/fetch_deps.py') }}
+
+      - name: Fetch dependencies
+        run: python3 build/fetch_deps.py
+
+      - name: Build (image + ISO)
+        run: python3 build/build.py --skip-fetch --skip-compile
+
+      # Allow 15s — 50% buffer over the local 10s target.
+      # CI runners are occasionally slower than a local machine.
+      - name: Boot test
+        run: python3 tests/boot_test.py --timeout 15 --verbose
+
+      - name: Upload ISO artifact
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nosdos-iso
+          path: out/nosdos.iso
+          retention-days: 7
