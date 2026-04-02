@@ -15,7 +15,6 @@
 #include <stdio.h>  /* fopen, fclose */
 #include <string.h> /* strlen */
 #include "screen.h"
-#include "input.h"
 #include "welcome.h"
 
 /* Flag file: presence means welcome has already been shown. */
@@ -59,7 +58,6 @@ void nos_welcome_show(void)
 {
     union REGS r;
     unsigned int conv_kb;
-    nos_event_t evt;
     int base;
 
     /* Read conventional memory for the summary line. */
@@ -116,9 +114,18 @@ void nos_welcome_show(void)
     wel_centre(base + WEL_H - 2,
                "[ Press any key to enter NOS-DOS ]", WEL_HINT);
 
-    /* Wait for keypress */
-    nos_inp_flush();
-    nos_inp_wait(&evt);
+    /* Wait for a fresh keypress.
+     * Clear the BIOS keyboard buffer directly (head = tail) first, then
+     * block on INT 16h/AH=00h.  This bypasses nos_inp_flush/wait entirely:
+     *  - Immune to stale keypresses surviving warm reboots (INT 19h).
+     *  - Immune to mouse events (INT 16h is keyboard-only).
+     *  - No dependency on kb_peek() or the DOS stdin queue. */
+    {
+        *(unsigned short far *)MK_FP(0x0040, 0x001A) =
+            *(unsigned short far *)MK_FP(0x0040, 0x001C);
+        r.h.ah = 0x00;
+        int86(0x16, &r, &r);
+    }
 }
 
 /* -----------------------------------------------------------------------
