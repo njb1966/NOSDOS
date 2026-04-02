@@ -69,6 +69,13 @@ static void wait_key(void)
 static void reboot(void)
 {
     union REGS r;
+    /* Clear BIOS keyboard buffer before rebooting.
+     * INT 19h (warm reboot) does NOT clear the buffer at 0040:001A/001C.
+     * Any keypress used to trigger the reboot would survive and immediately
+     * dismiss the shell's welcome dialog on the next boot.
+     * Setting head = tail empties the circular buffer atomically. */
+    *((unsigned short far *)MK_FP(0x0040, 0x001A)) =
+        *((unsigned short far *)MK_FP(0x0040, 0x001C));
     /* INT 19h: Bootstrap Loader — warm-ish reboot without POST */
     int86(0x19, &r, &r);
     /* Should not return; if it does, fall through to exit */
@@ -285,6 +292,31 @@ int main(int argc, char *argv[])
     printf("    CONFIG.SYS   : OK\r\n");
     printf("    AUTOEXEC.BAT : OK\r\n");
     printf("    NOS-HW.CFG   : OK\r\n");
+
+    /* Print generated files so the user can verify no stray entries */
+    {
+        FILE *df;
+        char  dline[256];
+        printf("\r\n  --- C:\\CONFIG.SYS ---\r\n");
+        df = fopen(PATH_CONFIG_OUT, "r");
+        if (df) {
+            while (fgets(dline, sizeof(dline), df))
+                fputs(dline, stdout);
+            fclose(df);
+        } else {
+            printf("  (could not open)\r\n");
+        }
+        printf("\r\n  --- C:\\AUTOEXEC.BAT ---\r\n");
+        df = fopen(PATH_AUTOEXEC_OUT, "r");
+        if (df) {
+            while (fgets(dline, sizeof(dline), df))
+                fputs(dline, stdout);
+            fclose(df);
+        } else {
+            printf("  (could not open)\r\n");
+        }
+    }
+
     print_sep();
 
     /* Done */

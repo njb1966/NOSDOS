@@ -36,16 +36,18 @@ static int  g_mouse_prev_btn  = 0;
  * Internal: keyboard
  * ----------------------------------------------------------------------- */
 
-/* Return 1 if a key is waiting.
- * INT 21h / AH=0Bh: DOS keyboard status — AL=0xFF (key ready) or 0x00 (none).
- * Avoids needing the ZF (zero flag) which Open Watcom's WORDREGS doesn't expose;
- * only cflag (carry) is available there. */
+/* Return 1 if a key is waiting in the BIOS keyboard buffer.
+ * Reads head/tail pointers from the BIOS data area (0040:001A / 0040:001C)
+ * directly.  head != tail means at least one keycode is buffered.
+ * This matches kb_read() which drains via INT 16h/AH=00h, ensuring
+ * nos_inp_flush() sees the same keys that kb_read() would consume.
+ * (The prior INT 21h/AH=0Bh approach used a different queue and missed
+ * BIOS-buffered keypresses that survived warm reboots.) */
 static int kb_peek(void)
 {
-    union REGS r;
-    r.h.ah = 0x0B;
-    intdos(&r, &r);
-    return (r.h.al == 0xFF);
+    unsigned short far *head = (unsigned short far *)MK_FP(0x0040, 0x001A);
+    unsigned short far *tail = (unsigned short far *)MK_FP(0x0040, 0x001C);
+    return (*head != *tail);
 }
 
 /* Read one key from the BIOS buffer (blocking). Returns encoded key code. */
