@@ -112,7 +112,7 @@ static int probe_h_drive(void)
 {
     union REGS r;
     r.h.ah = 0x36;
-    r.h.al = 8;         /* A=1 .. H=8 */
+    r.h.dl = 8;         /* INT 21h/36h: drive in DL (A=1 .. H=8) */
     int86(0x21, &r, &r);
     return (r.x.ax != 0xFFFF) ? 1 : 0;
 }
@@ -136,11 +136,12 @@ static void draw_header(void)
     conv_kb = (unsigned int)r.x.ax;
 
     /* Drive free space via INT 21h / AH=36h
-     * AX=sectors/cluster, BX=free clusters, CX=bytes/sector, DX=total clusters
-     * AX=FFFFh = invalid drive */
+     * Input:  DL = drive (0=default, 1=A, 2=B, 3=C, ...)
+     * Output: AX=sectors/cluster (FFFFh=invalid), BX=free clusters,
+     *         CX=bytes/sector, DX=total clusters */
     ap = active_panel();
     r.h.ah = 0x36;
-    r.h.al = (unsigned char)(ap->drive - 'A' + 1);
+    r.h.dl = (unsigned char)(ap->drive - 'A' + 1);
     int86(0x21, &r, &r);
     if (r.x.ax != 0xFFFF)
         free_kb = ((unsigned long)r.x.bx * r.x.ax * r.x.cx) >> 10;
@@ -233,10 +234,18 @@ static void redraw_all(void)
  * DOS shell-out (F12)
  * ----------------------------------------------------------------------- */
 
+static void set_text_mode(void)
+{
+    union REGS r;
+    r.h.ah = 0x00;
+    r.h.al = 0x03;  /* 80x25 colour text — clears screen, cursor to (0,0) */
+    int86(0x10, &r, &r);
+}
+
 static void dos_shell(void)
 {
     char *comspec;
-    nos_scr_restore();
+    set_text_mode();   /* clear shell UI before dropping to DOS */
     comspec = getenv("COMSPEC");
     if (!comspec || *comspec == '\0') comspec = "COMMAND.COM";
     spawnl(P_WAIT, comspec, comspec, NULL);
@@ -557,6 +566,6 @@ int main(void)
 
     nos_panel_free(&g_left);
     nos_panel_free(&g_right);
-    nos_scr_restore();
+    set_text_mode();   /* clear shell UI so COMMAND.COM prompt is visible */
     return 0;
 }

@@ -219,7 +219,8 @@ static int write_config_sys(int prof, const nos_hw_t *hw)
 {
     FILE          *f;
     prof_cfg_t    *p;
-    unsigned int   buttons;
+
+    (void)hw; /* mouse driver disabled — hw not consulted until compatible driver available */
 
     if (prof < PROF_STD || prof > PROF_GAME)
         return -1;
@@ -236,10 +237,9 @@ static int write_config_sys(int prof, const nos_hw_t *hw)
     fprintf(f, "DOS=HIGH,UMB\r\n");
     fprintf(f, "DEVICE=C:\\NOS\\SYSTEM\\JEMMEX.EXE %s\r\n", p->jemmex_opts);
 
-    if (p->load_mouse && hw->mouse_present) {
-        buttons = (hw->mouse_buttons >= 3) ? 3 : 2;
-        fprintf(f, "DEVICE=C:\\NOS\\SYSTEM\\CTMOUSE.EXE /%u\r\n", buttons);
-    }
+    /* CTMOUSE 2.1 disabled: uses LOCK on a register operand (LOCK SHL AX,2)
+     * which is #UD on 386+ under JEMMEX V86 mode.  Mouse driver loading is
+     * deferred until a compatible version is available. */
 
     fprintf(f, "FILES=%d\r\n",   p->files);
     fprintf(f, "BUFFERS=%d\r\n", p->buffers);
