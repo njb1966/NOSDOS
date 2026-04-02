@@ -6,6 +6,94 @@ Format: `[version/milestone] — date` with Added / Changed / Fixed sections.
 
 ---
 
+## [Post-Phase-3 — First-boot experience + install fixes] — 2026-04-02
+
+### Fixed
+
+**Welcome screen not showing on fresh install (three-round root cause)**
+
+- Root cause: `C:\NOS\SYSTEM\WELCOMED` is written when the user first dismisses the
+  welcome screen.  On reinstall, `FORMAT` erases the FAT but the file data survives
+  on disk.  Because `WELCOMED` is not part of the `INSTALL\` source tree, `copy_tree`
+  never overwrites it.  `nos_welcome_needed()` finds the stale flag and suppresses the
+  screen on every subsequent boot.
+- Fix — `src/install/install.c` STEP_COPY: calls `remove("C:\\NOS\\SYSTEM\\WELCOMED")`
+  after `copy_tree()` succeeds, so the flag is always gone after a fresh install.
+- Fix — `src/detect/detect.c`: calls `remove("C:\\NOS\\SYSTEM\\WELCOMED")` before
+  rebooting, so re-running DETECT /FORCE also clears the flag.
+
+**Keyboard buffer surviving warm reboot (INT 19h)**
+
+- `reboot()` in `detect.c` now clears the BIOS keyboard circular buffer (sets head =
+  tail at 0040:001A/001C) before issuing INT 19h.  Without this, the keypress from
+  "Press any key to reboot..." survived into the next boot and could dismiss the welcome
+  screen before it was even drawn.
+
+**Welcome screen dismissable by mouse / stale keyboard events**
+
+- `nos_welcome_show()` in `welcome.c` previously called `nos_inp_flush()` + `nos_inp_wait()`.
+  `nos_inp_wait()` accepts mouse events (INT 33h), so any mouse movement could dismiss the
+  dialog.  `nos_inp_flush()` drained the DOS stdin queue (INT 21h/AH=0Bh) rather than the
+  BIOS keyboard buffer (INT 16h), so warm-reboot keypresses slipped through.
+- Fix: replaced both calls with a direct BIOS buffer clear (head = tail) followed by a
+  blocking `int86(0x16, AH=00h)`.  This is keyboard-only and immune to stale buffered keys.
+
+**`kb_peek()` reading wrong keyboard queue**
+
+- `kb_peek()` in `input.c` used INT 21h/AH=0Bh (DOS stdin status), while `kb_read()` used
+  INT 16h/AH=00h (BIOS keyboard buffer).  These are separate queues: keys that survive a
+  warm reboot sit in the BIOS buffer but not in DOS stdin, so `nos_inp_flush()` was a no-op
+  for them.
+- Fix: `kb_peek()` now reads head/tail pointers directly from the BIOS data area
+  (0040:001A / 0040:001C).  `head != tail` means a key is waiting — the same data that
+  INT 16h/AH=00h will consume.
+
+**INT 21h/AH=36h register bug in NOS-SHELL**
+
+- `probe_h_drive()` and `draw_header()` in `shell.c` passed the drive number in AL instead
+  of DL to INT 21h/AH=36h (Get Disk Free Space).  The Open Watcom `intdos()` call used
+  `r.h.al` when the BIOS spec requires `r.h.dl`.  Result: free space showed 0 KB or a
+  garbage value for the current drive.
+- Fix: changed all `r.h.al = drive` assignments to `r.h.dl = drive`.
+
+**CTMOUSE causing LOCK SHL AX,2 (#UD) fault under JEMMEX**
+
+- CTMOUSE uses a `LOCK SHL AX,2` instruction which is an invalid opcode (`#UD`) on 386+
+  processors running under JEMMEX V86 mode (JEMMEX routes the exception through its
+  protected-mode IDT, generating an unhandled fault).
+- Fix: removed `CTMOUSE.EXE` from `CONFIG.TPL` (no `{{MOUSE_LINE}}` substitution) and
+  from the `nosmem.c` profile loader.  Mouse detection in `DETECT.EXE` still runs and
+  records the result in `NOS-HW.CFG`; CTMOUSE will be re-enabled when a version without
+  the locked-shift instruction is available.
+
+**Installer welcome banner unreadable (block art)**
+
+- The original `draw_welcome()` in `install.c` displayed five rows of `\xDB` (█) full-block
+  characters to form a "NOS-DOS" logo.  In VirtualBox the blocks rendered as yellow noise;
+  the text was not legible.
+- Fix: replaced the block art with a centered double-line box (`nos_scr_dbox()`, 54 wide ×
+  7 tall), spaced title `"N  O  S  -  D  O  S"` in yellow, subtitle and tagline below an
+  internal `╠══╣` separator.  Clean and readable at any VM display scale.
+
+### Changed
+
+**Build system**
+
+- `build/compile.py`: added `"install"` to the `COMPONENTS` list so `INSTALL.EXE` is
+  compiled automatically as part of the normal build.
+- `build/config.ini`: added `[cdrom_drivers]` section with `OAKCDROM` and `SHSUCDX`
+  package entries for CD-ROM support.
+- `build/mkiso.py`: full rewrite from simple floppy wrapper to installer ISO builder —
+  creates a bootable installer floppy image, stages the complete `INSTALL/` tree, and
+  packages everything into an El Torito ISO with the installer as the boot image.
+
+**Config templates**
+
+- `dist/config/CONFIG.TPL`: removed `{{MOUSE_LINE}}` substitution variable (CTMOUSE
+  disabled; see bug fix above).
+
+---
+
 ## [Phase 3 — Tasks 3.1/3.2/3.3/3.4/3.5/3.6 — NNET + networking integration] — 2026-04-01
 
 ### Added

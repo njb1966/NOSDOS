@@ -5,9 +5,9 @@
 NOS-DOS is a curated, ready-to-run DOS environment built on FreeDOS, optimized for virtual machines.
 It is an opinionated experience layer — not a new OS.
 
-[![CI](https://github.com/your-org/nosdos/actions/workflows/ci.yml/badge.svg)](https://github.com/your-org/nosdos/actions/workflows/ci.yml)
+[![CI](https://github.com/njb1966/NOSDOS/actions/workflows/ci.yml/badge.svg)](https://github.com/njb1966/NOSDOS/actions/workflows/ci.yml)
 [![License: GPL-2.0](https://img.shields.io/badge/license-GPL--2.0-blue)](LICENSE)
-[![Release](https://img.shields.io/github/v/release/your-org/nosdos)](https://github.com/your-org/nosdos/releases)
+[![Release](https://img.shields.io/github/v/release/njb1966/NOSDOS)](https://github.com/njb1966/NOSDOS/releases)
 
 ---
 
@@ -28,7 +28,7 @@ Import the OVA, start the VM, and you have a properly configured DOS system with
 
 ### Option A: VirtualBox OVA (recommended)
 
-1. [Download `nosdos.ova`](https://github.com/your-org/nosdos/releases/latest)
+1. [Download `nosdos.ova`](https://github.com/njb1966/NOSDOS/releases/latest)
 2. VirtualBox → **File → Import Appliance** → select the OVA → Import
 3. Start the VM — NOS-SHELL appears in under 10 seconds
 4. Press `F12` for a DOS prompt, then `NNET DHCP` to get networking
