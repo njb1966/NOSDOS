@@ -31,6 +31,7 @@ COMPONENTS = [
     "npkg",
     "play",
     "shell",
+    "install",
 ]
 
 
