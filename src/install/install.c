@@ -213,41 +213,32 @@ static void draw_welcome(void)
     draw_chrome("1/5 Welcome");
 
     /*
-     * Centred banner — "NOS-DOS" in large block letters using CP437 shading.
-     * 55 chars wide; starts at column 12 to centre in 80.
+     * Product name box — double-line border, centred in 80 columns.
+     * Box: cols 13-66 (54 wide), rows BODY_TOP+1 to BODY_TOP+7 (7 tall).
+     * Interior: cols 14-65 (52 wide), centre col ~40.
      */
-    nos_scr_puts(11, BODY_TOP + 1,
-        "\xDB\xDB\xDB\xDB\xDB \xDB\xDB  \xDB\xDB\xDB\xDB\xDB\xDB\xDB   "
-        "\xDB\xDB\xDB\xDB\xDB  \xDB\xDB\xDB\xDB\xDB\xDB\xDB  \xDB\xDB\xDB\xDB\xDB ",
-        INST_TITLE);
-    nos_scr_puts(11, BODY_TOP + 2,
-        "\xDB\xDB  \xDB\xDB \xDB\xDB  \xDB\xDB        "
-        "\xDB\xDB  \xDB\xDB \xDB\xDB     \xDB\xDB  \xDB\xDB",
-        INST_TITLE);
-    nos_scr_puts(11, BODY_TOP + 3,
-        "\xDB\xDB  \xDB\xDB \xDB\xDB  \xDB\xDB\xDB\xDB\xDB   "
-        "\xDB\xDB  \xDB\xDB \xDB\xDB\xDB\xDB\xDB  \xDB\xDB\xDB\xDB\xDB ",
-        INST_TITLE);
-    nos_scr_puts(11, BODY_TOP + 4,
-        "\xDB\xDB  \xDB\xDB \xDB\xDB  \xDB\xDB        "
-        "\xDB\xDB  \xDB\xDB \xDB\xDB     \xDB\xDB  \xDB\xDB",
-        INST_TITLE);
-    nos_scr_puts(11, BODY_TOP + 5,
-        "\xDB\xDB\xDB\xDB\xDB  \xDB\xDB  \xDB\xDB\xDB\xDB\xDB\xDB\xDB   "
-        "\xDB\xDB\xDB\xDB\xDB  \xDB\xDB     \xDB\xDB  \xDB\xDB",
-        INST_TITLE);
+    nos_scr_dbox(13, BODY_TOP + 1, 54, 7, INST_DIM);
 
-    nos_scr_puts(22, BODY_TOP + 7,
-                 "Boot fast. Work clean. Remember when", INST_DIM);
-    nos_scr_puts(30, BODY_TOP + 8, "computing just worked?", INST_DIM);
+    /* Product name — spaced letters for visual weight, yellow on blue */
+    nos_scr_puts(30, BODY_TOP + 2, "N  O  S  -  D  O  S", INST_TITLE);
 
-    nos_scr_hline(4, BODY_TOP + 10, 72, NOS_CH_H, INST_DIM);
+    /* Internal horizontal separator: left T-junction, bar, right T-junction */
+    nos_scr_putchar(13, BODY_TOP + 3, 0xCC, INST_DIM);   /* ╠ */
+    nos_scr_hline(14, BODY_TOP + 3, 52, NOS_CH_DH, INST_DIM);
+    nos_scr_putchar(66, BODY_TOP + 3, 0xB9, INST_DIM);   /* ╣ */
 
-    nos_scr_puts(4, BODY_TOP + 12,
+    /* Subtitle and tagline */
+    nos_scr_puts(31, BODY_TOP + 4, "NostalgicDOS  v1.0", INST_BODY);
+    nos_scr_puts(28, BODY_TOP + 5, "Boot fast.  Work clean.", INST_DIM);
+    nos_scr_puts(22, BODY_TOP + 6, "Remember when computing just worked?", INST_DIM);
+
+    nos_scr_hline(4, BODY_TOP + 9, 72, NOS_CH_H, INST_DIM);
+
+    nos_scr_puts(4, BODY_TOP + 11,
                  "This program installs NOS-DOS on your hard disk.", INST_BODY);
-    nos_scr_puts(4, BODY_TOP + 13,
+    nos_scr_puts(4, BODY_TOP + 12,
                  "Drive C: must already be partitioned (run FDISK if not).", INST_BODY);
-    nos_scr_puts(4, BODY_TOP + 15,
+    nos_scr_puts(4, BODY_TOP + 14,
                  "\xFE WARNING: All data on C: will be erased.", INST_WARN);
 
     draw_hints(" [Enter] Begin    [Esc] Quit");
