@@ -60,7 +60,7 @@ static void substitute_line(const char *in, char *out, int outsz,
     const char *p   = in;
     char       *q   = out;
     char       *end = out + outsz - 1;
-    char        key[MAX_KEY_LEN];
+    static char key[MAX_KEY_LEN];
     int         ki, idx;
     const char *v;
     int         vlen;
@@ -104,8 +104,8 @@ static int process_template(const char *tpl_path, const char *out_path,
 {
     FILE *fin;
     FILE *fout;
-    char in_line[MAX_LINE_LEN];
-    char out_line[MAX_LINE_LEN + MAX_VAL_LEN]; /* headroom for expansion */
+    static char in_line[MAX_LINE_LEN];
+    static char out_line[MAX_LINE_LEN + MAX_VAL_LEN]; /* headroom for expansion */
 
     fin = fopen(tpl_path, "r");
     if (!fin) {
@@ -143,16 +143,13 @@ static void build_jemmex_opts(char *val)
     strcpy(val, "NOEMS X=TEST");
 }
 
-/* MOUSE_LINE: full DEVICE= line for CTMOUSE, or empty if no mouse. */
+/* MOUSE_LINE: disabled — CuteMouse 2.1 uses LOCK on a register operand
+ * (LOCK SHL AX,2) which is #UD on 386+ under JEMMEX V86 mode.
+ * Mouse driver loading is deferred until a compatible version is available. */
 static void build_mouse_line(const nos_mouseinfo_t *mou, char *val)
 {
-    if (!mou->present) {
-        val[0] = '\0';
-        return;
-    }
-    strcpy(val, "DEVICE=C:\\NOS\\SYSTEM\\CTMOUSE.EXE /");
-    val[strlen(val)] = (mou->buttons >= 3) ? '3' : '2';
-    val[strlen(val)] = '\0';
+    (void)mou; /* suppress unused-parameter warning */
+    val[0] = '\0';
 }
 
 /* BLASTER_LINE: SET BLASTER= if card found, empty otherwise.
@@ -319,9 +316,9 @@ int nos_genconf(
     const char *autoexec_out,
     const char *hwcfg_out)
 {
-    subst_t tbl[MAX_SUBST];
-    int     n = 0;
-    int     rc;
+    static subst_t tbl[MAX_SUBST];
+    int            n = 0;
+    int            rc;
 
     /* Build substitution table */
     strcpy(tbl[n].key, "JEMMEX_OPTS");
