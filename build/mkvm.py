@@ -236,7 +236,7 @@ qemu-system-i386 \\
   -boot d \\
   -drive file="{hdd_abs}",format=raw,index=0,media=disk \\
   -drive if=ide,index=1,format=vvfat,file=fat:rw:"$SHARE" \\
-  -audiodev pa,id=snd0 -device sb16,audiodev=snd0 \\
+  -audiodev alsa,id=snd0 -device sb16,audiodev=snd0 \\
   -net nic,model=ne2k_isa \\
   -net user \\
   -vga std \\
