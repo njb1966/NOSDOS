@@ -31,6 +31,7 @@
 #include "viewer.h"
 #include "launcher.h"
 #include "shellcfg.h"
+#include "welcome.h"
 
 /* -----------------------------------------------------------------------
  * Layout constants
@@ -57,7 +58,8 @@ static nos_panel_t g_left;
 static nos_panel_t g_right;
 static int         g_active = 0;      /* 0=left, 1=right */
 static int         g_running = 1;
-static int         g_net_present = 0; /* 1 if packet driver detected */
+static int         g_net_present    = 0; /* 1 if packet driver detected */
+static int         g_bridge_mounted = 0; /* 1 if H:\ is accessible      */
 
 /* Copy I/O staging buffer -- static to avoid stack pressure */
 static unsigned char g_copy_buf[1024];
@@ -105,6 +107,16 @@ static int copy_file(const char *src, const char *dst)
  * Header and footer
  * ----------------------------------------------------------------------- */
 
+/* Returns 1 if H:\ (drive 8) is a valid mounted drive. */
+static int probe_h_drive(void)
+{
+    union REGS r;
+    r.h.ah = 0x36;
+    r.h.al = 8;         /* A=1 .. H=8 */
+    int86(0x21, &r, &r);
+    return (r.x.ax != 0xFFFF) ? 1 : 0;
+}
+
 static void draw_header(void)
 {
     union REGS r;
@@ -140,16 +152,18 @@ static void draw_header(void)
     mins  = (unsigned int)r.h.cl;
     secs  = (unsigned int)r.h.dh;
 
-    /* Right side: conv KB, drive free (MB or KB), NET indicator, clock */
+    /* Right side: conv KB, drive free, NET, H:\ (bridge), clock */
     if (free_kb >= 1024)
-        sprintf(buf, " NOS-DOS         %3uKB  %luMB free%s  %02u:%02u:%02u ",
+        sprintf(buf, " NOS-DOS         %3uKB  %luMB free%s%s  %02u:%02u:%02u ",
                 conv_kb, free_kb >> 10,
-                g_net_present ? "  NET" : "     ",
+                g_net_present    ? "  NET" : "     ",
+                g_bridge_mounted ? " H:" : "   ",
                 hours, mins, secs);
     else
-        sprintf(buf, " NOS-DOS         %3uKB  %luKB free%s  %02u:%02u:%02u ",
+        sprintf(buf, " NOS-DOS         %3uKB  %luKB free%s%s  %02u:%02u:%02u ",
                 conv_kb, free_kb,
-                g_net_present ? "  NET" : "     ",
+                g_net_present    ? "  NET" : "     ",
+                g_bridge_mounted ? " H:" : "   ",
                 hours, mins, secs);
     nos_scr_putn(0, HDR_ROW, buf, 80, attr);
 
@@ -477,7 +491,8 @@ static void dispatch(nos_event_t *evt)
 
         /* Refresh (Ctrl+R) */
         case NOS_KEY_CTRL_R:
-            g_net_present = nos_hwcfg_net_present();
+            g_net_present    = nos_hwcfg_net_present();
+            g_bridge_mounted = probe_h_drive();
             nos_panel_read_dir(&g_left);
             nos_panel_read_dir(&g_right);
             break;
@@ -501,8 +516,16 @@ int main(void)
     nos_scr_init();
     nos_inp_init();
 
+    /* First-boot welcome screen */
+    if (nos_welcome_needed()) {
+        nos_welcome_show();
+        nos_welcome_mark_shown();
+    }
+
     /* Check network status from NOS-HW.CFG */
-    g_net_present = nos_hwcfg_net_present();
+    g_net_present    = nos_hwcfg_net_present();
+    /* Probe H:\ for host bridge */
+    g_bridge_mounted = probe_h_drive();
 
     /* Initialise panels */
     if (nos_panel_init(&g_left,  LEFT_COL,  PANEL_TOP, LEFT_W,  PANEL_H) != 0 ||

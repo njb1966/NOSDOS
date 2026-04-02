@@ -187,6 +187,9 @@ def write_config_files(img_path: Path) -> bool:
     autoexec_bat = (
         "@ECHO OFF\r\n"
         "SET PROMPT=$P$G\r\n"
+        # Set PATH so DOS commands work from the shell-out prompt.
+        # C:\NOS\SYSTEM is always present if the HDD is attached.
+        "SET PATH=C:\\;C:\\NOS\\SYSTEM;C:\\NOS\\SHELL;C:\\APPS\r\n"
         "ECHO.\r\n"
         "ECHO  NOS-DOS (NostalgicDOS)\r\n"
         "ECHO.\r\n"

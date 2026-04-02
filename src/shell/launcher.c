@@ -23,6 +23,7 @@
 #include <stdio.h>   /* fopen, fgets, fclose, sprintf */
 #include <string.h>  /* strcpy, strlen, strchr, strncpy */
 #include <stdlib.h>  /* system */
+#include <direct.h>  /* chdir */
 #include "screen.h"
 #include "input.h"
 #include "launcher.h"
@@ -34,7 +35,18 @@
 #define LAU_MAX    32            /* max launcher entries                    */
 #define LAU_NAME   36            /* max display name length                 */
 #define LAU_CMD    80            /* max command string length               */
+#define LAU_DIR    65            /* max working directory length            */
 #define LAU_CFG    "C:\\NOS\\SHELL\\LAUNCHER.CFG"
+
+/* LAUNCHER.CFG supports two formats (backward-compatible):
+ *   2-field:  Name|Exec           (no working directory override)
+ *   3-field:  Name|Dir|Exec       (chdir to Dir before launch)
+ *
+ * NPKG-managed entries are preceded by a marker line:
+ *   #NPKG:<ID>
+ *   Name|Dir|Exec
+ * The lau_load() parser skips all '#' lines (including markers), so
+ * no change is needed here to handle them at load time.            */
 
 #define LAU_W      50            /* dialog width (matches dialog.c)         */
 #define LAU_COL    ((80 - LAU_W) / 2)   /* = 15                            */
@@ -58,6 +70,7 @@
 
 typedef struct {
     char name[LAU_NAME];
+    char dir[LAU_DIR];   /* working directory; empty = no chdir */
     char cmd[LAU_CMD];
 } lau_entry_t;
 
@@ -71,7 +84,7 @@ static int         g_entry_count;
 static int lau_load(void)
 {
     FILE *fp;
-    char  line[LAU_NAME + LAU_CMD + 4];
+    char  line[LAU_NAME + LAU_DIR + LAU_CMD + 6]; /* 3-field: name|dir|cmd */
     char *pipe;
     int   len;
 
@@ -88,15 +101,31 @@ static int lau_load(void)
         /* Skip blank lines and comments */
         if (len == 0 || line[0] == '#') continue;
 
-        /* Split at '|' */
+        /* Split at first '|' — always separates Name from rest */
         pipe = strchr(line, '|');
         if (!pipe) continue;
         *pipe = '\0';
 
-        strncpy(g_entries[g_entry_count].name, line,   LAU_NAME - 1);
-        strncpy(g_entries[g_entry_count].cmd,  pipe+1, LAU_CMD  - 1);
+        strncpy(g_entries[g_entry_count].name, line, LAU_NAME - 1);
         g_entries[g_entry_count].name[LAU_NAME - 1] = '\0';
-        g_entries[g_entry_count].cmd [LAU_CMD  - 1] = '\0';
+        g_entries[g_entry_count].dir[0]              = '\0';
+
+        {
+            char *rest  = pipe + 1;
+            char *pipe2 = strchr(rest, '|');
+
+            if (pipe2) {
+                /* 3-field: Name|Dir|Exec */
+                *pipe2 = '\0';
+                strncpy(g_entries[g_entry_count].dir,  rest,    LAU_DIR - 1);
+                strncpy(g_entries[g_entry_count].cmd,  pipe2+1, LAU_CMD - 1);
+                g_entries[g_entry_count].dir[LAU_DIR - 1] = '\0';
+            } else {
+                /* 2-field: Name|Exec */
+                strncpy(g_entries[g_entry_count].cmd, rest, LAU_CMD - 1);
+            }
+            g_entries[g_entry_count].cmd[LAU_CMD - 1] = '\0';
+        }
         g_entry_count++;
     }
     fclose(fp);
@@ -173,10 +202,12 @@ static void lau_draw_items(int cursor, int scroll)
  * Execute a selected entry
  * ----------------------------------------------------------------------- */
 
-static void lau_exec(const char *cmd)
+static void lau_exec(int idx)
 {
     nos_scr_restore();
-    system(cmd);
+    if (g_entries[idx].dir[0] != '\0')
+        chdir(g_entries[idx].dir);
+    system(g_entries[idx].cmd);
     nos_scr_init();
     nos_scr_hide_cursor();
     /* Caller (shell.c dispatch) repaints the shell screen */
@@ -197,7 +228,7 @@ void nos_launcher_show(void)
         /* No entries -- show a brief message using inline drawing */
         const char *title = "[ Launch ]";
         const char *msg1  = "No applications configured.";
-        const char *msg2  = "Add entries to LAUNCHER.CFG";
+        const char *msg2  = "Use NPKG INSTALL or edit LAUNCHER.CFG";
         const char *hint  = "[ Press any key ]";
         int tcol = LAU_COL + (LAU_W - (int)strlen(title)) / 2;
         int hcol = LAU_COL + (LAU_W - (int)strlen(hint))  / 2;
@@ -231,7 +262,7 @@ void nos_launcher_show(void)
             return;
 
         case NOS_KEY_ENTER:
-            lau_exec(g_entries[cursor].cmd);
+            lau_exec(cursor);
             return;
 
         case NOS_KEY_UP:

@@ -1,0 +1,47 @@
+[PACKAGE]
+ID=TC30
+Name=Turbo C
+Version=3.0
+Category=programming
+Description=Borland's classic C IDE and compiler, released as freeware
+Author=Borland International
+Year=1991
+License=freeware
+Tags=c programming compiler ide borland ansi
+
+[HARDWARE]
+Memory=512
+EMS=512
+Sound=none
+Mouse=yes
+VGA=no
+CPUSpeed=any
+DiskKB=2500
+
+[SOURCE]
+URL1=https://archive.org/download/borland-turbo-c-3.0/tc30.zip
+URL2=https://archive.org/download/BorlandTurboC/TC30.ZIP
+Archive=TC30.ZIP
+Redirect=yes
+
+[INSTALL]
+InstallDir=C:\DEV\TC3
+Extract=yes
+Extractor=unzip
+SetPath=yes
+
+[POST-INSTALL]
+MD %INSTALLDIR%\WORK
+ECHO Turbo C 3.0 installed to %INSTALLDIR%.
+ECHO IDE:      %INSTALLDIR%\TC.EXE
+ECHO Compiler: %INSTALLDIR%\TCC.EXE
+ECHO Set INCLUDE and LIB paths inside the IDE Options > Directories menu.
+
+[LAUNCHER]
+Label=Turbo C 3.0
+Exec=C:\DEV\TC3\TC.EXE
+Dir=C:\DEV\TC3\WORK
+Icon=229
+
+[REMOVE]
+DELTREE /Y %INSTALLDIR%

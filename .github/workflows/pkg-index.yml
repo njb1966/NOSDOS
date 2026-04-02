@@ -1,0 +1,40 @@
+name: Package Index
+
+# Validates all .npkg files and checks that packages.idx matches.
+# Triggered on any change to packages/ or the index generator itself.
+# Developers must run `python3 build/mkindex.py` and commit the result
+# before this check passes.
+
+on:
+  push:
+    paths:
+      - "packages/**"
+      - "build/mkindex.py"
+  pull_request:
+    paths:
+      - "packages/**"
+      - "build/mkindex.py"
+
+jobs:
+  validate-index:
+    name: Validate .npkg definitions and packages.idx
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Validate all .npkg files
+        run: python3 build/mkindex.py --validate --verbose
+
+      - name: Check packages.idx is up to date
+        run: |
+          python3 build/mkindex.py --check --verbose
+          echo ""
+          echo "If this step fails, run 'python3 build/mkindex.py' locally,"
+          echo "review the regenerated packages/packages.idx, and commit it."

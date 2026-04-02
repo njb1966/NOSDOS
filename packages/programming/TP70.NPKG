@@ -1,0 +1,47 @@
+[PACKAGE]
+ID=TP70
+Name=Turbo Pascal
+Version=7.0
+Category=programming
+Description=Borland Pascal IDE and compiler, released as freeware
+Author=Borland International
+Year=1992
+License=freeware
+Tags=pascal programming compiler ide borland
+
+[HARDWARE]
+Memory=512
+EMS=1024
+Sound=none
+Mouse=yes
+VGA=no
+CPUSpeed=any
+DiskKB=5000
+
+[SOURCE]
+URL1=https://archive.org/download/borland-turbo-pascal-7/tp70.zip
+URL2=https://archive.org/download/BorlandTurboPascal/TP70.ZIP
+Archive=TP70.ZIP
+Redirect=yes
+
+[INSTALL]
+InstallDir=C:\DEV\TP7
+Extract=yes
+Extractor=unzip
+SetPath=yes
+
+[POST-INSTALL]
+MD %INSTALLDIR%\WORK
+ECHO Turbo Pascal 7.0 installed to %INSTALLDIR%.
+ECHO IDE:      %INSTALLDIR%\TURBO.EXE
+ECHO Compiler: %INSTALLDIR%\TPC.EXE
+ECHO Set INCLUDE and LIB paths inside the IDE Options menu.
+
+[LAUNCHER]
+Label=Turbo Pascal 7.0
+Exec=C:\DEV\TP7\TURBO.EXE
+Dir=C:\DEV\TP7\WORK
+Icon=229
+
+[REMOVE]
+DELTREE /Y %INSTALLDIR%

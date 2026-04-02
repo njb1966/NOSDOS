@@ -191,6 +191,14 @@ def install_system_files(img_path: Path) -> bool:
             optional.append((src, "NOS/SYSTEM/"))
         else:
             log(f"  INFO: mTCP tool not found (fetch_deps.py needed?): {tool}")
+    # On-disk documentation (dist/docs/*.TXT → NOS/DOCS/)
+    docs_dir = DIST_DIR / "docs"
+    if docs_dir.is_dir():
+        for doc in sorted(docs_dir.glob("*.TXT")):
+            optional.append((doc, "NOS/DOCS/"))
+    else:
+        log("  INFO: dist/docs/ not found — documentation not installed")
+
     # Batch file wrappers for common commands
     bat_optional = [
         (ROOT_DIR / "dist" / "bat" / "NPING.BAT",   "NOS/SHELL/"),

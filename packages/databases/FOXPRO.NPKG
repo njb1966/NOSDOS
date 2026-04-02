@@ -1,0 +1,46 @@
+[PACKAGE]
+ID=FOXPRO
+Name=FoxPro
+Version=2.0
+Category=databases
+Description=xBase database with SQL and Rushmore query technology
+Author=Fox Software
+Year=1991
+License=commercial
+Tags=database xbase sql programming records rushmore
+
+[HARDWARE]
+Memory=512
+EMS=512
+Sound=none
+Mouse=yes
+VGA=no
+CPUSpeed=any
+DiskKB=4500
+
+[SOURCE]
+URL1=https://archive.org/download/foxpro-2.0-dos/foxpro20.zip
+URL2=https://archive.org/download/msdos_FoxPro_2/foxpro20.zip
+Archive=FOXPRO20.ZIP
+Redirect=yes
+
+[INSTALL]
+InstallDir=C:\APPS\FOXPRO
+Extract=yes
+Extractor=unzip
+SetPath=yes
+
+[POST-INSTALL]
+MD %INSTALLDIR%\DATA
+ECHO FoxPro 2.0 installed to %INSTALLDIR%.
+ECHO Run %INSTALLDIR%\FOXPRO.EXE to start.
+ECHO EMS memory strongly recommended for large databases.
+
+[LAUNCHER]
+Label=FoxPro 2.0
+Exec=C:\APPS\FOXPRO\FOXPRO.EXE
+Dir=C:\APPS\FOXPRO
+Icon=254
+
+[REMOVE]
+DELTREE /Y %INSTALLDIR%

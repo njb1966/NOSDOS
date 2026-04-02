@@ -1,0 +1,54 @@
+[PACKAGE]
+ID=HERETIC
+Name=Heretic Shareware
+Version=1.3
+Category=game
+Description=id Tech 1 fantasy FPS, episode 1 shareware
+Author=Raven Software
+Year=1994
+License=shareware
+Tags=fps fantasy shooter action raven id-tech
+
+[HARDWARE]
+Memory=530
+EMS=0
+XMS=4096
+Sound=sb
+Mouse=no
+VGA=yes
+CPUSpeed=medium
+DiskKB=6500
+
+[SOURCE]
+URL1=https://archive.org/download/heretic-shareware/heretic13.zip
+URL2=https://archive.org/download/msdos_Heretic/heretic13.zip
+Archive=HERET13.ZIP
+Redirect=yes
+
+[INSTALL]
+InstallDir=C:\GAMES\HERETIC
+Extract=yes
+Extractor=unzip
+SetPath=no
+
+[POST-INSTALL]
+MD %INSTALLDIR%\SAVE
+ECHO Heretic Shareware v1.3 installed to %INSTALLDIR%.
+ECHO Run %INSTALLDIR%\HERETIC.EXE to start.
+
+[LAUNCHER]
+Label=Heretic Shareware
+Exec=C:\GAMES\HERETIC\HERETIC.EXE
+Dir=C:\GAMES\HERETIC
+Icon=2
+
+[GAME]
+CPUPreset=SLOW33
+MemProfile=GAME
+SoundEnv=BLASTER=A220 I5 D1 H5 P330 T6
+MusicExt=OPL
+Notes=Requires 530KB+ conventional and 4MB XMS.
+SaveDir=C:\GAMES\HERETIC\SAVE
+
+[REMOVE]
+DELTREE /Y %INSTALLDIR%

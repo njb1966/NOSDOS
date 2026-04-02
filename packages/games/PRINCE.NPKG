@@ -1,0 +1,54 @@
+[PACKAGE]
+ID=PRINCE
+Name=Prince of Persia
+Version=1.0
+Category=game
+Description=Cinematic platformer with fluid rotoscoped animation
+Author=Broderbund / Jordan Mechner
+Year=1990
+License=commercial
+Tags=platformer action adventure rotoscope animation classic
+
+[HARDWARE]
+Memory=512
+EMS=0
+XMS=0
+Sound=sb
+Mouse=no
+VGA=yes
+CPUSpeed=slow
+DiskKB=1000
+
+[SOURCE]
+URL1=https://archive.org/download/prince-of-persia-1/prince.zip
+URL2=https://archive.org/download/msdos_Prince_of_Persia/prince.zip
+Archive=PRINCE.ZIP
+Redirect=yes
+
+[INSTALL]
+InstallDir=C:\GAMES\PRINCE
+Extract=yes
+Extractor=unzip
+SetPath=no
+
+[POST-INSTALL]
+ECHO Prince of Persia installed to %INSTALLDIR%.
+ECHO Run %INSTALLDIR%\PRINCE.EXE to start.
+ECHO IMPORTANT: Use NOSMEM /GAME and CPUPreset SLOW477 for correct speed.
+ECHO Arrow keys to move, Shift to creep, Ctrl to draw sword.
+
+[LAUNCHER]
+Label=Prince of Persia
+Exec=C:\GAMES\PRINCE\PRINCE.EXE
+Dir=C:\GAMES\PRINCE
+Icon=2
+
+[GAME]
+CPUPreset=SLOW477
+MemProfile=GAME
+SoundEnv=BLASTER=A220 I5 D1 H5 P330 T6
+MusicExt=OPL
+Notes=Speed-critical — must run at ~4.77MHz equivalent. SLOW477 preset required.
+
+[REMOVE]
+DELTREE /Y %INSTALLDIR%

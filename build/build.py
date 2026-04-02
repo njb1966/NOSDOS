@@ -8,6 +8,7 @@ Stages (in order):
   3. image   - Create bootable FAT12 floppy disk image (mkimage.py)
   4. hdd     - Create FAT16 hard disk image for C: drive (mkhdd.py)
   5. iso     - Create bootable El Torito ISO (mkiso.py)
+  6. mkvm    - Generate VM appliances: VirtualBox OVA, VMware bundle, QEMU scripts
 
 Usage:
   python build/build.py [options]
@@ -16,7 +17,8 @@ Options:
   --skip-fetch     Skip dependency download (assumes dist/thirdparty/ is populated)
   --skip-compile   Skip Open Watcom compilation
   --skip-hdd       Skip HDD image creation (keep existing nosdos.hdd)
-  --only <stage>   Run only the named stage (fetch|compile|image|hdd|iso)
+  --skip-mkvm      Skip VM appliance generation
+  --only <stage>   Run only the named stage (fetch|compile|image|hdd|iso|mkvm)
   --verbose        Show full subprocess output (default: summary only)
 """
 
@@ -80,6 +82,7 @@ STAGES = {
     "image":   BUILD_DIR / "mkimage.py",
     "hdd":     BUILD_DIR / "mkhdd.py",
     "iso":     BUILD_DIR / "mkiso.py",
+    "mkvm":    BUILD_DIR / "mkvm.py",
 }
 
 
@@ -88,6 +91,7 @@ def main() -> int:
     parser.add_argument("--skip-fetch",   action="store_true", help="Skip fetch stage")
     parser.add_argument("--skip-compile", action="store_true", help="Skip compile stage")
     parser.add_argument("--skip-hdd",     action="store_true", help="Skip HDD image stage")
+    parser.add_argument("--skip-mkvm",    action="store_true", help="Skip VM appliance stage")
     parser.add_argument("--only", choices=STAGES.keys(), metavar="STAGE",
                         help="Run only this stage: " + "|".join(STAGES.keys()))
     args = parser.parse_args()
@@ -103,6 +107,8 @@ def main() -> int:
         skip.add("compile")
     if args.skip_hdd:
         skip.add("hdd")
+    if args.skip_mkvm:
+        skip.add("mkvm")
 
     if args.only:
         stages_to_run = [args.only]

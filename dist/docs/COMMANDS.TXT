@@ -1,0 +1,122 @@
+NOS-DOS Command Reference
+=========================
+
+NOS-SHELL (F-KEY REFERENCE)
+-----------------------------
+  F1   Help viewer
+  F2   Configuration (sort order, display options)
+  F3   View file (text viewer with scrolling)
+  F4   Edit file (opens EDIT.COM)
+  F5   Copy file/directory
+  F6   Move / rename
+  F7   Create directory
+  F8   Delete (with confirmation)
+  F9   Application launcher
+  F10  Quit NOS-SHELL
+  F12  Drop to DOS prompt  (EXIT to return)
+  Tab  Switch active panel
+  Ins  Select/deselect file
+  Ctrl+R   Refresh both panels
+  Alt+F4   Quit NOS-SHELL
+
+NPKG - PACKAGE MANAGER
+-----------------------
+  NPKG UPDATE              Refresh package index from repository
+  NPKG SEARCH [term]       Search packages by name/category/description
+  NPKG SEARCH [term] [cat] Search within a category
+  NPKG INFO [id]           Show full package details
+  NPKG INSTALL [id]        Download, extract, configure package
+  NPKG REMOVE [id]         Remove package and clean up
+  NPKG LIST                List all installed packages
+  NPKG PROFILE [id]        Show hardware requirements
+
+  Categories: game  utilities  wordprocessing  spreadsheets
+              databases  programming  communications
+
+NNET - NETWORKING
+-----------------
+  NNET STATUS              Show network status and IP address
+  NNET DHCP                Obtain IP via DHCP
+  NNET PING [host]         Ping a host
+  NNET WEB [url]           Fetch a web page (HTTP only)
+  NNET FTP [host]          Open FTP session
+  NNET TELNET [host]       Open Telnet session
+  NNET IRC [server]        Connect to IRC server
+  NNET TIME                Synchronise clock via NTP
+  NNET CONFIG              Edit MTCP.CFG network configuration
+  NNET LOOKUP [host]       DNS lookup
+
+NBRIDGE - HOST BRIDGE
+---------------------
+  NBRIDGE STATUS           Show H:\ mount status and queue
+  NBRIDGE MOUNT            Auto-detect and mount shared folder on H:\
+  NBRIDGE DIRS             Create INBOX/OUTBOX/PRINT/CLIP on H:\
+  NBRIDGE PRINT [file]     Spool file to H:\PRINT\PRINTnnn.PRN
+  NBRIDGE CLIP GET         Display clipboard contents
+  NBRIDGE CLIP PUT [text]  Write text to clipboard
+  NBRIDGE CLIP CLEAR       Clear clipboard
+
+  H:\ directory convention:
+    H:\INBOX\    Host places files here for DOS
+    H:\OUTBOX\   DOS places files here for the host
+    H:\PRINT\    Print spool output (PRINTnnn.PRN)
+    H:\CLIP\     Clipboard exchange (CLIP.TXT)
+
+  TSRs (load in AUTOEXEC.BAT):
+    NOSLPT              Hook LPT1 output to H:\PRINT\
+    NOSLPT /U           Uninstall NOSLPT
+    NOSCLIP             Clipboard hotkeys (Ctrl+Shift+C/V)
+    NOSCLIP /U          Uninstall NOSCLIP
+
+NOSPLAY - GAME LAUNCHER
+-----------------------
+  NOSPLAY                  Interactive game selector
+  NOSPLAY [id]             Launch game with profile applied
+  NOSPLAY LIST             List installed games
+  NOSPLAY INFO [id]        Show game profile details
+
+  Launch sequence: memory profile -> CPU throttle -> sound env -> game
+  On exit: throttle removed, system returns to previous state.
+
+THROTTLE / TCTL - CPU SPEED CONTROL
+-------------------------------------
+  THROTTLE                 Install CPU throttle TSR (level 0 = OFF)
+  THROTTLE /L[n]           Install and set level 0-5 immediately
+  THROTTLE /U              Uninstall
+  THROTTLE /S              Show status
+
+  TCTL STATUS              Show current throttle level
+  TCTL SET [preset]        Set: OFF SLOW100 SLOW66 SLOW33 SLOW10 SLOW477
+  TCTL CALIBRATE           Measure CPU speed and compute presets
+
+  Hotkeys (while THROTTLE is loaded):
+    Ctrl+Alt+KP+    Increase throttle (slower)
+    Ctrl+Alt+KP-    Decrease throttle (faster)
+    Ctrl+Alt+0      Disable throttle (OFF)
+
+NOSMEM - MEMORY PROFILES
+-------------------------
+  NOSMEM /STD     Standard profile (all TSRs, 620KB+ free)
+  NOSMEM /MAX     Maximum conventional (635KB+ free)
+  NOSMEM /EMS     EMS emphasis (configure JEMMEX for 2-8MB EMS)
+  NOSMEM /GAME    Game profile (sound+mouse only, max conventional)
+
+NOSDETECT
+---------
+  Runs automatically on first boot. Detects hardware, generates
+  CONFIG.SYS and AUTOEXEC.BAT. Re-run to reconfigure:
+    DETECT         Run hardware detection
+
+STANDARD DOS COMMANDS (FreeDOS)
+---------------------------------
+  DIR [path]           List directory
+  CD [path]            Change directory
+  COPY src dest        Copy file
+  DEL [file]           Delete file
+  MD [dir]             Create directory
+  RD [dir]             Remove directory
+  TYPE [file]          Display file contents
+  EDIT [file]          Text editor
+  MEM /C               Show memory map and free memory
+  VER                  Show DOS version
+  CLS                  Clear screen

@@ -1,0 +1,2 @@
+bridge.c(132): Warning! W202: Symbol 'c' has been defined, but not referenced
+bridge.c(296): Warning! W202: Symbol 'text' has been defined, but not referenced

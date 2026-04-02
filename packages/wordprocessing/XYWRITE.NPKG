@@ -1,0 +1,44 @@
+[PACKAGE]
+ID=XYWRITE
+Name=XyWrite III+
+Version=3.56
+Category=wordprocessing
+Description=Ultra-configurable writer's word processor
+Author=XyQuest
+Year=1988
+License=commercial
+Tags=word processor writing professional keyboard macros
+
+[HARDWARE]
+Memory=384
+Sound=none
+Mouse=no
+VGA=no
+CPUSpeed=any
+DiskKB=1600
+
+[SOURCE]
+URL1=https://archive.org/download/xywrite-iii-plus/xywrite.zip
+URL2=https://archive.org/download/msdos_XyWrite/xywrite.zip
+Archive=XYWRITE.ZIP
+Redirect=yes
+
+[INSTALL]
+InstallDir=C:\APPS\XYWRITE
+Extract=yes
+Extractor=unzip
+SetPath=yes
+
+[POST-INSTALL]
+ECHO XyWrite III+ installed to %INSTALLDIR%.
+ECHO Run %INSTALLDIR%\XY.EXE to start XyWrite.
+ECHO Help: type HELP at the XyWrite command line.
+
+[LAUNCHER]
+Label=XyWrite III+
+Exec=C:\APPS\XYWRITE\XY.EXE
+Dir=C:\APPS\XYWRITE
+Icon=254
+
+[REMOVE]
+DELTREE /Y %INSTALLDIR%

@@ -1,0 +1,45 @@
+[PACKAGE]
+ID=WP51
+Name=WordPerfect
+Version=5.1
+Category=wordprocessing
+Description=The definitive DOS word processor with reveal codes
+Author=WordPerfect Corporation
+Year=1989
+License=commercial
+Tags=word processor writing office documents
+
+[HARDWARE]
+Memory=384
+EMS=0
+Sound=none
+Mouse=yes
+VGA=no
+CPUSpeed=any
+DiskKB=3500
+
+[SOURCE]
+URL1=https://archive.org/download/WordPerfect5.1forDOS/wp51dos.zip
+URL2=https://archive.org/download/msdos_WordPerfect_5.1/wp51.zip
+Archive=WP51DOS.ZIP
+Redirect=yes
+
+[INSTALL]
+InstallDir=C:\APPS\WP51
+Extract=yes
+Extractor=unzip
+SetPath=yes
+
+[POST-INSTALL]
+MD %INSTALLDIR%\WP
+ECHO WordPerfect 5.1 extracted to %INSTALLDIR%.
+ECHO Run %INSTALLDIR%\WP.EXE to start. F1=Help, F3=Exit.
+
+[LAUNCHER]
+Label=WordPerfect 5.1
+Exec=C:\APPS\WP51\WP.EXE
+Dir=C:\APPS\WP51
+Icon=254
+
+[REMOVE]
+DELTREE /Y %INSTALLDIR%

@@ -1,0 +1,44 @@
+[PACKAGE]
+ID=ASEASY
+Name=As-Easy-As
+Version=4.01
+Category=spreadsheets
+Description=Lotus-compatible spreadsheet released as freeware
+Author=TRIUS Inc.
+Year=1991
+License=freeware
+Tags=spreadsheet lotus compatible finance math
+
+[HARDWARE]
+Memory=384
+Sound=none
+Mouse=yes
+VGA=no
+CPUSpeed=any
+DiskKB=512
+
+[SOURCE]
+URL1=https://archive.org/download/as-easy-as-401/aseasy.zip
+URL2=https://archive.org/download/msdos_As-Easy-As/aseasy.zip
+Archive=ASEASY.ZIP
+Redirect=yes
+
+[INSTALL]
+InstallDir=C:\APPS\ASEASY
+Extract=yes
+Extractor=unzip
+SetPath=yes
+
+[POST-INSTALL]
+ECHO As-Easy-As 4.01 installed to %INSTALLDIR%.
+ECHO Run %INSTALLDIR%\ASEASY.EXE to start.
+ECHO Lotus 1-2-3 command compatible. F1=Help.
+
+[LAUNCHER]
+Label=As-Easy-As 4.01
+Exec=C:\APPS\ASEASY\ASEASY.EXE
+Dir=C:\APPS\ASEASY
+Icon=227
+
+[REMOVE]
+DELTREE /Y %INSTALLDIR%

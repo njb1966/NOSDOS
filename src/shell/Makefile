@@ -17,7 +17,7 @@ CFLAGS = -ms -bt=dos -q -w4 -e25 -zq -ox
 OBJDIR = obj
 BINDIR = bin
 
-OBJS = $(OBJDIR)/screen.obj $(OBJDIR)/input.obj $(OBJDIR)/panel.obj $(OBJDIR)/dialog.obj $(OBJDIR)/viewer.obj $(OBJDIR)/launcher.obj $(OBJDIR)/shellcfg.obj $(OBJDIR)/shell.obj
+OBJS = $(OBJDIR)/screen.obj $(OBJDIR)/input.obj $(OBJDIR)/panel.obj $(OBJDIR)/dialog.obj $(OBJDIR)/viewer.obj $(OBJDIR)/launcher.obj $(OBJDIR)/shellcfg.obj $(OBJDIR)/welcome.obj $(OBJDIR)/shell.obj
 
 all : dirs $(BINDIR)/SHELL.EXE .SYMBOLIC
 
@@ -46,7 +46,10 @@ $(OBJDIR)/launcher.obj : launcher.c launcher.h screen.h input.h
 $(OBJDIR)/shellcfg.obj : shellcfg.c shellcfg.h screen.h input.h panel.h
 	$(CC) $(CFLAGS) shellcfg.c -fo=$@
 
-$(OBJDIR)/shell.obj : shell.c screen.h input.h panel.h dialog.h viewer.h launcher.h shellcfg.h
+$(OBJDIR)/welcome.obj : welcome.c welcome.h screen.h input.h
+	$(CC) $(CFLAGS) welcome.c -fo=$@
+
+$(OBJDIR)/shell.obj : shell.c screen.h input.h panel.h dialog.h viewer.h launcher.h shellcfg.h welcome.h
 	$(CC) $(CFLAGS) shell.c -fo=$@
 
 $(BINDIR)/SHELL.EXE : $(OBJS)

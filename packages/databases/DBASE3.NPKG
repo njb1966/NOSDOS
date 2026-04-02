@@ -1,0 +1,45 @@
+[PACKAGE]
+ID=DBASE3
+Name=dBASE III Plus
+Version=1.1
+Category=databases
+Description=Classic xBase database management system, genre-defining
+Author=Ashton-Tate
+Year=1986
+License=commercial
+Tags=database xbase dbl programming records
+
+[HARDWARE]
+Memory=512
+Sound=none
+Mouse=no
+VGA=no
+CPUSpeed=any
+DiskKB=2000
+
+[SOURCE]
+URL1=https://archive.org/download/dbase-iii-plus-1.1/dbase3.zip
+URL2=https://archive.org/download/msdos_dBASE_III/dbase3.zip
+Archive=DBASE3.ZIP
+Redirect=yes
+
+[INSTALL]
+InstallDir=C:\APPS\DBASE3
+Extract=yes
+Extractor=unzip
+SetPath=yes
+
+[POST-INSTALL]
+MD %INSTALLDIR%\DATA
+ECHO dBASE III Plus 1.1 installed to %INSTALLDIR%.
+ECHO Run %INSTALLDIR%\DBASE.EXE to start.
+ECHO Type ASSIST at the dot prompt for menu mode.
+
+[LAUNCHER]
+Label=dBASE III Plus
+Exec=C:\APPS\DBASE3\DBASE.EXE
+Dir=C:\APPS\DBASE3
+Icon=254
+
+[REMOVE]
+DELTREE /Y %INSTALLDIR%

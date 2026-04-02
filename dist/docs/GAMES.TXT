@@ -1,0 +1,111 @@
+NOS-DOS Game Guide
+==================
+
+LAUNCHING GAMES
+---------------
+Games installed via NPKG appear in the F9 launcher and are run through
+NOSPLAY, which automatically applies the correct:
+  - Memory profile (NOSMEM /GAME or /EMS)
+  - CPU throttle level (SLOW33, SLOW477, etc.)
+  - Sound Blaster environment variables
+
+  NOSPLAY          Interactive game selector
+  NOSPLAY DOOM     Launch DOOM directly
+  NOSPLAY INFO DOOM  Show game profile details
+
+INSTALLING GAMES
+----------------
+  NPKG INSTALL DOOM      Install DOOM Shareware
+  NPKG INSTALL WOLF3D    Install Wolfenstein 3D Shareware
+  NPKG INSTALL QUAKE     Install Quake Shareware
+  ... etc.
+
+  Requires: active network connection (NNET STATUS / NNET DHCP)
+  Games are large (6-30 MB) -- downloads may take several minutes.
+
+CPU THROTTLE PRESETS
+--------------------
+  SLOW477   ~4.77 MHz equivalent  (very old games, pre-1990)
+  SLOW10    ~10 MHz equivalent    (286-era games)
+  SLOW33    ~33 MHz equivalent    (386-era: DOOM, Wolf3D, Prince)
+  SLOW66    ~66 MHz equivalent    (486-era: Duke3D, Quake)
+  SLOW100   ~100 MHz equivalent   (Pentium-era: most 1996+ games)
+  OFF       No throttle           (modern freeware, non-timing-sensitive)
+
+Adjust live with Ctrl+Alt+KP+ / Ctrl+Alt+KP- while a game is running.
+Use TCTL CALIBRATE once after first boot for accurate preset values.
+
+GAME COMPATIBILITY NOTES
+-------------------------
+DOOM Shareware (1993)
+  Preset: SLOW33  Memory: GAME (530KB conv + 2MB XMS)
+  Notes:  Requires BLASTER env var. NOSPLAY sets this automatically.
+          Save games go to C:\GAMES\DOOM\SAVE
+
+DOOM II (1994)
+  Preset: SLOW33  Memory: GAME
+  Notes:  Same requirements as DOOM. Commercial version required.
+
+Wolfenstein 3D Shareware (1992)
+  Preset: SLOW33  Memory: GAME (530KB conv)
+  Notes:  No XMS needed. Runs well on most 386+ settings.
+
+Prince of Persia (1990)
+  Preset: SLOW477  Memory: STD
+  Notes:  VERY timing-sensitive. If animation runs too fast, increase
+          the throttle level with Ctrl+Alt+KP+. TCTL CALIBRATE first.
+
+Commander Keen 1 (1990)
+  Preset: SLOW477  Memory: STD
+  Notes:  Requires EGA. VGA in CGA/EGA compatibility mode works fine.
+
+Heretic Shareware (1994)
+  Preset: SLOW33  Memory: GAME (530KB conv + 4MB XMS)
+  Notes:  DOOM engine derivative. Same BLASTER requirements.
+
+Duke Nukem 3D Shareware (1996)
+  Preset: SLOW66  Memory: GAME (570KB conv + 4MB XMS)
+  Notes:  Build engine. Needs more conventional memory than DOOM.
+
+Quake Shareware (1996)
+  Preset: SLOW66  Memory: GAME (600KB conv + 8MB XMS)
+  Notes:  The most demanding game in the package list. Requires 8MB
+          XMS. May run slowly even with SLOW66; try SLOW100.
+
+Descent Shareware (1994)
+  Preset: SLOW33  Memory: EMS (550KB conv + 2MB EMS)
+  Notes:  Uses EMS memory. Run NOSMEM /EMS before NOSPLAY, or let
+          NOSPLAY handle it via the MemProfile=EMS setting.
+
+Tyrian 2000 (freeware, 2004)
+  Preset: OFF  Memory: STD
+  Notes:  Freeware vertical shooter. No throttle needed. Runs great.
+
+SOUND CONFIGURATION
+-------------------
+All games expect a Sound Blaster at the default address:
+  IRQ 5, DMA 1, Address 220h (BLASTER=A220 I5 D1 T4)
+  Or SB16: H5 for 16-bit DMA, T6 for type
+
+NOS-DETECT configures the BLASTER variable in AUTOEXEC.BAT based on
+the detected sound card. NOSPLAY also sets it per-game from SoundEnv=.
+If sound does not work, check: TYPE C:\AUTOEXEC.BAT | FIND "BLASTER"
+
+MEMORY TROUBLESHOOTING
+-----------------------
+If a game says "Not enough memory":
+  1. Run NOSMEM /GAME from the command line.
+  2. Then run NOSPLAY [id] manually.
+  Or: NOSPLAY handles this automatically via MemProfile.
+
+If a game requires EMS and it is not available:
+  Run NOSMEM /EMS first (configures JEMMEX for EMS provision).
+
+ADDING GAME SAVES TO THE HOST
+------------------------------
+Game save directories are typically:
+  C:\GAMES\GAMENAME\SAVE\
+
+Copy saves to H:\OUTBOX\ to get them onto your host:
+  COPY C:\GAMES\DOOM\SAVE\*.* H:\OUTBOX\
+Then run watch_outbox.py on the host to collect them.

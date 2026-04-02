@@ -1,0 +1,54 @@
+[PACKAGE]
+ID=QUAKE
+Name=Quake Shareware
+Version=1.06
+Category=game
+Description=id Software's true 3D FPS, episode 1 shareware
+Author=id Software
+Year=1996
+License=shareware
+Tags=fps 3d shooter action id-software quake
+
+[HARDWARE]
+Memory=600
+EMS=0
+XMS=8192
+Sound=sb
+Mouse=no
+VGA=yes
+CPUSpeed=fast
+DiskKB=30000
+
+[SOURCE]
+URL1=https://archive.org/download/quake-shareware-1.06/quake106.zip
+URL2=https://archive.org/download/msdos_Quake/quake106.zip
+Archive=QUAKE106.ZIP
+Redirect=yes
+
+[INSTALL]
+InstallDir=C:\GAMES\QUAKE
+Extract=yes
+Extractor=unzip
+SetPath=no
+
+[POST-INSTALL]
+ECHO Quake Shareware v1.06 installed to %INSTALLDIR%.
+ECHO Run %INSTALLDIR%\QUAKE.EXE to start.
+ECHO Requires 8MB XMS and Sound Blaster.
+
+[LAUNCHER]
+Label=Quake Shareware
+Exec=C:\GAMES\QUAKE\QUAKE.EXE
+Dir=C:\GAMES\QUAKE
+Icon=2
+
+[GAME]
+CPUPreset=SLOW66
+MemProfile=GAME
+SoundEnv=BLASTER=A220 I5 D1 H5 P330 T6
+MusicExt=CD
+Notes=Needs 600KB conventional and 8MB XMS. Slow on <486/66.
+SaveDir=C:\GAMES\QUAKE\ID1\SAVE
+
+[REMOVE]
+DELTREE /Y %INSTALLDIR%

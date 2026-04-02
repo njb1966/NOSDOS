@@ -1,0 +1,54 @@
+[PACKAGE]
+ID=TYRIAN
+Name=Tyrian 2000
+Version=2.1
+Category=game
+Description=Vertical scrolling shoot-em-up, released as freeware
+Author=Eclipse Productions
+Year=2004
+License=freeware
+Tags=shmup shooter vertical scrolling freeware tyrian
+
+[HARDWARE]
+Memory=500
+EMS=0
+XMS=0
+Sound=sb
+Mouse=no
+VGA=yes
+CPUSpeed=any
+DiskKB=8000
+
+[SOURCE]
+URL1=https://archive.org/download/tyrian2000/tyrian21.zip
+URL2=https://archive.org/download/msdos_Tyrian_2000/tyrian21.zip
+Archive=TYRIAN21.ZIP
+Redirect=yes
+
+[INSTALL]
+InstallDir=C:\GAMES\TYRIAN
+Extract=yes
+Extractor=unzip
+SetPath=no
+
+[POST-INSTALL]
+ECHO Tyrian 2000 v2.1 installed to %INSTALLDIR%.
+ECHO Run %INSTALLDIR%\TYRIAN.EXE to start.
+ECHO Freeware -- no restrictions on use.
+
+[LAUNCHER]
+Label=Tyrian 2000
+Exec=C:\GAMES\TYRIAN\TYRIAN.EXE
+Dir=C:\GAMES\TYRIAN
+Icon=2
+
+[GAME]
+CPUPreset=OFF
+MemProfile=STD
+SoundEnv=BLASTER=A220 I5 D1 H5 P330 T6
+MusicExt=OPL
+Notes=Freeware shmup. Runs well on any speed. No throttle needed.
+SaveDir=C:\GAMES\TYRIAN
+
+[REMOVE]
+DELTREE /Y %INSTALLDIR%

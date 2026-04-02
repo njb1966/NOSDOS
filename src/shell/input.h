@@ -42,19 +42,19 @@
 #define NOS_KEY_BACKSPACE 0x08
 #define NOS_KEY_TAB       0x09
 
-/* Function keys */
-#define NOS_KEY_F1        0x101
-#define NOS_KEY_F2        0x102
-#define NOS_KEY_F3        0x103
-#define NOS_KEY_F4        0x104
-#define NOS_KEY_F5        0x105
-#define NOS_KEY_F6        0x106
-#define NOS_KEY_F7        0x107
-#define NOS_KEY_F8        0x108
-#define NOS_KEY_F9        0x109
-#define NOS_KEY_F10       0x10A
-#define NOS_KEY_F11       0x10B  /* enhanced keyboard only */
-#define NOS_KEY_F12       0x10C
+/* Function keys (0x100 | BIOS scan code) */
+#define NOS_KEY_F1        0x13B
+#define NOS_KEY_F2        0x13C
+#define NOS_KEY_F3        0x13D
+#define NOS_KEY_F4        0x13E
+#define NOS_KEY_F5        0x13F
+#define NOS_KEY_F6        0x140
+#define NOS_KEY_F7        0x141
+#define NOS_KEY_F8        0x142
+#define NOS_KEY_F9        0x143
+#define NOS_KEY_F10       0x144
+#define NOS_KEY_F11       0x185  /* enhanced keyboard only */
+#define NOS_KEY_F12       0x186
 
 /* Arrow keys */
 #define NOS_KEY_UP        0x148

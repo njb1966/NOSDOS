@@ -1,0 +1,44 @@
+[PACKAGE]
+ID=NORTON
+Name=Norton Commander
+Version=5.0
+Category=utilities
+Description=Twin-panel file manager that inspired NOS-SHELL's design
+Author=Symantec Corporation
+Year=1993
+License=commercial
+Tags=file manager commander panels directory navigation
+
+[HARDWARE]
+Memory=384
+Sound=none
+Mouse=yes
+VGA=no
+CPUSpeed=any
+DiskKB=1800
+
+[SOURCE]
+URL1=https://archive.org/download/norton-commander-5.0/nc50.zip
+URL2=https://archive.org/download/msdos_Norton_Commander_5/nc50.zip
+Archive=NC50.ZIP
+Redirect=yes
+
+[INSTALL]
+InstallDir=C:\UTILS\NC5
+Extract=yes
+Extractor=unzip
+SetPath=yes
+
+[POST-INSTALL]
+ECHO Norton Commander 5.0 installed to %INSTALLDIR%.
+ECHO Run %INSTALLDIR%\NC.EXE to start.
+ECHO F10=Quit, F9=Menu, Tab=switch panels, Enter=open.
+
+[LAUNCHER]
+Label=Norton Commander 5.0
+Exec=C:\UTILS\NC5\NC.EXE
+Dir=C:\UTILS\NC5
+Icon=248
+
+[REMOVE]
+DELTREE /Y %INSTALLDIR%
