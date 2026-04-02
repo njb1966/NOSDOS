@@ -44,6 +44,10 @@ CHECKSUMS: dict[str, Optional[str]] = {
     "ctmouse.zip":        None,   # CuteMouse driver
     "JemmB_v586.zip":     None,   # JEMMEX memory manager
     "mTCP_2025-01-10.zip": None,  # mTCP networking suite
+    "oakcdrom.zip":       None,   # OAKCDROM IDE/ATAPI CD-ROM driver
+    "shsucdx.zip":        None,   # SHSUCDX MSCDEX replacement
+    "format.zip":         None,   # FreeDOS FORMAT utility
+    "fdisk.zip":          None,   # FreeDOS FDISK utility
 }
 
 
@@ -200,7 +204,16 @@ def fetch_freedos_kernel(dest_dir: Path) -> bool:
 
 
 def fetch_freedos_freecom(dest_dir: Path) -> bool:
-    """Download FreeCOM (COMMAND.COM replacement) and extract COMMAND.COM."""
+    """Download FreeCOM and build COMMAND.COM with -fpi87 (no FPU emulation stubs).
+
+    FreeCOM 0.85a is compiled with Watcom FPU emulation (-fpi) by default, which
+    generates DA F7 stubs at runtime. These stubs trigger #UD in V86 mode, which
+    JEMMEX intercepts instead of reflecting to INT 06h, causing an exception-06
+    crash. Rebuilding with -fpi87 eliminates the runtime stubs entirely.
+
+    If Open Watcom (wcc) is not on PATH, falls back to the pre-built binary with
+    a warning — that binary will crash under JEMMEX.
+    """
     dest_dir.mkdir(parents=True, exist_ok=True)
     archive = dest_dir / "freecom.zip"
     base_url = config["freedos"]["base_url"].rstrip("/")
@@ -209,14 +222,87 @@ def fetch_freedos_freecom(dest_dir: Path) -> bool:
     if not download(url, archive, CHECKSUMS.get("freecom.zip")):
         return False
 
-    command_com = find_in_zip(archive, "COMMAND.COM")
-    if command_com is None:
-        log("  ERROR: COMMAND.COM not found inside freecom.zip")
-        return False
+    if shutil.which("wcc") is None:
+        log("  WARNING: Open Watcom (wcc) not found — using pre-built COMMAND.COM.")
+        log("  The pre-built FreeCOM uses Watcom FPU emulation (-fpi) and will")
+        log("  crash under JEMMEX V86 mode (exception 06 / DA F7 bug).")
+        log("  Install Open Watcom and re-run fetch_deps.py to fix this.")
+        command_com = find_in_zip(archive, "COMMAND.COM")
+        if command_com is None:
+            log("  ERROR: COMMAND.COM not found inside freecom.zip")
+            return False
+        out = dest_dir / "COMMAND.COM"
+        out.write_bytes(command_com)
+        log(f"  extracted → COMMAND.COM ({len(command_com)} bytes) [pre-built, JEMMEX-incompatible]")
+        return True
+
+    log("  Building FreeCOM from source with -fpi87 (no FPU emulation stubs)...")
+
+    import tempfile
+    with tempfile.TemporaryDirectory(prefix="freecom_build_") as build_dir:
+        build_path = Path(build_dir)
+
+        # Extract SOURCES.ZIP from inside freecom.zip
+        sources_data = find_in_zip(archive, "SOURCES.ZIP")
+        if sources_data is None:
+            log("  ERROR: SOURCE/FREECOM/SOURCES.ZIP not found in freecom.zip")
+            return False
+
+        sources_zip = build_path / "sources.zip"
+        sources_zip.write_bytes(sources_data)
+
+        with zipfile.ZipFile(sources_zip) as z:
+            z.extractall(build_path)
+
+        # Patch mkfiles/watcom.mak: add -fpi87 to CFLAGS1 and CL
+        # -fpi87 = inline x87 instructions without emulation stubs.
+        # Eliminates the DA F7 runtime patches that crash under JEMMEX.
+        mak_path = build_path / "mkfiles" / "watcom.mak"
+        mak = mak_path.read_text()
+        mak = mak.replace(
+            "CFLAGS1 = -os-s-wx",
+            "CFLAGS1 = -os-s-wx-fpi87",
+        )
+        mak = mak.replace(
+            "CL = $(BINPATH)$(DIRSEP)wcl -zq -fo=.obj -bcl=dos",
+            "CL = $(BINPATH)$(DIRSEP)wcl -zq -fo=.obj -bcl=dos -fpi87",
+        )
+        mak_path.write_text(mak)
+
+        # config.mak must exist (copied from config.std)
+        (build_path / "config.mak").write_bytes(
+            (build_path / "config.std").read_bytes()
+        )
+
+        watcom_root = shutil.which("wcc")
+        # wcc is at $WATCOM/binl/wcc or $WATCOM/binl64/wcc — resolve root
+        watcom_env = dict(os.environ)
+        if "WATCOM" not in watcom_env:
+            # Infer WATCOM root from wcc path: .../binl/wcc -> ...
+            wcc_path = Path(watcom_root).resolve()
+            watcom_env["WATCOM"] = str(wcc_path.parent.parent)
+
+        result = subprocess.run(
+            ["bash", "build.sh", "wc", "no-xms-swap"],
+            cwd=build_path,
+            env=watcom_env,
+            capture_output=True,
+            text=True,
+        )
+
+        if result.returncode != 0 or not (build_path / "command.com").exists():
+            log("  ERROR: FreeCOM build failed.")
+            if result.stdout:
+                log("  stdout: " + result.stdout[-400:])
+            if result.stderr:
+                log("  stderr: " + result.stderr[-400:])
+            return False
+
+        command_com_data = (build_path / "command.com").read_bytes()
 
     out = dest_dir / "COMMAND.COM"
-    out.write_bytes(command_com)
-    log(f"  extracted → COMMAND.COM ({len(command_com)} bytes)")
+    out.write_bytes(command_com_data)
+    log(f"  built → COMMAND.COM ({len(command_com_data)} bytes) [-fpi87, JEMMEX-compatible]")
     return True
 
 
@@ -262,6 +348,105 @@ def fetch_jemmex(dest_dir: Path) -> bool:
     out = dest_dir / "JEMMEX.EXE"
     out.write_bytes(jemmex_exe)
     log(f"  extracted → JEMMEX.EXE ({len(jemmex_exe)} bytes)")
+    return True
+
+
+def fetch_oakcdrom(dest_dir: Path) -> bool:
+    """Download OAKCDROM.SYS — IDE/ATAPI CD-ROM driver for FreeDOS.
+
+    Needed on the installer boot floppy so the CD-ROM is accessible as
+    a drive letter before the installer runs.
+    """
+    dest_dir.mkdir(parents=True, exist_ok=True)
+    archive = dest_dir / "oakcdrom.zip"
+    base_url = config["freedos"]["base_url"].rstrip("/")
+    url = f"{base_url}/{config['cdrom_drivers']['oakcdrom_pkg']}"
+
+    if not download(url, archive, CHECKSUMS.get("oakcdrom.zip")):
+        return False
+
+    driver = find_in_zip(archive, "OAKCDROM.SYS")
+    if driver is None:
+        log("  ERROR: OAKCDROM.SYS not found inside oakcdrom.zip")
+        return False
+
+    out = dest_dir / "OAKCDROM.SYS"
+    out.write_bytes(driver)
+    log(f"  extracted → OAKCDROM.SYS ({len(driver)} bytes)")
+    return True
+
+
+def fetch_shsucdx(dest_dir: Path) -> bool:
+    """Download SHSUCDX.EXE — freeware MSCDEX replacement for FreeDOS.
+
+    Needed on the installer boot floppy to assign a drive letter to the
+    CD-ROM after OAKCDROM.SYS loads the hardware driver.
+    """
+    dest_dir.mkdir(parents=True, exist_ok=True)
+    archive = dest_dir / "shsucdx.zip"
+    base_url = config["freedos"]["base_url"].rstrip("/")
+    url = f"{base_url}/{config['cdrom_drivers']['shsucdx_pkg']}"
+
+    if not download(url, archive, CHECKSUMS.get("shsucdx.zip")):
+        return False
+
+    shsucdx = find_in_zip(archive, "SHSUCDX.EXE")
+    if shsucdx is None:
+        log("  ERROR: SHSUCDX.EXE not found inside shsucdx.zip")
+        return False
+
+    out = dest_dir / "SHSUCDX.EXE"
+    out.write_bytes(shsucdx)
+    log(f"  extracted → SHSUCDX.EXE ({len(shsucdx)} bytes)")
+    return True
+
+
+def fetch_format(dest_dir: Path) -> bool:
+    """Download FreeDOS FORMAT.COM.
+
+    Placed at the ISO root so the installer can invoke it to format C:.
+    """
+    dest_dir.mkdir(parents=True, exist_ok=True)
+    archive = dest_dir / "format.zip"
+    base_url = config["freedos"]["base_url"].rstrip("/")
+    url = f"{base_url}/{config['freedos']['format_pkg']}"
+
+    if not download(url, archive, CHECKSUMS.get("format.zip")):
+        return False
+
+    fmt = find_in_zip(archive, "FORMAT.COM")
+    if fmt is None:
+        log("  ERROR: FORMAT.COM not found inside format.zip")
+        return False
+
+    out = dest_dir / "FORMAT.COM"
+    out.write_bytes(fmt)
+    log(f"  extracted → FORMAT.COM ({len(fmt)} bytes)")
+    return True
+
+
+def fetch_fdisk(dest_dir: Path) -> bool:
+    """Download FreeDOS FDISK.EXE.
+
+    Placed at the ISO root so the user can partition C: if needed before
+    running the installer.
+    """
+    dest_dir.mkdir(parents=True, exist_ok=True)
+    archive = dest_dir / "fdisk.zip"
+    base_url = config["freedos"]["base_url"].rstrip("/")
+    url = f"{base_url}/{config['freedos']['fdisk_pkg']}"
+
+    if not download(url, archive, CHECKSUMS.get("fdisk.zip")):
+        return False
+
+    fdisk = find_in_zip(archive, "FDISK.EXE")
+    if fdisk is None:
+        log("  ERROR: FDISK.EXE not found inside fdisk.zip")
+        return False
+
+    out = dest_dir / "FDISK.EXE"
+    out.write_bytes(fdisk)
+    log(f"  extracted → FDISK.EXE ({len(fdisk)} bytes)")
     return True
 
 
@@ -333,6 +518,10 @@ def main() -> int:
         ("CuteMouse (CTMOUSE.EXE)",           lambda: fetch_ctmouse(DIST_DIR / "ctmouse")),
         ("JEMMEX",                            lambda: fetch_jemmex(DIST_DIR / "jemmex")),
         ("mTCP networking suite",             lambda: fetch_mtcp(DIST_DIR / "mtcp")),
+        ("OAKCDROM.SYS (CD-ROM driver)",      lambda: fetch_oakcdrom(DIST_DIR / "cdrom")),
+        ("SHSUCDX.EXE (CD-ROM extensions)",  lambda: fetch_shsucdx(DIST_DIR / "cdrom")),
+        ("FORMAT.COM",                        lambda: fetch_format(DIST_DIR / "freedos")),
+        ("FDISK.EXE",                         lambda: fetch_fdisk(DIST_DIR / "freedos")),
     ]
 
     failures = []
