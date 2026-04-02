@@ -238,6 +238,8 @@ def install_nos_system_files(img_path: Path) -> bool:
         (THIRDPARTY / "ctmouse" / "CTMOUSE.EXE", "NOS/SYSTEM/"),
         (DIST_DIR / "config" / "CONFIG.TPL",     "NOS/SYSTEM/"),
         (DIST_DIR / "config" / "AUTOEXEC.TPL",   "NOS/SYSTEM/"),
+        (DIST_DIR / "utils" / "MEM.EXE",    "NOS/SYSTEM/"),
+        (DIST_DIR / "utils" / "CHKDSK.EXE", "NOS/SYSTEM/"),
     ]
     # Optional compiled binaries (present only after Open Watcom compile stage)
     optional = [

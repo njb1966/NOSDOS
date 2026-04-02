@@ -213,10 +213,12 @@ def install_system_files(img_path: Path) -> bool:
             optional.append((src, dst))
         else:
             log(f"  INFO: batch wrapper not found: {src.name}")
-    # FreeDOS kernel — for future HDD-boot capability
+    # FreeDOS kernel and utilities
     freedos_files = [
         (FREEDOS_DIR / "KERNEL.SYS",  ""),
         (FREEDOS_DIR / "COMMAND.COM", ""),
+        (DIST_DIR / "utils" / "MEM.EXE",    "NOS/SYSTEM/"),
+        (DIST_DIR / "utils" / "CHKDSK.EXE", "NOS/SYSTEM/"),
     ]
 
     for src, dst in required:
