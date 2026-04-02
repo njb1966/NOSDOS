@@ -325,6 +325,11 @@ int main(int argc, char *argv[])
         return 0;
     }
 
+    /* Delete any stale WELCOMED flag so SHELL shows the first-boot
+     * welcome screen.  This handles reinstalls where FORMAT did not fully
+     * wipe C: and the old flag survived into the new install. */
+    remove("C:\\NOS\\SYSTEM\\WELCOMED");
+
     printf("\r\n  Detection complete. System will reboot.\r\n");
     printf("  Press any key to reboot...\r\n");
     wait_key();
