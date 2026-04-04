@@ -964,6 +964,7 @@ int main(void)
                     fprintf(bf, "REM Written by NOS-INSTALL. DETECT.EXE updates on first boot.\r\n");
                     fprintf(bf, "DOS=HIGH,UMB\r\n");
                     fprintf(bf, "DEVICE=C:\\NOS\\SYSTEM\\JEMMEX.EXE NOEMS X=TEST\r\n");
+                    fprintf(bf, "DEVICE=C:\\NOS\\SYSTEM\\OAKCDROM.SYS /D:MSCD001\r\n");
                     fprintf(bf, "FILES=40\r\n");
                     fprintf(bf, "BUFFERS=20\r\n");
                     fprintf(bf, "STACKS=9,256\r\n");
@@ -978,6 +979,7 @@ int main(void)
                     fprintf(bf, "REM DETECT.EXE will replace this file on first boot.\r\n");
                     fprintf(bf, "SET PROMPT=$P$G\r\n");
                     fprintf(bf, "SET PATH=C:\\;C:\\NOS\\SYSTEM;C:\\NOS\\SHELL;C:\\APPS\r\n");
+                    fprintf(bf, "LH C:\\NOS\\SYSTEM\\SHSUCDX.COM /D:MSCD001\r\n");
                     fprintf(bf, "LH C:\\NOS\\SYSTEM\\PCNTPK.COM INT=0x60 > NUL\r\n");
                     fprintf(bf, "C:\\NOS\\SYSTEM\\DETECT.EXE\r\n");
                     fprintf(bf, "IF EXIST C:\\NOS\\SHELL\\SHELL.EXE C:\\NOS\\SHELL\\SHELL.EXE\r\n");

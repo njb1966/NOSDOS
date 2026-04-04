@@ -1,0 +1,50 @@
+[PACKAGE]
+ID=ROGUE
+Name=Rogue
+Version=1.0
+Category=game
+Description=The original dungeon-crawler that defined the roguelike genre
+Author=Epyx
+Year=1983
+License=freeware
+Tags=roguelike dungeon rpg ascii text classic
+
+[HARDWARE]
+Memory=256
+Sound=none
+Mouse=no
+VGA=no
+CPUSpeed=any
+DiskKB=128
+
+[SOURCE]
+URL1=https://archive.org/download/msdos_Rogue_1983/Rogue_1983.zip
+URL2=https://archive.org/download/Rogue_1983_Epyx/rogue.zip
+Archive=ROGUE.ZIP
+Redirect=yes
+
+[INSTALL]
+InstallDir=C:\GAMES\ROGUE
+Extract=yes
+Extractor=pkzip
+SetPath=no
+
+[POST-INSTALL]
+ECHO Rogue installed to %INSTALLDIR%.
+ECHO Run %INSTALLDIR%\ROGUE.EXE to start.
+ECHO Navigate with numpad. ? for help. Good luck.
+
+[LAUNCHER]
+Label=Rogue
+Exec=C:\GAMES\ROGUE\ROGUE.EXE
+Dir=C:\GAMES\ROGUE
+Icon=2
+
+[GAME]
+CPUPreset=SLOW477
+MemProfile=STD
+Notes=Text/CGA mode. No throttle strictly needed but SLOW477 gives authentic feel.
+SaveDir=C:\GAMES\ROGUE
+
+[REMOVE]
+DELTREE /Y %INSTALLDIR%

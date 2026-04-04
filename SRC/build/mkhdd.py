@@ -177,6 +177,8 @@ def install_system_files(img_path: Path) -> bool:
         (THIRDPARTY / "jemmex"  / "JEMMEX.EXE",   "NOS/SYSTEM/"),
         (THIRDPARTY / "ctmouse" / "CTMOUSE.EXE",   "NOS/SYSTEM/"),
         (THIRDPARTY / "pcntpk"  / "PCNTPK.COM",    "NOS/SYSTEM/"),
+        (THIRDPARTY / "cdrom"   / "OAKCDROM.SYS",  "NOS/SYSTEM/"),
+        (THIRDPARTY / "cdrom"   / "SHSUCDX.COM",   "NOS/SYSTEM/"),
         (DIST_DIR   / "config"  / "CONFIG.TPL",    "NOS/SYSTEM/"),
         (DIST_DIR   / "config"  / "AUTOEXEC.TPL",  "NOS/SYSTEM/"),
     ]

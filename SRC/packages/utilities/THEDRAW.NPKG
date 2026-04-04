@@ -1,0 +1,44 @@
+[PACKAGE]
+ID=THEDRAW
+Name=TheDraw 4.63
+Version=4.63
+Category=utilities
+Description=Full-featured ANSI and ASCII art editor, released as freeware
+Author=Ian E. Davis
+Year=1993
+License=freeware
+Tags=ansi ascii art editor screen design bbs
+
+[HARDWARE]
+Memory=256
+Sound=none
+Mouse=yes
+VGA=no
+CPUSpeed=any
+DiskKB=256
+
+[SOURCE]
+URL1=https://archive.org/download/thedraw-4.63/thedraw463.zip
+URL2=https://archive.org/download/msdos_TheDraw/thedraw463.zip
+Archive=THEDRAW463.ZIP
+Redirect=yes
+
+[INSTALL]
+InstallDir=C:\APPS\THEDRAW
+Extract=yes
+Extractor=pkzip
+SetPath=yes
+
+[POST-INSTALL]
+ECHO TheDraw 4.63 installed to %INSTALLDIR%.
+ECHO Run TD.EXE to start.
+ECHO F1=Help. Supports ANSI, ASCII, and BIN file formats.
+
+[LAUNCHER]
+Label=TheDraw 4.63
+Exec=C:\APPS\THEDRAW\TD.EXE
+Dir=C:\APPS\THEDRAW
+Icon=219
+
+[REMOVE]
+DELTREE /Y %INSTALLDIR%

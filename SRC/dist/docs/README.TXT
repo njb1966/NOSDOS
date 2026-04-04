@@ -15,7 +15,7 @@ host-bridge file exchange built in.
 You get:
   - A fast, clean DOS environment that boots in under 10 seconds
   - NOS-SHELL: dual-pane file manager (F-key driven, mouse optional)
-  - NPKG: package manager with 28+ curated DOS applications
+  - NPKG: package manager with 29+ curated DOS applications
   - NNET: networking wrappers around mTCP (ping, FTP, IRC, web)
   - NOS-BRIDGE: seamless file exchange with your host OS
   - NOS-PLAY: game launcher with automatic speed/sound profiles
@@ -26,7 +26,7 @@ DOCUMENTATION
   README.TXT      This file
   QUICKSTART.TXT  Get started in 5 minutes
   VBOX.TXT        Full VirtualBox installation guide (start here for VBox)
-  HOWTO.TXT       How to install applications and games (all 28 packages)
+  HOWTO.TXT       How to install applications and games (all 29 packages)
   COMMANDS.TXT    All NOS-DOS commands reference
   NPKG.TXT        Package manager guide
   GAMES.TXT       Game compatibility and launch guide

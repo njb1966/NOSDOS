@@ -13,7 +13,7 @@ CONTENTS
   3. Installing a Game (Step by Step)
   4. Complete Package Catalog
        Word Processing  |  Spreadsheets  |  Databases
-       Programming      |  Communications  |  Utilities  |  Games
+       Programming      |  Utilities  |  Games
   5. Launching Applications
   6. Launching Games (NOSPLAY)
   7. Memory Profiles
@@ -289,30 +289,6 @@ MASM611  -  Microsoft MASM 6.11  (commercial)
              Requires a valid commercial licence.
 
 -----------------------------------------------------------------------
-COMMUNICATIONS
------------------------------------------------------------------------
-
-TELIX  -  Telix 3.51  (shareware)
-  Install:   NPKG INSTALL TELIX
-  Location:  C:\COMM\TELIX\
-  Launch:    TELIX.EXE
-  Memory:    384 KB conventional
-  Notes:     Feature-rich terminal emulator. ZMODEM file transfer
-             built in. Configure COM port: Alt+O (Settings).
-             Downloads land in C:\COMM\TELIX\DL\
-             Added to PATH at install: type TELIX anywhere.
-
-PROCOMM  -  ProComm Plus 2.01  (shareware)
-  Install:   NPKG INSTALL PROCOMM
-  Location:  C:\COMM\PROCOMM\
-  Launch:    PCPLUS.EXE
-  Memory:    384 KB conventional
-  Notes:     Full-featured terminal emulator with scripting language.
-             Multi-protocol: ZMODEM, XMODEM, YMODEM, Kermit.
-             Configure: Alt+S (Setup). Downloads: C:\COMM\PROCOMM\DL\
-             Added to PATH at install: type PCPLUS anywhere.
-
------------------------------------------------------------------------
 UTILITIES
 -----------------------------------------------------------------------
 
@@ -343,6 +319,16 @@ PCTOOLS  -  PC Tools 9.0  (commercial)
   Memory:    512 KB conventional; 512 KB EMS recommended
   Notes:     Disk utilities, undelete, backup, and desktop manager
              suite. Requires a valid commercial licence.
+
+THEDRAW  -  TheDraw 4.63  (freeware)
+  Install:   NPKG INSTALL THEDRAW
+  Location:  C:\APPS\THEDRAW\
+  Launch:    TD.EXE
+  Memory:    256 KB conventional
+  Notes:     ANSI and ASCII art editor by Ian E. Davis. Released as
+             freeware. Supports ANSI, ASCII, and BIN screen formats.
+             Create BBS-style screens, menus, and art. F1=Help.
+             Mouse supported. Works fine on CGA, EGA, or VGA.
 
 -----------------------------------------------------------------------
 GAMES
@@ -476,6 +462,30 @@ TYRIAN  -  Tyrian 2000 v2.1  (freeware)
   Notes:     Vertical scrolling shoot-em-up. Fully freeware -- no
              licence restrictions. Runs well on any VM speed setting.
              Lightest game in terms of memory requirements.
+
+ROTT  -  Rise of the Triad Shareware v1.3  (shareware)
+  Install:   NPKG INSTALL ROTT
+  Location:  C:\GAMES\ROTT\
+  Launch:    NOSPLAY ROTT  (or F9 launcher)
+  Memory:    500 KB conventional + 4 MB XMS
+  Sound:     Sound Blaster 16  (set by NOSPLAY)
+  CPU Preset: SLOW66  (~66 MHz)
+  Save Dir:  C:\GAMES\ROTT\SAVE\
+  Notes:     Apogee's wild FPS with jump pads, god-mode powerups, and
+             multi-level rocket launchers. Episode 1 is shareware;
+             the full game ("The HUNT Begins") is commercial.
+             NOSPLAY handles memory and BLASTER setup automatically.
+
+ROGUE  -  Rogue  (freeware)
+  Install:   NPKG INSTALL ROGUE
+  Location:  C:\GAMES\ROGUE\
+  Launch:    NOSPLAY ROGUE  (or ROGUE.EXE directly)
+  Memory:    256 KB conventional (no XMS or EMS needed)
+  Sound:     None
+  CPU Preset: SLOW477  (gives authentic feel, not strictly required)
+  Notes:     The original dungeon-crawler that defined the roguelike
+             genre. Text/CGA display. Navigate with numpad.
+             Press ? for in-game help. Tiny install (~128 KB).
 
 
 =======================================================================

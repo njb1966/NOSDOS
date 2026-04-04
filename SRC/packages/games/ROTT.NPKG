@@ -1,0 +1,54 @@
+[PACKAGE]
+ID=ROTT
+Name=Rise of the Triad Shareware
+Version=1.3
+Category=game
+Description=Apogee's fast-paced FPS with powerups and multi-level missiles, episode 1 shareware
+Author=Apogee Software / 3D Realms
+Year=1994
+License=shareware
+Tags=fps shooter action apogee 3d powerups shareware
+
+[HARDWARE]
+Memory=500
+EMS=0
+XMS=4096
+Sound=sb
+Mouse=no
+VGA=yes
+CPUSpeed=fast
+DiskKB=6000
+
+[SOURCE]
+URL1=https://archive.org/download/rise-of-the-triad-shareware/rottsw13.zip
+URL2=https://archive.org/download/msdos_Rise_of_the_Triad/rottsw13.zip
+Archive=ROTTSW13.ZIP
+Redirect=yes
+
+[INSTALL]
+InstallDir=C:\GAMES\ROTT
+Extract=yes
+Extractor=pkzip
+SetPath=no
+
+[POST-INSTALL]
+MD %INSTALLDIR%\SAVE
+ECHO Rise of the Triad Shareware v1.3 installed to %INSTALLDIR%.
+ECHO Run %INSTALLDIR%\ROTT.EXE to start. Episode 1 is shareware.
+ECHO Requires SB (A220 I5 D1) and 4MB XMS. Use NOSMEM /GAME first.
+
+[LAUNCHER]
+Label=Rise of the Triad
+Exec=C:\GAMES\ROTT\ROTT.EXE
+Dir=C:\GAMES\ROTT
+Icon=2
+
+[GAME]
+CPUPreset=SLOW66
+MemProfile=GAME
+SoundEnv=BLASTER=A220 I5 D1 H5 P330 T6
+Notes=Requires 500KB+ conventional and 4MB XMS. NOSMEM /GAME before launch.
+SaveDir=C:\GAMES\ROTT\SAVE
+
+[REMOVE]
+DELTREE /Y %INSTALLDIR%

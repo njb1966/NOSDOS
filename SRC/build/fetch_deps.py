@@ -395,14 +395,14 @@ def fetch_shsucdx(dest_dir: Path) -> bool:
     if not download(url, archive, CHECKSUMS.get("shsucdx.zip")):
         return False
 
-    shsucdx = find_in_zip(archive, "SHSUCDX.EXE")
+    shsucdx = find_in_zip(archive, "SHSUCDX.COM")
     if shsucdx is None:
-        log("  ERROR: SHSUCDX.EXE not found inside shsucdx.zip")
+        log("  ERROR: SHSUCDX.COM not found inside shsucdx.zip")
         return False
 
-    out = dest_dir / "SHSUCDX.EXE"
+    out = dest_dir / "SHSUCDX.COM"
     out.write_bytes(shsucdx)
-    log(f"  extracted → SHSUCDX.EXE ({len(shsucdx)} bytes)")
+    log(f"  extracted → SHSUCDX.COM ({len(shsucdx)} bytes)")
     return True
 
 
@@ -419,14 +419,14 @@ def fetch_format(dest_dir: Path) -> bool:
     if not download(url, archive, CHECKSUMS.get("format.zip")):
         return False
 
-    fmt = find_in_zip(archive, "FORMAT.COM")
+    fmt = find_in_zip(archive, "FORMAT.EXE")
     if fmt is None:
-        log("  ERROR: FORMAT.COM not found inside format.zip")
+        log("  ERROR: FORMAT.EXE not found inside format.zip")
         return False
 
-    out = dest_dir / "FORMAT.COM"
+    out = dest_dir / "FORMAT.EXE"
     out.write_bytes(fmt)
-    log(f"  extracted → FORMAT.COM ({len(fmt)} bytes)")
+    log(f"  extracted → FORMAT.EXE ({len(fmt)} bytes)")
     return True
 
 
@@ -501,6 +501,11 @@ def fetch_mtcp(dest_dir: Path) -> bool:
     shutil.rmtree(extract_dir, ignore_errors=True)
 
     if not found:
+        # Nothing newly copied — check if files already exist from a prior run
+        already = [n for n in set(wanted.values()) if (dest_dir / n).exists()]
+        if already:
+            log(f"  already present: {', '.join(sorted(already))}")
+            return True
         log("  WARNING: no mTCP binaries extracted — check zip structure")
         return False
 
@@ -543,7 +548,7 @@ def main() -> int:
         ("PCNTPK.COM (PCnet packet driver)",  lambda: check_pcntpk(DIST_DIR / "pcntpk")),
         ("GCDROM.SYS (CD-ROM driver)",        lambda: fetch_oakcdrom(DIST_DIR / "cdrom")),
         ("SHSUCDX.EXE (CD-ROM extensions)",  lambda: fetch_shsucdx(DIST_DIR / "cdrom")),
-        ("FORMAT.COM",                        lambda: fetch_format(DIST_DIR / "freedos")),
+        ("FORMAT.EXE",                        lambda: fetch_format(DIST_DIR / "freedos")),
         ("FDISK.EXE",                         lambda: fetch_fdisk(DIST_DIR / "freedos")),
     ]
 

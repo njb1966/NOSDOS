@@ -18,6 +18,8 @@ INSTALLING GAMES
   NPKG INSTALL DOOM      Install DOOM Shareware
   NPKG INSTALL WOLF3D    Install Wolfenstein 3D Shareware
   NPKG INSTALL QUAKE     Install Quake Shareware
+  NPKG INSTALL ROTT      Install Rise of the Triad Shareware
+  NPKG INSTALL ROGUE     Install Rogue
   ... etc.
 
   Requires: active network connection (NNET STATUS / NNET DHCP)
@@ -27,8 +29,8 @@ CPU THROTTLE PRESETS
 --------------------
   SLOW477   ~4.77 MHz equivalent  (very old games, pre-1990)
   SLOW10    ~10 MHz equivalent    (286-era games)
-  SLOW33    ~33 MHz equivalent    (386-era: DOOM, Wolf3D, Prince)
-  SLOW66    ~66 MHz equivalent    (486-era: Duke3D, Quake)
+  SLOW33    ~33 MHz equivalent    (386-era: DOOM, Wolf3D, Prince, ROTT)
+  SLOW66    ~66 MHz equivalent    (486-era: Duke3D, Quake, ROTT)
   SLOW100   ~100 MHz equivalent   (Pentium-era: most 1996+ games)
   OFF       No throttle           (modern freeware, non-timing-sensitive)
 
@@ -80,6 +82,18 @@ Descent Shareware (1994)
 Tyrian 2000 (freeware, 2004)
   Preset: OFF  Memory: STD
   Notes:  Freeware vertical shooter. No throttle needed. Runs great.
+
+Rise of the Triad Shareware (1994)
+  Preset: SLOW66  Memory: GAME (500KB conv + 4MB XMS)
+  Notes:  Apogee FPS with jump pads, powerups, and multi-level missile
+          launchers. Episode 1 shareware. NOSPLAY sets BLASTER and XMS.
+          Save games go to C:\GAMES\ROTT\SAVE
+
+Rogue (1983)
+  Preset: SLOW477  Memory: STD
+  Notes:  Text/CGA dungeon crawler that started the roguelike genre.
+          Numpad movement. ? for help. Extremely small -- under 128KB.
+          No XMS or EMS needed.
 
 SOUND CONFIGURATION
 -------------------
