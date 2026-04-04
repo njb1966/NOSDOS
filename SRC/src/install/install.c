@@ -998,31 +998,22 @@ int main(void)
             {
                 char fdisk_cmd[64];
 
-                /* Re-install the silent INT 24h handler around SYS.COM.
+                /* SYS.COM is intentionally skipped.
                  *
-                 * FreeDOS SYS.COM reads the FAT directly via INT 13h using its
-                 * own internal sector arithmetic.  It does not use DOS file I/O
-                 * (INT 21h) to traverse the FAT — it reads raw sectors and
-                 * parses the BPB itself.  On FAT16 partitions larger than 32 MB
-                 * the total sector count exceeds 65535 and the BPB stores it in
-                 * the 32-bit total_sectors_32 field (total_sectors_16 = 0).
-                 * FreeDOS SYS.COM does not handle this case correctly: it
-                 * interprets a zero total_sectors_16 as a zero-length volume,
-                 * calculates a corrupt FAT start offset, and issues an INT 13h
-                 * read to an invalid sector — triggering an INT 24h critical
-                 * error ("general failure reading DOS area").
+                 * FreeDOS SYS.COM cannot handle FAT16 partitions larger than
+                 * 32 MB: it reads total_sectors_16 from the BPB, finds zero
+                 * (the 32-bit field is used instead at this size), computes a
+                 * corrupt FAT offset, and triggers an INT 24h critical error
+                 * dialog ("general failure reading DOS area") in the child
+                 * process — _harderr() in the parent cannot suppress it.
                  *
-                 * FORMAT /S already wrote the partition boot record (PBR) and
-                 * installed KERNEL.SYS with the correct hidden+system attributes
-                 * before copy_tree ran, so SYS.COM is belt-and-suspenders here.
-                 * Suppress its critical error and continue; the system is
-                 * bootable from FORMAT /S alone on large partitions. */
+                 * FORMAT /S (called earlier) already wrote the PBR and placed
+                 * KERNEL.SYS with correct hidden+system attributes, so the
+                 * volume is fully bootable without SYS.COM. */
                 _harderr(inst_crit_err);
-                system("A:\\SYS C:");
 
-                /* FDISK reads/writes only the MBR (LBA 0) which is always
-                 * reachable via CHS — no FAT involvement, no critical errors
-                 * expected.  Keep the suppressor active as a precaution. */
+                /* FDISK reads/writes only the MBR (LBA 0) via CHS — no FAT
+                 * involvement, no critical errors expected. */
                 fdisk_cmd[0] = g_cd_drive;
                 fdisk_cmd[1] = ':'; fdisk_cmd[2] = '\\';
                 strcpy(fdisk_cmd + 3, "FDISK.EXE /ACTIVATE:1");
