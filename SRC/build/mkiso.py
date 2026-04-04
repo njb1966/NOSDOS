@@ -442,6 +442,8 @@ def stage_iso_root(iso_root: Path) -> bool:
         DIST_DIR   / "utils"   / "PKZIP.EXE",
         CDROM_DIR  / "OAKCDROM.SYS",
         CDROM_DIR  / "SHSUCDX.COM",
+        FREEDOS_DIR / "DELTREE.COM",
+        FREEDOS_DIR / "XCOPY.EXE",
     ]
     for src in required_sys:
         if src.exists():

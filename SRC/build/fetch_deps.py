@@ -406,6 +406,60 @@ def fetch_shsucdx(dest_dir: Path) -> bool:
     return True
 
 
+def fetch_deltree(dest_dir: Path) -> bool:
+    """Download FreeDOS DELTREE.COM.
+
+    Required by every NPKG [REMOVE] section: DELTREE /Y <installdir>.
+    Placed in NOS/SYSTEM so it is always on PATH in an installed system.
+    """
+    dest_dir.mkdir(parents=True, exist_ok=True)
+    archive = dest_dir / "deltree.zip"
+    base_url = config["freedos"]["base_url"].rstrip("/")
+    url = f"{base_url}/{config['freedos']['deltree_pkg']}"
+
+    if not download(url, archive, CHECKSUMS.get("deltree.zip")):
+        return False
+
+    data = find_in_zip(archive, "BIN/DELTREE.COM")
+    if data is None:
+        data = find_in_zip(archive, "DELTREE.COM")
+    if data is None:
+        log("  ERROR: DELTREE.COM not found inside deltree.zip")
+        return False
+
+    out = dest_dir / "DELTREE.COM"
+    out.write_bytes(data)
+    log(f"  extracted → DELTREE.COM ({len(data)} bytes)")
+    return True
+
+
+def fetch_xcopy(dest_dir: Path) -> bool:
+    """Download FreeDOS XCOPY.EXE.
+
+    Provides recursive directory copy capability.
+    Placed in NOS/SYSTEM so it is always on PATH in an installed system.
+    """
+    dest_dir.mkdir(parents=True, exist_ok=True)
+    archive = dest_dir / "xcopy.zip"
+    base_url = config["freedos"]["base_url"].rstrip("/")
+    url = f"{base_url}/{config['freedos']['xcopy_pkg']}"
+
+    if not download(url, archive, CHECKSUMS.get("xcopy.zip")):
+        return False
+
+    data = find_in_zip(archive, "BIN/XCOPY.EXE")
+    if data is None:
+        data = find_in_zip(archive, "XCOPY.EXE")
+    if data is None:
+        log("  ERROR: XCOPY.EXE not found inside xcopy.zip")
+        return False
+
+    out = dest_dir / "XCOPY.EXE"
+    out.write_bytes(data)
+    log(f"  extracted → XCOPY.EXE ({len(data)} bytes)")
+    return True
+
+
 def fetch_format(dest_dir: Path) -> bool:
     """Download FreeDOS FORMAT.COM.
 
@@ -550,6 +604,8 @@ def main() -> int:
         ("SHSUCDX.EXE (CD-ROM extensions)",  lambda: fetch_shsucdx(DIST_DIR / "cdrom")),
         ("FORMAT.EXE",                        lambda: fetch_format(DIST_DIR / "freedos")),
         ("FDISK.EXE",                         lambda: fetch_fdisk(DIST_DIR / "freedos")),
+        ("DELTREE.COM",                       lambda: fetch_deltree(DIST_DIR / "freedos")),
+        ("XCOPY.EXE",                         lambda: fetch_xcopy(DIST_DIR / "freedos")),
     ]
 
     failures = []
