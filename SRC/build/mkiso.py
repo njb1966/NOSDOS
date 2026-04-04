@@ -103,6 +103,7 @@ INSTALLED_CONFIG_SYS = (
     "REM Written by NOS-INSTALL. DETECT.EXE updates on first boot.\r\n"
     "DOS=HIGH,UMB\r\n"
     "DEVICE=C:\\NOS\\SYSTEM\\JEMMEX.EXE NOEMS X=TEST\r\n"
+    "DEVICE=C:\\NOS\\SYSTEM\\OAKCDROM.SYS /D:MSCD001\r\n"
     "FILES=40\r\n"
     "BUFFERS=20\r\n"
     "STACKS=9,256\r\n"
@@ -115,6 +116,7 @@ INSTALLED_AUTOEXEC_BAT = (
     "REM DETECT.EXE will replace this file on first boot.\r\n"
     "SET PROMPT=$P$G\r\n"
     "SET PATH=C:\\;C:\\NOS\\SYSTEM;C:\\NOS\\SHELL;C:\\APPS\r\n"
+    "LH C:\\NOS\\SYSTEM\\SHSUCDX.COM /D:MSCD001\r\n"
     "LH C:\\NOS\\SYSTEM\\PCNTPK.COM INT=0x60 > NUL\r\n"
     "C:\\NOS\\SYSTEM\\DETECT.EXE\r\n"
     "IF EXIST C:\\NOS\\SHELL\\SHELL.EXE C:\\NOS\\SHELL\\SHELL.EXE\r\n"
@@ -438,6 +440,8 @@ def stage_iso_root(iso_root: Path) -> bool:
         DIST_DIR   / "utils"   / "CHKDSK.EXE",
         DIST_DIR   / "utils"   / "PKUNZIP.EXE",
         DIST_DIR   / "utils"   / "PKZIP.EXE",
+        CDROM_DIR  / "OAKCDROM.SYS",
+        CDROM_DIR  / "SHSUCDX.COM",
     ]
     for src in required_sys:
         if src.exists():
