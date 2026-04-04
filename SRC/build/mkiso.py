@@ -83,7 +83,7 @@ FLOPPY_SPT     = 18
 
 INSTALLER_CONFIG_SYS = (
     "REM NOS-DOS Installer Boot\r\n"
-    "DEVICE=A:\\GCDROM.SYS /D:MSCD001\r\n"
+    "DEVICE=A:\\OAKCDROM.SYS /D:MSCD001\r\n"
     "FILES=30\r\n"
     "BUFFERS=10\r\n"
     "STACKS=9,256\r\n"
@@ -196,7 +196,7 @@ def build_installer_floppy() -> bool:
     sys_com     = FREEDOS_DIR / "SYS.COM"
     boot_asm    = FREEDOS_DIR / "boot.asm"
     jemmex_exe  = THIRDPARTY / "jemmex" / "JEMMEX.EXE"
-    oakcdrom    = CDROM_DIR / "GCDROM.SYS"
+    oakcdrom    = CDROM_DIR / "OAKCDROM.SYS"
 
     # SHSUCDX / MSCDEX: optional — build proceeds without it but will warn.
     cdex_path, cdex_name = find_cdex()

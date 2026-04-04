@@ -217,11 +217,11 @@ def make_blank_vmdk(out_dir: Path) -> None:
     using mformat on the host.  When attached to a VM alongside nosdos.iso,
     the installer finds C: already formatted and copies files directly —
     bypassing the FORMAT.EXE step that fails on completely blank partitions.
+
+    Prefers VBoxManage convertfromraw (natively compatible VMDK) over
+    qemu-img convert (which can produce VMDKs VirtualBox refuses to attach).
     """
     print("\n[mkvm] Building blank installer-target VMDK...")
-
-    if not require_tool("qemu-img"):
-        return
 
     blank_hdd = out_dir / "nosdos-blank.hdd"
     blank_vmdk = out_dir / "nosdos-blank.vmdk"
@@ -230,8 +230,17 @@ def make_blank_vmdk(out_dir: Path) -> None:
         print(f"  WARNING: {blank_hdd} not found — run mkhdd.py first.")
         return
 
-    run(["qemu-img", "convert", "-f", "raw", "-O", "vmdk",
-         str(blank_hdd), str(blank_vmdk)])
+    blank_vmdk.unlink(missing_ok=True)
+
+    if shutil.which("VBoxManage"):
+        run(["VBoxManage", "convertfromraw",
+             str(blank_hdd), str(blank_vmdk),
+             "--format", "VMDK"])
+    elif require_tool("qemu-img"):
+        run(["qemu-img", "convert", "-f", "raw", "-O", "vmdk",
+             str(blank_hdd), str(blank_vmdk)])
+    else:
+        return
 
     print(f"  Blank installer VMDK: {blank_vmdk}")
     print("  Usage (VirtualBox):")
@@ -394,7 +403,7 @@ def main() -> int:
     parser.add_argument("--no-vmware", action="store_true", help="Skip VMware bundle")
     parser.add_argument("--no-qemu",   action="store_true", help="Skip QEMU scripts")
     parser.add_argument("--no-blank",  action="store_true", help="Skip blank installer VMDK")
-    args = parser.parse_args()
+    args, _ = parser.parse_known_args()  # ignore unknown flags passed by build.py
 
     hdd     = Path(args.hdd)
     out_dir = Path(args.out)
