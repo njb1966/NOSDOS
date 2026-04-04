@@ -1,0 +1,58 @@
+[PACKAGE]
+ID=DOOM
+Name=DOOM Shareware
+Version=1.9
+Category=game
+Description=id Software's first-person shooter, episode 1 shareware
+Author=id Software
+Year=1993
+License=shareware
+Tags=fps shooter action 3d id software
+
+[HARDWARE]
+Memory=530
+EMS=0
+XMS=2048
+Sound=sb
+Mouse=no
+VGA=yes
+CPUSpeed=medium
+DiskKB=6000
+
+[SOURCE]
+URL1=https://archive.org/download/doom-shareware-1.9/doom19s.zip
+URL2=https://archive.org/download/DoomShareware/doom19s.zip
+Archive=DOOM19S.ZIP
+Bytes=2397849
+MD5=90facab21eefe84cd43461896f9e6a97
+Redirect=yes
+
+[INSTALL]
+InstallDir=C:\GAMES\DOOM
+Extract=yes
+Extractor=unzip
+SetPath=no
+SetVar=DOOMWADDIR=C:\GAMES\DOOM
+
+[POST-INSTALL]
+MD %INSTALLDIR%\SAVE
+ECHO DOOM Shareware v1.9 installed to %INSTALLDIR%.
+ECHO Run %INSTALLDIR%\DOOM.EXE to start.
+ECHO Requires SB16 (A220 I5 D1) and 2MB XMS. Use NOSMEM /GAME first.
+
+[LAUNCHER]
+Label=DOOM Shareware
+Exec=C:\GAMES\DOOM\DOOM.EXE
+Dir=C:\GAMES\DOOM
+Icon=2
+
+[GAME]
+CPUPreset=SLOW33
+MemProfile=GAME
+SoundEnv=BLASTER=A220 I5 D1 H5 P330 T6
+MusicExt=OPL
+Notes=Requires 530KB+ conventional and 2MB XMS. NOSMEM /GAME before launch.
+SaveDir=C:\GAMES\DOOM\SAVE
+
+[REMOVE]
+DELTREE /Y %INSTALLDIR%

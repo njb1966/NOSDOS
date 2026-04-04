@@ -1,0 +1,46 @@
+[PACKAGE]
+ID=PCTOOLS
+Name=PC Tools
+Version=9.0
+Category=utilities
+Description=Disk utilities, undelete, backup, and desktop manager
+Author=Central Point Software
+Year=1992
+License=commercial
+Tags=utilities disk undelete backup desktop manager tools
+
+[HARDWARE]
+Memory=512
+EMS=512
+Sound=none
+Mouse=yes
+VGA=no
+CPUSpeed=any
+DiskKB=6000
+
+[SOURCE]
+URL1=https://archive.org/download/pc-tools-9.0/pctools90.zip
+URL2=https://archive.org/download/msdos_PC_Tools_9/pctools90.zip
+Archive=PCTOOL9.ZIP
+Redirect=yes
+
+[INSTALL]
+InstallDir=C:\UTILS\PCTOOLS
+Extract=yes
+Extractor=unzip
+SetPath=yes
+
+[POST-INSTALL]
+ECHO PC Tools 9.0 installed to %INSTALLDIR%.
+ECHO Desktop:    %INSTALLDIR%\PCSHELL.EXE
+ECHO Disk tools: %INSTALLDIR%\PCTOOLS.EXE
+ECHO Undelete:   %INSTALLDIR%\UNDELETE.EXE
+
+[LAUNCHER]
+Label=PC Tools 9.0
+Exec=C:\UTILS\PCTOOLS\PCSHELL.EXE
+Dir=C:\UTILS\PCTOOLS
+Icon=248
+
+[REMOVE]
+DELTREE /Y %INSTALLDIR%

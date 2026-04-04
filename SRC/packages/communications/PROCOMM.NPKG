@@ -1,0 +1,46 @@
+[PACKAGE]
+ID=PROCOMM
+Name=ProComm Plus
+Version=2.01
+Category=communications
+Description=Terminal emulator with scripting and multi-protocol support
+Author=Datastorm Technologies
+Year=1990
+License=shareware
+Tags=terminal modem bbs serial communications scripting zmodem
+
+[HARDWARE]
+Memory=384
+Sound=speaker
+Mouse=yes
+VGA=no
+CPUSpeed=any
+DiskKB=1800
+
+[SOURCE]
+URL1=https://archive.org/download/procomm-plus-2.01/procomm.zip
+URL2=https://archive.org/download/msdos_ProComm_Plus/procomm.zip
+Archive=PROCOMM.ZIP
+Redirect=yes
+
+[INSTALL]
+InstallDir=C:\COMM\PROCOMM
+Extract=yes
+Extractor=unzip
+SetPath=yes
+
+[POST-INSTALL]
+MD %INSTALLDIR%\DL
+ECHO ProComm Plus 2.01 installed to %INSTALLDIR%.
+ECHO Run %INSTALLDIR%\PCPLUS.EXE to start.
+ECHO Downloads will go to %INSTALLDIR%\DL\
+ECHO Configure via Alt+S (Setup).
+
+[LAUNCHER]
+Label=ProComm Plus 2.01
+Exec=C:\COMM\PROCOMM\PCPLUS.EXE
+Dir=C:\COMM\PROCOMM
+Icon=1
+
+[REMOVE]
+DELTREE /Y %INSTALLDIR%

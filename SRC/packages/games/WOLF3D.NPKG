@@ -1,0 +1,55 @@
+[PACKAGE]
+ID=WOLF3D
+Name=Wolfenstein 3D
+Version=1.4
+Category=game
+Description=id Software's landmark 3D shooter, episode 1 shareware
+Author=id Software
+Year=1992
+License=shareware
+Tags=fps shooter 3d id software nazi castle wolfenstein
+
+[HARDWARE]
+Memory=512
+EMS=0
+XMS=0
+Sound=sb
+Mouse=no
+VGA=yes
+CPUSpeed=medium
+DiskKB=2500
+
+[SOURCE]
+URL1=https://archive.org/download/wolf3d-shareware/wl6v14.zip
+URL2=https://archive.org/download/Wolfenstein3D/wl6v14.zip
+Archive=WL6V14.ZIP
+Redirect=yes
+
+[INSTALL]
+InstallDir=C:\GAMES\WOLF3D
+Extract=yes
+Extractor=unzip
+SetPath=no
+
+[POST-INSTALL]
+MD %INSTALLDIR%\SAVE
+ECHO Wolfenstein 3D shareware installed to %INSTALLDIR%.
+ECHO Run %INSTALLDIR%\WOLF3D.EXE to start.
+ECHO Ctrl+arrows = strafe, Space = open doors.
+
+[LAUNCHER]
+Label=Wolfenstein 3D
+Exec=C:\GAMES\WOLF3D\WOLF3D.EXE
+Dir=C:\GAMES\WOLF3D
+Icon=2
+
+[GAME]
+CPUPreset=SLOW33
+MemProfile=GAME
+SoundEnv=BLASTER=A220 I5 D1 H5 P330 T6
+MusicExt=OPL
+Notes=Runs well at SLOW33. SLOW10 for authentic 386 experience.
+SaveDir=C:\GAMES\WOLF3D\SAVE
+
+[REMOVE]
+DELTREE /Y %INSTALLDIR%

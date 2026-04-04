@@ -1,0 +1,198 @@
+NOS-DOS: Installing in VirtualBox
+==================================
+Version 1.0  |  NOS-DOS v1.x  |  See also: QUICKSTART.TXT, README.TXT
+
+This guide walks you through creating a VirtualBox VM and installing
+NOS-DOS from scratch using the installer ISO.
+
+------------------------------------------------------------------------
+WHAT YOU NEED
+------------------------------------------------------------------------
+
+Two files from the NOS-DOS release:
+
+  nosdos-blank.vmdk   Pre-formatted blank hard disk (installer target)
+  nosdos.iso          Bootable installer ISO
+
+IMPORTANT: Do NOT create a blank VDI/VMDK in VirtualBox yourself.
+The installer requires a disk that is already partitioned and formatted.
+nosdos-blank.vmdk provides exactly this -- use it as-is.
+
+------------------------------------------------------------------------
+STEP 1 -- CREATE THE VM
+------------------------------------------------------------------------
+
+Open VirtualBox and click "New".
+
+  Name:           NOS-DOS
+  Machine Folder: (your choice)
+  Type:           Other
+  Version:        DOS
+
+  Memory:         64 MB  (32 MB minimum; 64 MB recommended)
+
+When asked about a virtual hard disk, choose:
+  "Use an existing virtual hard disk file"
+
+Click the folder icon, then "Add", and select:
+  nosdos-blank.vmdk
+
+Click "Create".
+
+------------------------------------------------------------------------
+STEP 2 -- CONFIGURE THE VM
+------------------------------------------------------------------------
+
+With the NOS-DOS VM selected, open Settings.
+
+  SYSTEM tab
+  ----------
+  Boot Order:
+    [x] Optical      <-- must be first
+    [x] Hard Disk    <-- second
+    [ ] Floppy       <-- uncheck or move below Hard Disk
+
+  STORAGE tab
+  -----------
+  You should see one storage controller. It MUST be an IDE controller.
+
+  *** If the controller says "SATA" or "AHCI", the CD-ROM driver will
+  *** not find the disc. Right-click and remove it, then add a new
+  *** IDE controller (click the controller icon at the bottom).
+
+  Under the IDE controller:
+    Hard disk slot:  nosdos-blank.vmdk  (already attached from Step 1)
+    Optical slot:    click the empty CD icon -> "Choose a disk file..."
+                     select nosdos.iso
+
+  AUDIO tab
+  ---------
+  Enable Audio:        checked
+  Host Audio Driver:   (your OS default)
+  Controller:          SoundBlaster 16
+
+  NETWORK tab
+  -----------
+  Adapter 1:
+    Enable Network Adapter:  checked
+    Attached to:             NAT
+    Adapter Type:            PCnet-FAST III (Am79C973)
+
+Click OK.
+
+------------------------------------------------------------------------
+STEP 3 -- RUN THE INSTALLER
+------------------------------------------------------------------------
+
+Start the VM. It boots from the ISO automatically.
+
+You will see the FreeDOS boot messages, then the NOS-DOS installer
+appears as a blue TUI screen.
+
+  Screen 1 -- Welcome
+    Press Enter to continue.
+
+  Screen 2 -- Pre-flight check
+    The installer confirms:
+      CD-ROM:  found (D:)
+      C: disk: partitioned and formatted  [OK]
+    Press Enter to continue.
+
+  Screen 3 -- Confirm installation
+    This is the point of no return. Press Enter to begin.
+
+  Screen 4 -- Format
+    Press any key to launch FORMAT. When FORMAT asks:
+      "Proceed with Format (Y/N)?"  -- press Y, then Enter.
+    FORMAT writes the filesystem. This takes a few seconds.
+
+  Screen 5 -- Copy files
+    The installer copies NOS-DOS to C:\. A file counter shows
+    progress. Copying ~100 files takes about 30-60 seconds.
+
+  Screen 6 -- Done
+    The installer displays:
+      "Installation complete."
+      "1. Remove the installation disc."
+      "2. Press Enter to reboot."
+
+    Remove the ISO:
+      In the VirtualBox menu bar: Devices -> Optical Drives ->
+        Remove Disk from Virtual Drive
+
+    Press Enter in the VM. It reboots from C:.
+
+------------------------------------------------------------------------
+STEP 4 -- FIRST BOOT
+------------------------------------------------------------------------
+
+On the very first boot from the hard disk, NOS-DETECT runs to probe
+your virtual hardware (CPU, memory, sound, network). This is normal.
+
+DETECT generates CONFIG.SYS and AUTOEXEC.BAT, then reboots once more.
+
+After the second reboot, NOS-DOS is fully configured:
+  - NOS-SHELL launches automatically (dual-pane file manager)
+  - Networking is configured (MTCP.CFG has your IP address)
+  - All NOS-DOS tools are available
+
+------------------------------------------------------------------------
+STEP 5 -- OPTIONAL: TAKE A SNAPSHOT
+------------------------------------------------------------------------
+
+After the first successful boot, take a VirtualBox snapshot so you can
+always return to a clean state:
+
+  Machine -> Take Snapshot -> Name it "Fresh install"
+
+------------------------------------------------------------------------
+TROUBLESHOOTING
+------------------------------------------------------------------------
+
+  "AMD-V is being used by another hypervisor (VERR_SVM_IN_USE)"
+    KVM is loaded on your Linux host and conflicts with VirtualBox.
+    Run as root (or with sudo):
+      modprobe -r kvm_amd
+      modprobe -r kvm
+    Then try starting the VM again. KVM will reload on next reboot.
+
+  Installer boots but cannot find the CD-ROM (no D: drive)
+    The storage controller is SATA/AHCI instead of IDE. The CD-ROM
+    driver (OAKCDROM.SYS) requires an IDE controller.
+    Fix: Settings -> Storage -> remove SATA controller -> add IDE
+    controller -> re-attach nosdos-blank.vmdk and nosdos.iso.
+
+  Installer shows "C: disk: NOT FOUND" on the pre-flight screen
+    The VM is using a blank VDI you created yourself instead of
+    nosdos-blank.vmdk. A self-created blank disk has no partition
+    table and no filesystem -- the installer cannot use it.
+    Fix: detach the blank VDI and attach nosdos-blank.vmdk instead.
+
+  FORMAT fails or shows Abort/Ignore/Retry/Fail
+    Same cause as above -- wrong disk attached.
+
+  Black screen after removing ISO and pressing Enter
+    The boot sector on C: was not written correctly. This usually
+    means FORMAT did not complete. Start over with a fresh copy of
+    nosdos-blank.vmdk (re-run the build, or re-extract from the
+    release archive).
+
+  NOS-SHELL does not appear / boots to DOS prompt
+    NOS-DETECT did not complete successfully. At the C:\> prompt:
+      C:\NOS\SYSTEM\DETECT.EXE /FORCE
+    This re-runs hardware detection and reboots.
+
+------------------------------------------------------------------------
+VM SPECIFICATIONS (for reference)
+------------------------------------------------------------------------
+
+  CPU:        32-bit x86 (no PAE required)
+  RAM:        64 MB
+  Disk:       ~32 MB (nosdos-blank.vmdk, FAT16)
+  CD-ROM:     IDE, ATAPI
+  Sound:      SoundBlaster 16
+  Network:    PCnet-FAST III, NAT
+  Display:    Standard VGA
+  Controller: IDE (PIIX4)
+
+------------------------------------------------------------------------

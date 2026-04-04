@@ -1,0 +1,54 @@
+[PACKAGE]
+ID=DUKE3D
+Name=Duke Nukem 3D Shareware
+Version=1.3d
+Category=game
+Description=Build-engine FPS, episode 1 shareware
+Author=3D Realms
+Year=1996
+License=shareware
+Tags=fps shooter build-engine action 3drealms
+
+[HARDWARE]
+Memory=570
+EMS=0
+XMS=4096
+Sound=sb
+Mouse=no
+VGA=yes
+CPUSpeed=fast
+DiskKB=10000
+
+[SOURCE]
+URL1=https://archive.org/download/duke-nukem-3d-shareware/duke3d_sw.zip
+URL2=https://archive.org/download/msdos_Duke_Nukem_3D/duke3d_sw.zip
+Archive=DUKE3DSW.ZIP
+Redirect=yes
+
+[INSTALL]
+InstallDir=C:\GAMES\DUKE3D
+Extract=yes
+Extractor=unzip
+SetPath=no
+
+[POST-INSTALL]
+ECHO Duke Nukem 3D Shareware installed to %INSTALLDIR%.
+ECHO Run %INSTALLDIR%\DUKE3D.EXE to start.
+ECHO Requires Sound Blaster (A220 I5 D1).
+
+[LAUNCHER]
+Label=Duke Nukem 3D SW
+Exec=C:\GAMES\DUKE3D\DUKE3D.EXE
+Dir=C:\GAMES\DUKE3D
+Icon=2
+
+[GAME]
+CPUPreset=SLOW66
+MemProfile=GAME
+SoundEnv=BLASTER=A220 I5 D1 H5 P330 T6
+MusicExt=OPL
+Notes=Needs 570KB conventional and 4MB XMS. Fast machine recommended.
+SaveDir=C:\GAMES\DUKE3D\SAVE
+
+[REMOVE]
+DELTREE /Y %INSTALLDIR%

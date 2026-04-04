@@ -1,0 +1,103 @@
+NOS-DOS Quick Start
+===================
+
+5 MINUTES TO A WORKING DOS ENVIRONMENT
+---------------------------------------
+
+STEP 0: INSTALL (first time only)
+  Run the installer once to set up NOS-DOS on the virtual hard disk.
+
+  VirtualBox:
+    See VBOX.TXT for the full step-by-step guide. In brief:
+      1. Create a new VM (Other/DOS, 64 MB RAM, IDE controller).
+      2. Attach nosdos-blank.vmdk as the hard disk.
+      3. Attach nosdos.iso as the optical drive.
+      4. Boot order: Optical first, Hard Disk second.
+      5. Start the VM and follow the installer screens.
+      6. When done: Devices -> Optical Drives -> Remove Disk,
+         then press Enter. The VM reboots into NOS-DOS.
+
+    IMPORTANT: Use nosdos-blank.vmdk -- do not create your own
+    blank disk. The installer requires a pre-formatted disk.
+
+  VMware:
+    Attach nosdos-blank.vmdk as the hard disk and nosdos.iso as
+    the CD-ROM. Boot order: CD first. Follow the installer prompts.
+    When done: VM -> Settings -> CD/DVD -> uncheck "Connected",
+    then press Enter in the VM to reboot from the hard disk.
+
+  QEMU (Linux / macOS):
+    Run:  ./run-qemu.sh          (installer ISO boots automatically)
+    When the installer says to remove the disc, close the QEMU window.
+    Then run:  ./run-qemu-hdd.sh  (boots from the installed HDD, no ISO)
+    Use run-qemu-hdd.sh for all future sessions.
+
+  QEMU (Windows):
+    Run:  run-qemu.bat           (installer ISO boots automatically)
+    When the installer says to remove the disc, close the QEMU window.
+    Then run:  run-qemu-hdd.bat  (boots from the installed HDD, no ISO)
+    Use run-qemu-hdd.bat for all future sessions.
+
+STEP 1: BOOT
+  After installation, NOS-DOS boots in under 10 seconds and lands in
+  NOS-SHELL. On the very first boot, NOS-DETECT runs to configure
+  hardware — this takes a few extra seconds then reboots once more.
+
+STEP 2: NAVIGATE NOS-SHELL
+  Arrow keys   Move cursor in file panel
+  Tab          Switch between left and right panel
+  Enter        Open directory or run file
+  F1           Help (this documentation)
+  F3           View file
+  F5           Copy file
+  F6           Move/rename file
+  F7           Create directory
+  F8           Delete file
+  F9           Application launcher
+  F10          Quit to DOS prompt
+  F12          Drop to DOS shell (type EXIT to return)
+  Ctrl+R       Refresh panels
+
+STEP 3: CONNECT TO THE INTERNET
+  Press F12 to open a DOS prompt, then:
+    NNET DHCP          Obtain an IP address
+    NNET STATUS        Verify connection
+    NNET PING 8.8.8.8  Test connectivity
+    EXIT               Return to NOS-SHELL
+
+STEP 4: INSTALL AN APPLICATION
+    NPKG UPDATE            Download package index
+    NPKG SEARCH word       Find word processors
+    NPKG INSTALL GALAXY    Install Galaxy Write
+    NPKG LIST              See installed packages
+  The application appears in the F9 launcher automatically.
+
+STEP 5: EXCHANGE FILES WITH YOUR HOST
+    NBRIDGE MOUNT          Mount shared folder on H:\
+    NBRIDGE DIRS           Create INBOX/OUTBOX/PRINT/CLIP
+  Copy files to H:\OUTBOX\ and they appear on your host desktop
+  (run watch_outbox.py from the host_helpers/ folder on the host).
+
+STEP 6: PLAY A GAME
+    NPKG INSTALL DOOM      Install DOOM Shareware
+    NOSPLAY DOOM           Launch with correct speed/sound profile
+  Or press F9 and select the game from the launcher.
+
+KEY FILES AND LOCATIONS
+-----------------------
+  C:\NOS\SHELL\SHELL.EXE     NOS-SHELL (starts automatically)
+  C:\NOS\SHELL\LAUNCHER.CFG  F9 launcher entries
+  C:\NOS\SYSTEM\             System utilities
+  C:\NOS\NPKG\INSTALLED.DB   Installed package registry
+  C:\APPS\                   Productivity applications
+  C:\GAMES\                  Games
+  C:\USER\                   Your personal files
+  C:\TEMP\                   Temporary files
+
+GETTING HELP
+------------
+  F1 in NOS-SHELL     Open documentation viewer
+  NPKG /?             Package manager help
+  NNET /?             Networking help
+  NBRIDGE /?          Host bridge help
+  NOSPLAY /?          Game launcher help

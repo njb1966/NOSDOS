@@ -1,0 +1,54 @@
+[PACKAGE]
+ID=DESCENT
+Name=Descent Shareware
+Version=1.4a
+Category=game
+Description=Six-degrees-of-freedom shooter in mine shafts, shareware
+Author=Parallax Software
+Year=1994
+License=shareware
+Tags=fps 6dof shooter action parallax mine
+
+[HARDWARE]
+Memory=550
+EMS=2048
+XMS=0
+Sound=sb
+Mouse=yes
+VGA=yes
+CPUSpeed=medium
+DiskKB=7000
+
+[SOURCE]
+URL1=https://archive.org/download/descent-shareware-1.4a/descent14a.zip
+URL2=https://archive.org/download/msdos_Descent/descent14a.zip
+Archive=DES14ASW.ZIP
+Redirect=yes
+
+[INSTALL]
+InstallDir=C:\GAMES\DESCENT
+Extract=yes
+Extractor=unzip
+SetPath=no
+
+[POST-INSTALL]
+ECHO Descent Shareware v1.4a installed to %INSTALLDIR%.
+ECHO Run %INSTALLDIR%\DESCENT.EXE to start.
+ECHO Requires 2MB EMS and Sound Blaster.
+
+[LAUNCHER]
+Label=Descent Shareware
+Exec=C:\GAMES\DESCENT\DESCENT.EXE
+Dir=C:\GAMES\DESCENT
+Icon=2
+
+[GAME]
+CPUPreset=SLOW33
+MemProfile=EMS
+SoundEnv=BLASTER=A220 I5 D1 H5 P330 T6
+MusicExt=OPL
+Notes=Needs 550KB conventional and 2MB EMS. Use NOSMEM /EMS.
+SaveDir=C:\GAMES\DESCENT\SAVE
+
+[REMOVE]
+DELTREE /Y %INSTALLDIR%

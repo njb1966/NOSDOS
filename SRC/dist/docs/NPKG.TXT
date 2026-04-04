@@ -1,0 +1,117 @@
+NOS-DOS Package Manager (NPKG)
+==============================
+
+OVERVIEW
+--------
+NPKG downloads, installs, and removes DOS software packages from the
+NOS-DOS repository. Packages are defined by .npkg files that specify
+where to download the archive, how to extract it, and what to configure.
+
+NPKG requires an active network connection (run NNET DHCP first).
+Archives are downloaded from archive.org and other public sources.
+
+QUICK REFERENCE
+---------------
+  NPKG UPDATE              Refresh package index
+  NPKG SEARCH [term]       Find packages
+  NPKG INSTALL [id]        Install a package
+  NPKG REMOVE [id]         Remove a package
+  NPKG LIST                Show installed packages
+  NPKG INFO [id]           Show package details
+  NPKG PROFILE [id]        Show hardware requirements
+
+AVAILABLE PACKAGES (as of v1.0)
+--------------------------------
+  WORD PROCESSING
+    GALAXY    Galaxy Write 4.0           (shareware)
+    WP51      WordPerfect 5.1            (commercial)
+    WSTAR7    WordStar 7.0               (commercial)
+    XYWRITE   XyWrite III+               (commercial)
+
+  SPREADSHEETS
+    LOTUS123  Lotus 1-2-3 v2.4           (commercial)
+    ASEASY    As-Easy-As 5.7             (shareware)
+    SC        Spreadsheet Calculator     (freeware)
+
+  DATABASES
+    DBASE3    dBASE III+                 (commercial)
+    FOXPRO    FoxPro 2.6                 (commercial)
+
+  PROGRAMMING
+    TP70      Turbo Pascal 7.0           (commercial)
+    TC30      Turbo C++ 3.0              (commercial)
+    QBASIC    QBasic 1.1                 (freeware)
+    MASM611   Microsoft MASM 6.11        (commercial)
+
+  COMMUNICATIONS
+    TELIX     Telix 3.51                 (shareware)
+    PROCOMM   ProComm Plus 2.01          (commercial)
+
+  UTILITIES
+    NORTON    Norton Utilities 8.0       (commercial)
+    PCTOOLS   PC Tools 9.0               (commercial)
+    XTREE     XTree Gold 2.5             (commercial)
+
+  GAMES
+    DOOM      DOOM Shareware             (shareware)
+    DOOM2     DOOM II                    (commercial)
+    WOLF3D    Wolfenstein 3D Shareware   (shareware)
+    PRINCE    Prince of Persia           (commercial)
+    KEEN1     Commander Keen 1           (shareware)
+    HERETIC   Heretic Shareware          (shareware)
+    DUKE3D    Duke Nukem 3D Shareware    (shareware)
+    QUAKE     Quake Shareware            (shareware)
+    DESCENT   Descent Shareware          (shareware)
+    TYRIAN    Tyrian 2000                (freeware)
+
+INSTALLATION DETAILS
+--------------------
+When you run NPKG INSTALL [id]:
+
+  1. NPKG downloads the package index if not cached.
+  2. The package definition (.npkg file) is fetched from the repository.
+  3. The archive (ZIP/ARJ) is downloaded from the source URL.
+     - Up to 3 fallback URLs are tried.
+     - 3 retry attempts per URL with 3-second back-off.
+     - Files under 1 KB are rejected as error pages.
+  4. The archive is extracted to the InstallDir (e.g. C:\APPS\GALAXY).
+  5. POST-INSTALL commands run (echo instructions, create directories).
+  6. If SetPath=yes, InstallDir is appended to AUTOEXEC.BAT PATH.
+  7. If the package has a [LAUNCHER] section, it is added to LAUNCHER.CFG
+     so the application appears in the NOS-SHELL F9 launcher.
+  8. Games with a [GAME] section are launched via NOSPLAY automatically.
+
+REMOVING PACKAGES
+-----------------
+  NPKG REMOVE [id]
+
+  This will:
+  - Show the install directory and ask for confirmation.
+  - Run [REMOVE] batch commands (typically DELTREE /Y C:\APPS\name).
+  - Remove the AUTOEXEC.BAT block added at install time.
+  - Remove the launcher entry from LAUNCHER.CFG.
+  - Deregister from INSTALLED.DB.
+
+COMMERCIAL SOFTWARE NOTE
+------------------------
+Commercial packages (marked "commercial" in the license field) require
+a valid purchased copy. NPKG only downloads from public archive.org
+sources that host software legally. You are responsible for ensuring
+you have the appropriate licence for any commercial software installed.
+
+Shareware and freeware packages have no such restrictions.
+
+ADDING YOUR OWN PACKAGES
+------------------------
+See CONTRIBUTING.TXT (on GitHub) for the full .npkg format reference.
+Briefly: create a file with the same structure as the packages in
+C:\NOS\NPKG\DEFS\ and run NPKG INSTALL with the local .npkg path.
+
+NETWORK TROUBLESHOOTING
+-----------------------
+If downloads fail:
+  - Run NNET STATUS to verify you have an IP address.
+  - Run NNET DHCP if no IP is shown.
+  - archive.org may throttle requests -- wait 1-2 minutes and retry.
+  - Try NPKG INSTALL again; NPKG retries each URL 3 times.
+  - Check that MTCP.CFG exists: TYPE C:\NOS\SYSTEM\MTCP.CFG

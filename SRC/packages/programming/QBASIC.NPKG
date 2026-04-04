@@ -1,0 +1,46 @@
+[PACKAGE]
+ID=QBASIC
+Name=QBasic
+Version=1.1
+Category=programming
+Description=Microsoft BASIC interpreter and IDE with full-screen editor
+Author=Microsoft Corporation
+Year=1991
+License=freeware
+Tags=basic programming beginner interpreter microsoft
+
+[HARDWARE]
+Memory=384
+Sound=none
+Mouse=yes
+VGA=no
+CPUSpeed=any
+DiskKB=512
+
+[SOURCE]
+URL1=https://archive.org/download/msdos-qbasic-1.1/qbasic11.zip
+URL2=https://archive.org/download/msdos_QBasic_1.1/qbasic11.zip
+Archive=QBASIC11.ZIP
+Redirect=yes
+
+[INSTALL]
+InstallDir=C:\DEV\QBASIC
+Extract=yes
+Extractor=unzip
+SetPath=yes
+
+[POST-INSTALL]
+MD %INSTALLDIR%\PROG
+ECHO QBasic 1.1 installed to %INSTALLDIR%.
+ECHO Run %INSTALLDIR%\QBASIC.EXE to start.
+ECHO Sample programs in %INSTALLDIR%\SAMPLES\ (if included).
+ECHO Press F1 for help, Shift+F5 to run.
+
+[LAUNCHER]
+Label=QBasic 1.1
+Exec=C:\DEV\QBASIC\QBASIC.EXE
+Dir=C:\DEV\QBASIC\PROG
+Icon=229
+
+[REMOVE]
+DELTREE /Y %INSTALLDIR%

@@ -1,0 +1,54 @@
+[PACKAGE]
+ID=KEEN1
+Name=Commander Keen: Marooned on Mars
+Version=1.31
+Category=game
+Description=Apogee's classic side-scroller: episode 1 shareware
+Author=id Software / Apogee Software
+Year=1990
+License=shareware
+Tags=platformer sidescroller apogee id software kids shareware
+
+[HARDWARE]
+Memory=512
+EMS=0
+XMS=0
+Sound=sb
+Mouse=no
+VGA=no
+CPUSpeed=slow
+DiskKB=400
+
+[SOURCE]
+URL1=https://archive.org/download/commander-keen-1-marooned-on-mars/keen1.zip
+URL2=https://archive.org/download/msdos_Commander_Keen/keen1.zip
+Archive=KEEN1.ZIP
+Redirect=yes
+
+[INSTALL]
+InstallDir=C:\GAMES\KEEN1
+Extract=yes
+Extractor=unzip
+SetPath=no
+
+[POST-INSTALL]
+ECHO Commander Keen Ep.1 installed to %INSTALLDIR%.
+ECHO Run %INSTALLDIR%\KEEN1.EXE to start.
+ECHO Arrow keys to move, Ctrl to jump, Alt to shoot/pogo.
+ECHO Use CPUPreset SLOW477 for correct speed (XT-era game).
+
+[LAUNCHER]
+Label=Commander Keen Ep.1
+Exec=C:\GAMES\KEEN1\KEEN1.EXE
+Dir=C:\GAMES\KEEN1
+Icon=2
+
+[GAME]
+CPUPreset=SLOW477
+MemProfile=STD
+SoundEnv=BLASTER=A220 I5 D1 H5 P330 T6
+MusicExt=OPL
+Notes=EGA graphics required. Must run near 4.77MHz for playable speed.
+
+[REMOVE]
+DELTREE /Y %INSTALLDIR%

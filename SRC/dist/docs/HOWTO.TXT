@@ -1,0 +1,725 @@
+NOS-DOS: How to Install Applications and Games
+===============================================
+Version 1.0  |  NOS-DOS v1.x  |  See also: NPKG.TXT, GAMES.TXT
+
+This guide covers everything you need to install, launch, and remove
+software on NOS-DOS. Read BEFORE YOU BEGIN first, then jump to the
+section for what you want to do.
+
+CONTENTS
+--------
+  1. Before You Begin
+  2. Installing an Application (Step by Step)
+  3. Installing a Game (Step by Step)
+  4. Complete Package Catalog
+       Word Processing  |  Spreadsheets  |  Databases
+       Programming      |  Communications  |  Utilities  |  Games
+  5. Launching Applications
+  6. Launching Games (NOSPLAY)
+  7. Memory Profiles
+  8. CPU Speed Presets (Games)
+  9. Removing a Package
+ 10. Saving Files / Host File Exchange
+ 11. Troubleshooting
+
+
+=======================================================================
+1. BEFORE YOU BEGIN
+=======================================================================
+
+NETWORK CONNECTION REQUIRED
+----------------------------
+All packages download from the internet at install time. NOS-DOS does
+not bundle copyrighted software. You must have an active network
+connection before running NPKG INSTALL.
+
+Check your connection:
+  NNET STATUS              Shows your IP address and link state
+  NNET DHCP                Requests an IP if none is shown
+  NNET PING 8.8.8.8        Confirms internet access
+
+If NNET STATUS shows no IP, run NNET DHCP and wait 5 seconds, then
+check again. If it still fails, see Section 11 (Troubleshooting).
+
+DISK SPACE
+----------
+Check available space before installing large packages:
+  CHKDSK C:                Shows free bytes on C:
+
+Space needed per category (approximate):
+  Word processors, spreadsheets, utilities:   1 - 6 MB
+  Databases, programming tools:               2 - 6 MB
+  Games:                                      2 - 30 MB (Quake needs 30MB)
+
+UPDATING THE PACKAGE INDEX
+---------------------------
+Run this once per session before installing anything new:
+  NPKG UPDATE
+
+This downloads the master package list. Without it, NPKG may not know
+about packages added after your install image was built.
+
+
+=======================================================================
+2. INSTALLING AN APPLICATION (STEP BY STEP)
+=======================================================================
+
+Example: installing Galaxy Write (a freeware word processor).
+
+Step 1 - Verify network:
+  NNET STATUS
+  (must show an IP address; if not, run NNET DHCP)
+
+Step 2 - Update package index (once per session):
+  NPKG UPDATE
+
+Step 3 - Search for the package (optional):
+  NPKG SEARCH word
+  NPKG SEARCH word wordprocessing    (restrict to a category)
+
+Step 4 - View package details (optional):
+  NPKG INFO GALAXY
+
+Step 5 - Install:
+  NPKG INSTALL GALAXY
+
+  NPKG will:
+    a) Download the package definition from the repository
+    b) Download the archive from archive.org (may take a few minutes)
+    c) Extract to the install directory (C:\APPS\GALAXY)
+    d) Run post-install setup commands
+    e) Add the application to the F9 launcher in NOS-SHELL
+
+Step 6 - Launch the application:
+  From NOS-SHELL, press F9 and select it from the launcher.
+  Or from the DOS prompt: GALAXY.EXE
+
+That is all there is to it for a standard application.
+
+
+=======================================================================
+3. INSTALLING A GAME (STEP BY STEP)
+=======================================================================
+
+Games have additional requirements: memory profiles and CPU throttle
+settings. NOSPLAY handles all of this automatically.
+
+Example: installing DOOM Shareware.
+
+Step 1 - Verify network and update index (same as Section 2):
+  NNET STATUS
+  NPKG UPDATE
+
+Step 2 - Install:
+  NPKG INSTALL DOOM
+
+  Downloaded to: C:\GAMES\DOOM
+  Archive size:  ~2.3 MB (takes 1-3 minutes on a typical VM)
+
+Step 3 - Launch the game:
+  NOSPLAY DOOM
+
+  NOSPLAY automatically:
+    a) Switches to the GAME memory profile (NOSMEM /GAME)
+    b) Installs the CPU throttle TSR at SLOW33 (~33MHz)
+    c) Sets the BLASTER environment variable for sound
+    d) Executes the game
+    e) Removes the throttle and restores the prior memory profile on exit
+
+  Or press F9 in NOS-SHELL and select the game from the launcher.
+  The F9 launcher also calls NOSPLAY for games.
+
+Step 4 - Adjust speed if needed (while the game is running):
+  Ctrl+Alt+KP+    Slow down further (higher throttle)
+  Ctrl+Alt+KP-    Speed up (lower throttle)
+  Ctrl+Alt+0      Disable throttle entirely
+
+Run TCTL CALIBRATE once after first boot to ensure the speed presets
+are calibrated for your virtual machine.
+
+NOTE: Games marked "commercial" in the catalog require a legally
+purchased copy of the WAD or data files. NPKG downloads from public
+archive.org mirrors; you are responsible for your own licence.
+
+
+=======================================================================
+4. COMPLETE PACKAGE CATALOG
+=======================================================================
+
+Use NPKG INFO [ID] for full details on any package.
+Use NPKG PROFILE [ID] to see hardware requirements.
+
+-----------------------------------------------------------------------
+WORD PROCESSING
+-----------------------------------------------------------------------
+
+GALAXY  -  Galaxy Write 4.0  (freeware)
+  Install:   NPKG INSTALL GALAXY
+  Location:  C:\APPS\GALAXY\
+  Launch:    GALAXY.EXE
+  Memory:    384 KB conventional
+  Notes:     Lightweight word processor with spell checker. Good
+             starting point for DOS writing. Menus via F-keys.
+
+XYWRITE  -  XyWrite III+ v3.56  (commercial)
+  Install:   NPKG INSTALL XYWRITE
+  Location:  C:\APPS\XYWRITE\
+  Launch:    XY.EXE
+  Memory:    384 KB conventional
+  Notes:     Keyboard-driven, no mouse required. Highly configurable
+             via keyboard macros. Type HELP at the command line.
+             Preferred by serious writers; steep learning curve.
+
+WP51  -  WordPerfect 5.1  (commercial)
+  Install:   NPKG INSTALL WP51
+  Location:  C:\APPS\WP51\
+  Launch:    WP.EXE
+  Memory:    384 KB conventional
+  Notes:     The industry standard DOS word processor. Function key
+             driven. F1=Help, F3=Exit, Alt+F3=Reveal Codes.
+             Requires a valid commercial licence.
+
+WSTAR7  -  WordStar 7.0  (commercial)
+  Install:   NPKG INSTALL WSTAR7
+  Location:  C:\APPS\WSTAR7\
+  Launch:    WS.EXE
+  Memory:    384 KB conventional
+  Notes:     Classic diamond-key navigation (Ctrl+E/S/D/X). F1=Help.
+             Keyboard layout designed for original IBM PC without
+             cursor keys. Requires a valid commercial licence.
+
+-----------------------------------------------------------------------
+SPREADSHEETS
+-----------------------------------------------------------------------
+
+ASEASY  -  As-Easy-As 4.01  (freeware)
+  Install:   NPKG INSTALL ASEASY
+  Location:  C:\APPS\ASEASY\
+  Launch:    ASEASY.EXE
+  Memory:    384 KB conventional
+  Notes:     Lotus 1-2-3 command-compatible. Best free alternative.
+             F1=Help. Reads and writes .WKS files.
+
+SC  -  SC Spreadsheet Calculator 7.16  (GPL)
+  Install:   NPKG INSTALL SC
+  Location:  C:\APPS\SC\
+  Launch:    SC.EXE
+  Memory:    256 KB conventional (smallest memory footprint available)
+  Notes:     vi-style keyboard navigation (hjkl). Minimal and fast.
+             No mouse support. Ideal if conventional memory is tight.
+
+LOTUS123  -  Lotus 1-2-3 v2.4  (commercial)
+  Install:   NPKG INSTALL LOTUS123
+  Location:  C:\APPS\LOTUS\
+  Launch:    123.EXE
+  Memory:    512 KB conventional; 512 KB EMS recommended
+  Notes:     The definitive DOS business spreadsheet. EMS memory
+             strongly recommended for large worksheets. F1=Help,
+             / (slash) to open menus. Requires a valid commercial
+             licence.
+
+-----------------------------------------------------------------------
+DATABASES
+-----------------------------------------------------------------------
+
+DBASE3  -  dBASE III Plus v1.1  (commercial)
+  Install:   NPKG INSTALL DBASE3
+  Location:  C:\APPS\DBASE3\
+  Launch:    DBASE.EXE
+  Memory:    512 KB conventional
+  Notes:     The original xBase database. At the dot prompt, type
+             ASSIST for full menu mode, or enter dBASE commands
+             directly. Type HELP for command reference.
+             Requires a valid commercial licence.
+
+FOXPRO  -  FoxPro 2.0  (commercial)
+  Install:   NPKG INSTALL FOXPRO
+  Location:  C:\APPS\FOXPRO\
+  Launch:    FOXPRO.EXE
+  Memory:    512 KB conventional; 512 KB EMS recommended
+  Notes:     xBase with SQL extensions and Rushmore query technology.
+             Faster than dBASE for large datasets. EMS memory strongly
+             recommended. Requires a valid commercial licence.
+
+-----------------------------------------------------------------------
+PROGRAMMING
+-----------------------------------------------------------------------
+
+QBASIC  -  QBasic 1.1  (freeware)
+  Install:   NPKG INSTALL QBASIC
+  Location:  C:\DEV\QBASIC\
+  Launch:    QBASIC.EXE
+  Memory:    384 KB conventional; mouse optional
+  Notes:     Microsoft BASIC interpreter with full-screen IDE.
+             Best entry point for beginners. F1=Help, F5=Run,
+             Shift+F5=Restart. Source files save to C:\DEV\QBASIC\PROG\
+
+TC30  -  Turbo C 3.0  (freeware)
+  Install:   NPKG INSTALL TC30
+  Location:  C:\DEV\TC3\
+  Launch:    TC.EXE  (IDE)  or  TCC.EXE  (command-line compiler)
+  Memory:    512 KB conventional; 512 KB EMS recommended
+  Notes:     Borland's classic C compiler, now freeware. After first
+             launch, set include/lib paths: Options > Directories:
+               Include: C:\DEV\TC3\INCLUDE
+               Library: C:\DEV\TC3\LIB
+             Work files go to C:\DEV\TC3\WORK\
+
+TP70  -  Turbo Pascal 7.0  (freeware)
+  Install:   NPKG INSTALL TP70
+  Location:  C:\DEV\TP7\
+  Launch:    TURBO.EXE  (IDE)  or  TPC.EXE  (command-line)
+  Memory:    512 KB conventional; 1 MB EMS recommended
+  Notes:     Borland Pascal, now freeware. EMS recommended for the
+             IDE with large programs. Set paths in Options > Directories
+             after first launch. Work files: C:\DEV\TP7\WORK\
+
+MASM611  -  Microsoft MASM 6.11  (commercial)
+  Install:   NPKG INSTALL MASM611
+  Location:  C:\DEV\MASM6\
+  Launch:    ML.EXE (assembler), LINK.EXE (linker), CV.EXE (CodeView)
+  Memory:    512 KB conventional
+  Notes:     Microsoft Macro Assembler with the CodeView debugger.
+             Environment variables set automatically at install:
+               INCLUDE=C:\DEV\MASM6\INCLUDE
+               LIB=C:\DEV\MASM6\LIB
+             Quick example:
+               ML /Zi hello.asm /link /DEBUG
+             Work directory: C:\DEV\MASM6\WORK\
+             Requires a valid commercial licence.
+
+-----------------------------------------------------------------------
+COMMUNICATIONS
+-----------------------------------------------------------------------
+
+TELIX  -  Telix 3.51  (shareware)
+  Install:   NPKG INSTALL TELIX
+  Location:  C:\COMM\TELIX\
+  Launch:    TELIX.EXE
+  Memory:    384 KB conventional
+  Notes:     Feature-rich terminal emulator. ZMODEM file transfer
+             built in. Configure COM port: Alt+O (Settings).
+             Downloads land in C:\COMM\TELIX\DL\
+             Added to PATH at install: type TELIX anywhere.
+
+PROCOMM  -  ProComm Plus 2.01  (shareware)
+  Install:   NPKG INSTALL PROCOMM
+  Location:  C:\COMM\PROCOMM\
+  Launch:    PCPLUS.EXE
+  Memory:    384 KB conventional
+  Notes:     Full-featured terminal emulator with scripting language.
+             Multi-protocol: ZMODEM, XMODEM, YMODEM, Kermit.
+             Configure: Alt+S (Setup). Downloads: C:\COMM\PROCOMM\DL\
+             Added to PATH at install: type PCPLUS anywhere.
+
+-----------------------------------------------------------------------
+UTILITIES
+-----------------------------------------------------------------------
+
+NORTON  -  Norton Commander 5.0  (commercial)
+  Install:   NPKG INSTALL NORTON
+  Location:  C:\UTILS\NC5\
+  Launch:    NC.EXE
+  Memory:    384 KB conventional
+  Notes:     The original dual-pane commander that NOS-SHELL is
+             modelled on. F9=menu, Tab=switch panels, Enter=open,
+             F10=quit. Requires a valid commercial licence.
+
+XTREE  -  XTree Gold 2.5  (commercial)
+  Install:   NPKG INSTALL XTREE
+  Location:  C:\UTILS\XTREE\
+  Launch:    XTGOLD.EXE
+  Memory:    384 KB conventional
+  Notes:     Directory-tree file manager with split-window view.
+             Excellent for disk housekeeping and archive management.
+             F1=Help, F5=View, Alt+X=Exit.
+             Requires a valid commercial licence.
+
+PCTOOLS  -  PC Tools 9.0  (commercial)
+  Install:   NPKG INSTALL PCTOOLS
+  Location:  C:\UTILS\PCTOOLS\
+  Launch:    PCSHELL.EXE (desktop), PCTOOLS.EXE (disk tools),
+             UNDELETE.EXE (file recovery)
+  Memory:    512 KB conventional; 512 KB EMS recommended
+  Notes:     Disk utilities, undelete, backup, and desktop manager
+             suite. Requires a valid commercial licence.
+
+-----------------------------------------------------------------------
+GAMES
+-----------------------------------------------------------------------
+
+All games are launched through NOSPLAY which sets the correct memory
+profile, CPU speed, and sound environment automatically.
+See Section 6 for detailed NOSPLAY instructions.
+
+KEEN1  -  Commander Keen: Marooned on Mars v1.31  (shareware)
+  Install:   NPKG INSTALL KEEN1
+  Location:  C:\GAMES\KEEN1\
+  Launch:    NOSPLAY KEEN1  (or F9 launcher)
+  Memory:    512 KB conventional
+  CPU Preset: SLOW477  (~4.77 MHz)
+  Notes:     EGA side-scrolling platformer. EXTREMELY speed-sensitive:
+             SLOW477 is required or the game runs unplayably fast.
+             Controls: Arrow keys=move, Ctrl=jump, Alt=shoot/pogo.
+             No XMS required.
+
+PRINCE  -  Prince of Persia v1.0  (commercial)
+  Install:   NPKG INSTALL PRINCE
+  Location:  C:\GAMES\PRINCE\
+  Launch:    NOSPLAY PRINCE  (or F9 launcher)
+  Memory:    512 KB conventional
+  CPU Preset: SLOW477  (~4.77 MHz)
+  Notes:     Cinematic platformer with rotoscoped animation. Also
+             EXTREMELY speed-sensitive. If animation stutters or runs
+             wrong, use Ctrl+Alt+KP+ to slow down further.
+             Controls: Arrow keys=move, Shift=creep, Ctrl=draw sword.
+             Requires a valid commercial licence.
+
+WOLF3D  -  Wolfenstein 3D Shareware v1.4  (shareware)
+  Install:   NPKG INSTALL WOLF3D
+  Location:  C:\GAMES\WOLF3D\
+  Launch:    NOSPLAY WOLF3D  (or F9 launcher)
+  Memory:    512 KB conventional
+  Sound:     Sound Blaster  (A220 I5 D1 -- set by NOSPLAY)
+  CPU Preset: SLOW33  (~33 MHz)
+  Save Dir:  C:\GAMES\WOLF3D\SAVE\
+  Notes:     id Software's landmark FPS. No XMS required -- lightest
+             game in the catalog. SLOW10 for authentic 286 speed.
+             Controls: Ctrl+arrows=strafe, Space=open doors.
+
+DOOM  -  DOOM Shareware v1.9  (shareware)
+  Install:   NPKG INSTALL DOOM
+  Location:  C:\GAMES\DOOM\
+  Launch:    NOSPLAY DOOM  (or F9 launcher)
+  Memory:    530 KB conventional + 2 MB XMS
+  Sound:     Sound Blaster 16  (A220 I5 D1 H5 -- set by NOSPLAY)
+  CPU Preset: SLOW33  (~33 MHz)
+  Save Dir:  C:\GAMES\DOOM\SAVE\
+  Notes:     Episode 1 shareware. Requires 2MB XMS; NOSPLAY switches
+             to GAME memory profile automatically. BLASTER variable
+             set by NOSPLAY before launch. If sound does not work,
+             check: TYPE C:\AUTOEXEC.BAT | FIND "BLASTER"
+             Episode 1 (shareware) is free; episodes 2-3 are
+             commercial (requires DOOM.WAD from a purchased copy).
+
+DOOM2  -  DOOM II: Hell on Earth v1.9  (commercial)
+  Install:   NPKG INSTALL DOOM2
+  Location:  C:\GAMES\DOOM2\
+  Launch:    NOSPLAY DOOM2  (or F9 launcher)
+  Memory:    530 KB conventional + 4 MB XMS
+  Sound:     Sound Blaster 16  (set by NOSPLAY)
+  CPU Preset: SLOW33  (~33 MHz)
+  Save Dir:  C:\GAMES\DOOM2\SAVE\
+  Notes:     Requires the full commercial DOOM2.WAD. NPKG downloads
+             from archive.org but you must own a legal copy.
+             Uses 4MB XMS vs 2MB for Doom 1.
+
+HERETIC  -  Heretic Shareware v1.3  (shareware)
+  Install:   NPKG INSTALL HERETIC
+  Location:  C:\GAMES\HERETIC\
+  Launch:    NOSPLAY HERETIC  (or F9 launcher)
+  Memory:    530 KB conventional + 4 MB XMS
+  Sound:     Sound Blaster 16  (set by NOSPLAY)
+  CPU Preset: SLOW33  (~33 MHz)
+  Save Dir:  C:\GAMES\HERETIC\SAVE\
+  Notes:     Fantasy FPS built on the DOOM engine (id Tech 1).
+             Same memory requirements as DOOM but needs 4MB XMS.
+             NOSPLAY handles profile and BLASTER automatically.
+
+DESCENT  -  Descent Shareware v1.4a  (shareware)
+  Install:   NPKG INSTALL DESCENT
+  Location:  C:\GAMES\DESCENT\
+  Launch:    NOSPLAY DESCENT  (or F9 launcher)
+  Memory:    550 KB conventional + 2 MB EMS
+  Sound:     Sound Blaster 16  (set by NOSPLAY)
+  CPU Preset: SLOW33  (~33 MHz)
+  Save Dir:  C:\GAMES\DESCENT\SAVE\
+  Notes:     Six-degrees-of-freedom shooter. Uses EMS (not XMS).
+             NOSPLAY switches to the EMS memory profile automatically.
+             If you run manually without NOSPLAY, run NOSMEM /EMS first
+             then C:\GAMES\DESCENT\DESCENT.EXE.
+
+DUKE3D  -  Duke Nukem 3D Shareware v1.3d  (shareware)
+  Install:   NPKG INSTALL DUKE3D
+  Location:  C:\GAMES\DUKE3D\
+  Launch:    NOSPLAY DUKE3D  (or F9 launcher)
+  Memory:    570 KB conventional + 4 MB XMS
+  Sound:     Sound Blaster 16  (set by NOSPLAY)
+  CPU Preset: SLOW66  (~66 MHz)
+  Save Dir:  C:\GAMES\DUKE3D\SAVE\
+  Notes:     Build engine FPS. Needs more conventional memory than
+             DOOM -- 570 KB is a tight target. If install fails with
+             "insufficient memory", run NOSMEM /MAX from the DOS
+             prompt, then try again. Episode 1 is shareware.
+
+QUAKE  -  Quake Shareware v1.06  (shareware)
+  Install:   NPKG INSTALL QUAKE
+  Location:  C:\GAMES\QUAKE\
+  Launch:    NOSPLAY QUAKE  (or F9 launcher)
+  Memory:    600 KB conventional + 8 MB XMS
+  Sound:     Sound Blaster 16  (set by NOSPLAY)
+  CPU Preset: SLOW66  (~66 MHz)
+  Save Dir:  C:\GAMES\QUAKE\ID1\SAVE\
+  Notes:     The most demanding game in the catalog. Requires 8 MB
+             XMS -- your VM must have at least 16 MB RAM allocated.
+             30 MB disk space required. Download may take 10+ minutes.
+             If it runs slowly at SLOW66, try SLOW100 or OFF.
+             Episode 1 is shareware (ID1\PAK0.PAK).
+
+TYRIAN  -  Tyrian 2000 v2.1  (freeware)
+  Install:   NPKG INSTALL TYRIAN
+  Location:  C:\GAMES\TYRIAN\
+  Launch:    NOSPLAY TYRIAN  (or F9 launcher)
+  Memory:    500 KB conventional (no XMS or EMS needed)
+  Sound:     Sound Blaster  (set by NOSPLAY)
+  CPU Preset: OFF  (no throttle -- not speed-sensitive)
+  Notes:     Vertical scrolling shoot-em-up. Fully freeware -- no
+             licence restrictions. Runs well on any VM speed setting.
+             Lightest game in terms of memory requirements.
+
+
+=======================================================================
+5. LAUNCHING APPLICATIONS
+=======================================================================
+
+From NOS-SHELL (the normal way):
+  Press F9 to open the application launcher.
+  Use arrow keys to select, Enter to launch.
+  Any package with a [LAUNCHER] section appears here automatically
+  after NPKG INSTALL.
+
+From the DOS prompt:
+  Press F12 in NOS-SHELL to drop to a DOS prompt.
+  Type the executable path directly, e.g.:
+    C:\APPS\GALAXY\GALAXY.EXE
+  Packages installed with SetPath=yes can be run by name alone:
+    GALAXY
+  Type EXIT to return to NOS-SHELL.
+
+List all installed packages:
+  NPKG LIST
+
+Find where a package is installed:
+  NPKG INFO [id]
+
+
+=======================================================================
+6. LAUNCHING GAMES (NOSPLAY)
+=======================================================================
+
+Always use NOSPLAY to launch games. Running game executables directly
+will bypass the memory profile and CPU throttle setup, and the game
+may crash, run at the wrong speed, or have no sound.
+
+Basic usage:
+  NOSPLAY              Interactive selector (lists installed games)
+  NOSPLAY DOOM         Launch DOOM directly
+  NOSPLAY INFO DOOM    Show profile details without launching
+
+What NOSPLAY does before launching:
+  1. Reads the [GAME] section from the package definition
+  2. Runs NOSMEM with the correct profile (STD/MAX/EMS/GAME)
+  3. Installs THROTTLE TSR at the correct CPUPreset
+  4. Sets the BLASTER environment variable from SoundEnv=
+  5. Changes to the game directory
+  6. Runs the game executable
+  7. On return: removes THROTTLE, restores prior memory profile
+
+Live speed adjustment during a game:
+  Ctrl+Alt+KP+    Increase throttle (run slower)
+  Ctrl+Alt+KP-    Decrease throttle (run faster)
+  Ctrl+Alt+0      Disable throttle completely
+
+Calibrate speed presets (run once after first boot):
+  TCTL CALIBRATE
+
+Check current throttle:
+  TCTL STATUS
+
+Set throttle manually:
+  TCTL SET SLOW33
+  TCTL SET OFF
+
+
+=======================================================================
+7. MEMORY PROFILES
+=======================================================================
+
+NOSMEM switches between four preset configurations by rewriting
+CONFIG.SYS and AUTOEXEC.BAT and rebooting the memory manager.
+NOSPLAY calls NOSMEM automatically; you only need this manually
+if you are running programs outside of NOSPLAY.
+
+  NOSMEM /STD    Standard profile
+                   620 KB+ free conventional memory
+                   All standard TSRs loaded (THROTTLE, mouse, etc.)
+                   JEMMEX provides EMS and XMS
+
+  NOSMEM /MAX    Maximum conventional profile
+                   635 KB+ free conventional memory
+                   Removes optional TSRs from UMBs
+                   Use when a program needs every byte of conventional
+
+  NOSMEM /EMS    EMS emphasis profile
+                   JEMMEX configured to provide 2-8 MB EMS
+                   Required by: Descent, FoxPro (large DB), Lotus 1-2-3
+                   XMS not reduced, but EMS given priority
+
+  NOSMEM /GAME   Game profile
+                   Maximum conventional + maximum XMS available
+                   Only sound and mouse TSRs loaded
+                   Required by: DOOM, DOOM2, Heretic, Quake, Duke3D
+                   620+ KB conventional; all remaining RAM as XMS
+
+Check current memory:
+  MEM /C               Detailed memory map
+  MEM /C | MORE        Paginated (press Space for next page)
+
+Rule of thumb: if a game manual says it requires XMS, use /GAME.
+If it says EMS, use /EMS. If it says nothing special, use /STD.
+
+
+=======================================================================
+8. CPU SPEED PRESETS (GAMES)
+=======================================================================
+
+DOS games from the 1980s and early 1990s are timing-sensitive: they
+were written for specific CPU speeds. Running them on a fast VM without
+throttling causes them to run at many times the intended speed.
+
+NOSPLAY applies the correct preset automatically. Use TCTL to adjust
+manually if a game runs too fast or too slow.
+
+  Preset    Target Speed    Era             Games
+  --------  ------------    ---             -----
+  SLOW477   ~4.77 MHz       XT (1981-1989)  Commander Keen, Prince of
+                                            Persia, early EGA games
+  SLOW10    ~10 MHz         286 (1984-1990) Early 286-era titles
+  SLOW33    ~33 MHz         386/486 (1992)  DOOM, Wolf3D, Heretic,
+                                            Descent, Wolfenstein
+  SLOW66    ~66 MHz         486 (1994-1996) DOOM II, Duke3D, Quake,
+                                            Dark Forces era
+  SLOW100   ~100 MHz        Pentium (1996+) Late DOS, most 1996 titles
+  OFF       No throttle     Any             Freeware, modern DOS ports,
+                                            Tyrian, non-timing games
+
+If a game runs too fast after using NOSPLAY, press Ctrl+Alt+KP+ to
+add more throttle. If it runs too slowly, press Ctrl+Alt+KP-.
+
+Run TCTL CALIBRATE once after first boot to tune the presets to your
+specific VM and host CPU.
+
+
+=======================================================================
+9. REMOVING A PACKAGE
+=======================================================================
+
+  NPKG REMOVE [id]
+
+Example:
+  NPKG REMOVE DOOM
+
+NPKG will:
+  1. Show the install directory and ask for confirmation (Y/N)
+  2. Run the [REMOVE] section of the package definition (typically
+     DELTREE /Y C:\GAMES\DOOM -- deletes all installed files)
+  3. Remove the AUTOEXEC.BAT block that NPKG added at install time
+  4. Remove the launcher entry from the F9 menu
+  5. Deregister the package from INSTALLED.DB
+
+Check what is installed before removing:
+  NPKG LIST
+
+NOTE: NPKG REMOVE deletes all installed files including save games.
+Back up saves to H:\OUTBOX\ before removing a game:
+  COPY C:\GAMES\DOOM\SAVE\*.* H:\OUTBOX\
+
+
+=======================================================================
+10. SAVING FILES / HOST FILE EXCHANGE
+=======================================================================
+
+NOS-BRIDGE mounts a shared folder from your host as H:\ (drive H).
+This lets you move files between DOS and your host OS.
+
+Set up H:\ (once per session):
+  NBRIDGE MOUNT        Auto-detect and mount the shared folder
+  NBRIDGE DIRS         Create INBOX, OUTBOX, PRINT, and CLIP
+
+Copy files from DOS to your host:
+  COPY C:\USER\MYFILE.TXT H:\OUTBOX\
+
+Copy files from your host to DOS:
+  (Place files in the shared folder's INBOX directory on the host)
+  COPY H:\INBOX\MYFILE.TXT C:\USER\
+
+Back up game saves before removing a game:
+  COPY C:\GAMES\DOOM\SAVE\*.* H:\OUTBOX\
+
+Check bridge status:
+  NBRIDGE STATUS
+
+On the host side: run watch_outbox.py from the host_helpers/ folder
+to automatically collect files dropped in the OUTBOX.
+
+
+=======================================================================
+11. TROUBLESHOOTING
+=======================================================================
+
+PROBLEM: NPKG says "No network / cannot connect"
+  Solution: Run NNET DHCP, wait 5 seconds, then NNET STATUS.
+            If still no IP, check VM network adapter settings.
+            The adapter must be set to NAT or Bridged, not Host-only.
+
+PROBLEM: Download fails or archive is corrupt
+  Solution: NPKG retries each URL 3 times. If all fail, wait 1-2
+            minutes (archive.org rate limits) and run NPKG INSTALL
+            again. NPKG resumes from scratch but will re-try mirrors.
+            Check connectivity: NNET PING 8.8.8.8
+
+PROBLEM: "File too small -- server returned error page"
+  Solution: archive.org occasionally returns an HTML error page
+            instead of the file. Wait 2 minutes and retry.
+            Try: NPKG INFO [id] to see alternate URLs.
+
+PROBLEM: "Not enough memory" when running a game
+  Solution: Run NOSMEM /GAME from the DOS prompt, then NOSPLAY [id].
+            If you already used NOSPLAY, check MEM /C output.
+            If conventional memory is below 530 KB, something extra
+            is loaded. Type NOSMEM /MAX and try again.
+
+PROBLEM: Game requires EMS but EMS is not available
+  Solution: Run NOSMEM /EMS first, then launch the game.
+            NOSPLAY handles this automatically for Descent.
+            Check EMS: MEM /C  (look for "EMS" line)
+
+PROBLEM: Game runs too fast
+  Solution: While the game is running, press Ctrl+Alt+KP+ to add
+            more throttle. Or quit and run: TCTL CALIBRATE first,
+            then NOSPLAY [id] again.
+
+PROBLEM: Game has no sound
+  Solution: Check the BLASTER environment variable:
+              TYPE C:\AUTOEXEC.BAT | FIND "BLASTER"
+            It should show: A220 I5 D1 H5 P330 T6
+            NOS-DETECT sets this on first boot. If absent, run:
+              NOSDETECT
+            Then reboot and try again.
+
+PROBLEM: "Package not found"
+  Solution: Run NPKG UPDATE first to refresh the package index.
+            Check spelling: NPKG SEARCH [partial name]
+            IDs are case-insensitive: DOOM, doom, Doom all work.
+
+PROBLEM: Disk full during install
+  Solution: Check space: CHKDSK C:
+            Remove an existing package to free space: NPKG REMOVE [id]
+            Large games (Quake) need 30 MB free.
+
+PROBLEM: NPKG LIST shows a package but NPKG REMOVE fails
+  Solution: The package definition may be missing from the cache.
+            Run NPKG UPDATE, then retry NPKG REMOVE [id].
+
+For all other issues, check NPKG.TXT and GAMES.TXT for additional
+command reference and game-specific compatibility notes.

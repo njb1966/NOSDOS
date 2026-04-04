@@ -1,0 +1,43 @@
+[PACKAGE]
+ID=GALAXY
+Name=Galaxy Write
+Version=4.0
+Category=wordprocessing
+Description=Lightweight freeware word processor with spell checker
+Author=Apogee Software
+Year=1992
+License=freeware
+Tags=word processor text editor writing
+
+[HARDWARE]
+Memory=384
+Sound=none
+Mouse=yes
+VGA=no
+CPUSpeed=any
+DiskKB=512
+
+[SOURCE]
+URL1=https://archive.org/download/galaxy-write-4/galaxy40.zip
+URL2=https://archive.org/download/msdos_galaxy_write/galaxy40.zip
+Archive=GALAXY40.ZIP
+Redirect=yes
+
+[INSTALL]
+InstallDir=C:\APPS\GALAXY
+Extract=yes
+Extractor=unzip
+SetPath=yes
+
+[POST-INSTALL]
+ECHO Galaxy Write installed to %INSTALLDIR%.
+ECHO Run: GALAXY.EXE
+
+[LAUNCHER]
+Label=Galaxy Write 4.0
+Exec=C:\APPS\GALAXY\GALAXY.EXE
+Dir=C:\APPS\GALAXY
+Icon=254
+
+[REMOVE]
+DELTREE /Y %INSTALLDIR%

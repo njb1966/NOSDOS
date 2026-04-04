@@ -1,0 +1,44 @@
+[PACKAGE]
+ID=SC
+Name=SC Spreadsheet Calculator
+Version=7.16
+Category=spreadsheets
+Description=Curses-based spreadsheet calculator, minimal and fast
+Author=Chuck Martin / James Gosling
+Year=1992
+License=gpl
+Tags=spreadsheet lightweight terminal calculator
+
+[HARDWARE]
+Memory=256
+Sound=none
+Mouse=no
+VGA=no
+CPUSpeed=any
+DiskKB=256
+
+[SOURCE]
+URL1=https://archive.org/download/sc-spreadsheet-716/sc716.zip
+URL2=https://archive.org/download/msdos_SC/sc716.zip
+Archive=SC716.ZIP
+Redirect=yes
+
+[INSTALL]
+InstallDir=C:\APPS\SC
+Extract=yes
+Extractor=unzip
+SetPath=yes
+
+[POST-INSTALL]
+ECHO SC 7.16 installed to %INSTALLDIR%.
+ECHO Run %INSTALLDIR%\SC.EXE to start.
+ECHO Navigation: vi-style hjkl keys.
+
+[LAUNCHER]
+Label=SC Spreadsheet
+Exec=C:\APPS\SC\SC.EXE
+Dir=C:\APPS\SC
+Icon=227
+
+[REMOVE]
+DELTREE /Y %INSTALLDIR%

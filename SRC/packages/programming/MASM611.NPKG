@@ -1,0 +1,49 @@
+[PACKAGE]
+ID=MASM611
+Name=MASM
+Version=6.11
+Category=programming
+Description=Microsoft Macro Assembler with CodeView debugger
+Author=Microsoft Corporation
+Year=1993
+License=commercial
+Tags=assembly assembler masm x86 programming low-level
+
+[HARDWARE]
+Memory=512
+Sound=none
+Mouse=no
+VGA=no
+CPUSpeed=any
+DiskKB=3500
+
+[SOURCE]
+URL1=https://archive.org/download/masm-6.11/masm611.zip
+URL2=https://archive.org/download/msdos_MASM_6.11/masm611.zip
+Archive=MASM611.ZIP
+Redirect=yes
+
+[INSTALL]
+InstallDir=C:\DEV\MASM6
+Extract=yes
+Extractor=unzip
+SetPath=yes
+SetVar=INCLUDE=C:\DEV\MASM6\INCLUDE
+SetVar=LIB=C:\DEV\MASM6\LIB
+
+[POST-INSTALL]
+MD %INSTALLDIR%\WORK
+ECHO MASM 6.11 installed to %INSTALLDIR%.
+ECHO Assembler: %INSTALLDIR%\ML.EXE
+ECHO Linker:    %INSTALLDIR%\LINK.EXE
+ECHO Debugger:  %INSTALLDIR%\CV.EXE (CodeView)
+ECHO Example: ML /Zi hello.asm /link /DEBUG
+
+[LAUNCHER]
+Label=MASM 6.11
+Exec=C:\DEV\MASM6\PWBRMAKE.EXE
+Dir=C:\DEV\MASM6\WORK
+Icon=229
+
+[REMOVE]
+DELTREE /Y %INSTALLDIR%

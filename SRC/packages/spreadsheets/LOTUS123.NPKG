@@ -1,0 +1,46 @@
+[PACKAGE]
+ID=LOTUS123
+Name=Lotus 1-2-3
+Version=2.4
+Category=spreadsheets
+Description=The definitive DOS spreadsheet for business computing
+Author=Lotus Development Corporation
+Year=1991
+License=commercial
+Tags=spreadsheet finance database charts office
+
+[HARDWARE]
+Memory=512
+EMS=512
+Sound=none
+Mouse=yes
+VGA=no
+CPUSpeed=any
+DiskKB=2000
+
+[SOURCE]
+URL1=https://archive.org/download/lotus-1-2-3-dos/lotus24.zip
+URL2=https://archive.org/download/msdos_Lotus_123/lotus24.zip
+Archive=LOTUS24.ZIP
+Redirect=yes
+
+[INSTALL]
+InstallDir=C:\APPS\LOTUS
+Extract=yes
+Extractor=unzip
+SetPath=yes
+
+[POST-INSTALL]
+MD %INSTALLDIR%\WORK
+ECHO Lotus 1-2-3 v2.4 installed to %INSTALLDIR%.
+ECHO Run %INSTALLDIR%\123.EXE to start.
+ECHO EMS memory recommended for large spreadsheets.
+
+[LAUNCHER]
+Label=Lotus 1-2-3 v2.4
+Exec=C:\APPS\LOTUS\123.EXE
+Dir=C:\APPS\LOTUS\WORK
+Icon=227
+
+[REMOVE]
+DELTREE /Y %INSTALLDIR%

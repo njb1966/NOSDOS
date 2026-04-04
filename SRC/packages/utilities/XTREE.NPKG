@@ -1,0 +1,44 @@
+[PACKAGE]
+ID=XTREE
+Name=XTree Gold
+Version=2.5
+Category=utilities
+Description=Directory-tree file manager with split-window view
+Author=Executive Systems
+Year=1991
+License=commercial
+Tags=file manager directory tree utilities navigation archive
+
+[HARDWARE]
+Memory=384
+Sound=none
+Mouse=yes
+VGA=no
+CPUSpeed=any
+DiskKB=800
+
+[SOURCE]
+URL1=https://archive.org/download/xtree-gold-2.5/xtreegld.zip
+URL2=https://archive.org/download/msdos_XTree_Gold/xtreegld.zip
+Archive=XTREEGLD.ZIP
+Redirect=yes
+
+[INSTALL]
+InstallDir=C:\UTILS\XTREE
+Extract=yes
+Extractor=unzip
+SetPath=yes
+
+[POST-INSTALL]
+ECHO XTree Gold 2.5 installed to %INSTALLDIR%.
+ECHO Run %INSTALLDIR%\XTGOLD.EXE to start.
+ECHO F1=Help, F5=View, Alt+X=Exit.
+
+[LAUNCHER]
+Label=XTree Gold 2.5
+Exec=C:\UTILS\XTREE\XTGOLD.EXE
+Dir=C:\
+Icon=248
+
+[REMOVE]
+DELTREE /Y %INSTALLDIR%

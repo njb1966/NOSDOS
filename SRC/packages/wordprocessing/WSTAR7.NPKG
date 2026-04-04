@@ -1,0 +1,44 @@
+[PACKAGE]
+ID=WSTAR7
+Name=WordStar
+Version=7.0
+Category=wordprocessing
+Description=Classic word processor with diamond-key navigation
+Author=MicroPro International
+Year=1992
+License=commercial
+Tags=word processor writing office documents
+
+[HARDWARE]
+Memory=384
+Sound=none
+Mouse=yes
+VGA=no
+CPUSpeed=any
+DiskKB=2800
+
+[SOURCE]
+URL1=https://archive.org/download/wordstar-7.0-dos/wstar70.zip
+URL2=https://archive.org/download/msdos_WordStar_7/wstar70.zip
+Archive=WSTAR70.ZIP
+Redirect=yes
+
+[INSTALL]
+InstallDir=C:\APPS\WSTAR7
+Extract=yes
+Extractor=unzip
+SetPath=yes
+
+[POST-INSTALL]
+ECHO WordStar 7.0 installed to %INSTALLDIR%.
+ECHO Run %INSTALLDIR%\WS.EXE to start WordStar.
+ECHO Navigation: Ctrl+E/S/D/X (diamond keys). F1=Help.
+
+[LAUNCHER]
+Label=WordStar 7.0
+Exec=C:\APPS\WSTAR7\WS.EXE
+Dir=C:\APPS\WSTAR7
+Icon=254
+
+[REMOVE]
+DELTREE /Y %INSTALLDIR%

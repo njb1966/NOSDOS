@@ -1,0 +1,3 @@
+tctl.c(67): Warning! W112: Parameter 1: Pointer truncated
+tctl.c(67): Note! I2003: source conversion type is 'char __far *'
+tctl.c(67): Note! I2004: target conversion type is 'char const *'
