@@ -481,6 +481,13 @@ def stage_iso_root(iso_root: Path) -> bool:
         for bat in sorted(bat_dir.glob("*.BAT")):
             shutil.copy2(bat, nos_sh / bat.name.upper())
 
+    # Default launcher config — always ship so F9 works before NPKG runs
+    launcher_cfg = DIST_DIR / "shell" / "LAUNCHER.CFG"
+    if launcher_cfg.exists():
+        shutil.copy2(launcher_cfg, nos_sh / "LAUNCHER.CFG")
+    else:
+        log("  WARNING: dist/shell/LAUNCHER.CFG not found — F9 will show empty message")
+
     # mTCP networking tools
     mtcp_tools = [
         "DHCP.EXE", "PING.EXE", "HTGET.EXE", "FTP.EXE",

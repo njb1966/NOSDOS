@@ -226,7 +226,12 @@ def install_system_files(img_path: Path) -> bool:
         (ROOT_DIR / "dist" / "bat" / "NIRC.BAT",    "NOS/SHELL/"),
         (ROOT_DIR / "dist" / "bat" / "NTELNET.BAT", "NOS/SHELL/"),
         (ROOT_DIR / "dist" / "bat" / "NTIME.BAT",   "NOS/SHELL/"),
+        (ROOT_DIR / "dist" / "bat" / "ADDAPP.BAT",  "NOS/SHELL/"),
     ]
+    # Default launcher config — ships empty so F9 works from first boot
+    launcher_cfg = ROOT_DIR / "dist" / "shell" / "LAUNCHER.CFG"
+    if launcher_cfg.exists():
+        optional.append((launcher_cfg, "NOS/SHELL/"))
     for src, dst in bat_optional:
         if src.exists():
             optional.append((src, dst))
