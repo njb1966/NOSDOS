@@ -179,6 +179,7 @@ def install_system_files(img_path: Path) -> bool:
         (THIRDPARTY / "pcntpk"  / "PCNTPK.COM",    "NOS/SYSTEM/"),
         (THIRDPARTY / "cdrom"   / "OAKCDROM.SYS",  "NOS/SYSTEM/"),
         (THIRDPARTY / "cdrom"   / "SHSUCDX.COM",   "NOS/SYSTEM/"),
+        (FREEDOS_DIR / "EDIT.EXE",                 "NOS/SYSTEM/"),
         (FREEDOS_DIR / "ATTRIB.COM",               "NOS/SYSTEM/"),
         (FREEDOS_DIR / "DELTREE.COM",              "NOS/SYSTEM/"),
         (FREEDOS_DIR / "XCOPY.EXE",                "NOS/SYSTEM/"),

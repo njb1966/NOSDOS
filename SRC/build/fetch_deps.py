@@ -406,6 +406,29 @@ def fetch_shsucdx(dest_dir: Path) -> bool:
     return True
 
 
+def fetch_edit(dest_dir: Path) -> bool:
+    """Download FreeDOS EDIT.EXE — full-screen text editor."""
+    dest_dir.mkdir(parents=True, exist_ok=True)
+    archive = dest_dir / "edit.zip"
+    base_url = config["freedos"]["base_url"].rstrip("/")
+    url = f"{base_url}/{config['freedos']['edit_pkg']}"
+
+    if not download(url, archive, CHECKSUMS.get("edit.zip")):
+        return False
+
+    data = find_in_zip(archive, "BIN/EDIT.EXE")
+    if data is None:
+        data = find_in_zip(archive, "EDIT.EXE")
+    if data is None:
+        log("  ERROR: EDIT.EXE not found inside edit.zip")
+        return False
+
+    out = dest_dir / "EDIT.EXE"
+    out.write_bytes(data)
+    log(f"  extracted → EDIT.EXE ({len(data)} bytes)")
+    return True
+
+
 def fetch_attrib(dest_dir: Path) -> bool:
     """Download FreeDOS ATTRIB.COM.
 
@@ -631,6 +654,7 @@ def main() -> int:
         ("SHSUCDX.EXE (CD-ROM extensions)",  lambda: fetch_shsucdx(DIST_DIR / "cdrom")),
         ("FORMAT.EXE",                        lambda: fetch_format(DIST_DIR / "freedos")),
         ("FDISK.EXE",                         lambda: fetch_fdisk(DIST_DIR / "freedos")),
+        ("EDIT.EXE",                          lambda: fetch_edit(DIST_DIR / "freedos")),
         ("ATTRIB.COM",                        lambda: fetch_attrib(DIST_DIR / "freedos")),
         ("DELTREE.COM",                       lambda: fetch_deltree(DIST_DIR / "freedos")),
         ("XCOPY.EXE",                         lambda: fetch_xcopy(DIST_DIR / "freedos")),
