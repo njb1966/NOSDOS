@@ -419,6 +419,7 @@ static void action_delete(void)
         if (rmdir(path) != 0)
             nos_dlg_msg("Error", "Cannot remove: directory not empty.");
     } else {
+        _dos_setfileattr(path, _A_NORMAL);
         if (remove(path) != 0) {
             sprintf(msg, "Cannot delete: %s", ap->files[ap->cursor].name);
             nos_dlg_msg("Error", msg);
