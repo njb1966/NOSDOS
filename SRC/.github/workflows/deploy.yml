@@ -1,0 +1,41 @@
+name: Deploy
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - "packages/**"
+      - "website/**"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install SSH key
+        run: |
+          install -m 600 -D /dev/null ~/.ssh/id_deploy
+          echo "${{ secrets.DEPLOY_KEY }}" > ~/.ssh/id_deploy
+          echo "Host nosdos-deploy" >> ~/.ssh/config
+          echo "  HostName 209.145.49.66" >> ~/.ssh/config
+          echo "  Port 2222" >> ~/.ssh/config
+          echo "  User root" >> ~/.ssh/config
+          echo "  IdentityFile ~/.ssh/id_deploy" >> ~/.ssh/config
+          echo "  StrictHostKeyChecking no" >> ~/.ssh/config
+
+      - name: Deploy website
+        run: |
+          rsync -avz --delete \
+            -e "ssh -p 2222 -i ~/.ssh/id_deploy -o StrictHostKeyChecking=no" \
+            website/ \
+            root@209.145.49.66:/var/www/html/nosdos.njb1966.com/public_html/
+
+      - name: Deploy packages
+        run: |
+          rsync -avz --delete \
+            -e "ssh -p 2222 -i ~/.ssh/id_deploy -o StrictHostKeyChecking=no" \
+            packages/ \
+            root@209.145.49.66:/var/www/html/nosdos.njb1966.com/public_html/packages/

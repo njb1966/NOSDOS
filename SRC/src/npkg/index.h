@@ -29,9 +29,8 @@
 
 /* Default repository base URL (compiled in).  Override at runtime by        *
  * writing the desired base URL to C:\NOS\NPKG\REPO.URL (one line, no        *
- * trailing slash, plain HTTP — mTCP HTGET does not support HTTPS).           *
- * Example: http://nosdos.example.com/packages                               */
-#define NOS_INDEX_REPO_URL      "http://nosdos.example.com/packages"
+ * trailing slash, plain HTTP — mTCP HTGET does not support HTTPS).           */
+#define NOS_INDEX_REPO_URL      "http://nosdos.njb1966.com/packages"
 
 /* Runtime URL path for REPO.URL override file.                              */
 #define NOS_REPO_URL_FILE       "C:\\NOS\\NPKG\\REPO.URL"
