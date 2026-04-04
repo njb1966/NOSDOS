@@ -2,9 +2,9 @@
 """NOS-DOS: Build system
 mkhdd.py - Create a FAT16 hard disk image (C: drive).
 
-Creates a 32 MB raw disk image with:
+Creates a 504 MB raw disk image with:
   - MBR partition table (single FAT16 partition at sector 63)
-  - Partition formatted FAT16 via mformat
+  - Partition formatted FAT16 via mformat (16 sectors/cluster = 8 KB)
   - NOS-DOS directory skeleton (NOS/SYSTEM, NOS/SHELL, etc.)
   - System files: JEMMEX.EXE, CTMOUSE.EXE, DETECT.EXE, NOSMEM.EXE,
                   CONFIG.TPL, AUTOEXEC.TPL
@@ -13,9 +13,10 @@ Creates a 32 MB raw disk image with:
 When attached to QEMU alongside the El Torito boot ISO, the BIOS presents
 this image as hard disk 0x80, which FreeDOS assigns to drive C:.
 
-Partition geometry (fits within 32 MB):
-  Cylinders=64  Heads=16  Sectors/track=63
-  Partition sectors = 64*16*63 = 64512  (31.5 MB usable)
+Partition geometry (~504 MB, FAT16 large partition):
+  Cylinders=1024  Heads=16  Sectors/track=63
+  Partition sectors = 1024*16*63 = 1032192  (~503 MB usable)
+  Cluster size: 16 sectors (8 KB) — required for FAT16 at this size
 
 Requires: mformat, mcopy, mmd, mattrib (mtools)
 """
@@ -40,9 +41,10 @@ FREEDOS_DIR  = THIRDPARTY / "freedos"
 PACKAGES_DIR = ROOT_DIR / "packages"
 
 # ---- Disk geometry ----
-# Chosen so CYL * HEADS * SPT fits cleanly inside 32 MB and leaves room for
-# the MBR at sector 0 and the standard first-partition offset at sector 63.
-HDD_CYL   = 64
+# 1024 * 16 * 63 = 1,032,192 sectors = ~504 MB total disk.
+# Partition type 0x06 (FAT16 >= 32 MB); 16 sectors/cluster (8 KB) so the
+# cluster count stays within the FAT16 limit of 65,524 clusters.
+HDD_CYL   = 1024
 HDD_HEADS = 16
 HDD_SPT   = 63   # sectors per track
 
@@ -101,7 +103,7 @@ def create_hdd_image(img_path: Path) -> bool:
         "<B3sB3sII",
         0x80,
         bytes([0x00, 0x01, 0x00]),
-        0x04,                       # FAT16 < 32 MB
+        0x06,                       # FAT16 >= 32 MB
         bytes([0xFF, 0xFF, 0xFF]),
         PART_START_SECTOR,
         PART_SIZE_SECTORS,
@@ -136,6 +138,8 @@ def format_partition(img_path: Path) -> bool:
             "-t", str(HDD_CYL),
             "-h", str(HDD_HEADS),
             "-s", str(HDD_SPT),
+            "-c", "16",             # 16 sectors/cluster = 8 KB; keeps cluster
+                                    # count within FAT16 limit at ~500 MB
             "::",
         ],
         check=False,
