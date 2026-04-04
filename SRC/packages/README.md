@@ -380,7 +380,7 @@ Redirect=yes
 [INSTALL]
 InstallDir=C:\APPS\DOOM
 Extract=yes
-Extractor=unzip
+Extractor=pkzip
 StripDir=no
 SetPath=no
 SetVar=DOOMWADDIR=C:\APPS\DOOM

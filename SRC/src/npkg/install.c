@@ -220,7 +220,7 @@ int nos_npkg_parse(const char *path, nos_pkg_t *pkg)
 
     /* Defaults */
     pkg->extract = 1;
-    scopy(pkg->extractor, "unzip", 9);
+    scopy(pkg->extractor, "pkzip", 9);
 
     f = fopen(path, "r");
     if (!f)

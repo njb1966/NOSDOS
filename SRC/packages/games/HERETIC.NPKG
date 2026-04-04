@@ -28,7 +28,7 @@ Redirect=yes
 [INSTALL]
 InstallDir=C:\GAMES\HERETIC
 Extract=yes
-Extractor=unzip
+Extractor=pkzip
 SetPath=no
 
 [POST-INSTALL]

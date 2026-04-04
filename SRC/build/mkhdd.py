@@ -228,8 +228,10 @@ def install_system_files(img_path: Path) -> bool:
     freedos_files = [
         (FREEDOS_DIR / "KERNEL.SYS",  ""),
         (FREEDOS_DIR / "COMMAND.COM", ""),
-        (DIST_DIR / "utils" / "MEM.EXE",    "NOS/SYSTEM/"),
-        (DIST_DIR / "utils" / "CHKDSK.EXE", "NOS/SYSTEM/"),
+        (DIST_DIR / "utils" / "MEM.EXE",      "NOS/SYSTEM/"),
+        (DIST_DIR / "utils" / "CHKDSK.EXE",   "NOS/SYSTEM/"),
+        (DIST_DIR / "utils" / "PKUNZIP.EXE",  "NOS/SYSTEM/"),
+        (DIST_DIR / "utils" / "PKZIP.EXE",    "NOS/SYSTEM/"),
     ]
 
     for src, dst in required:

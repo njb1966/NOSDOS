@@ -26,7 +26,7 @@ Redirect=yes
 [INSTALL]
 InstallDir=C:\DEV\MASM6
 Extract=yes
-Extractor=unzip
+Extractor=pkzip
 SetPath=yes
 SetVar=INCLUDE=C:\DEV\MASM6\INCLUDE
 SetVar=LIB=C:\DEV\MASM6\LIB

@@ -27,7 +27,7 @@ Redirect=yes
 [INSTALL]
 InstallDir=C:\DEV\TP7
 Extract=yes
-Extractor=unzip
+Extractor=pkzip
 SetPath=yes
 
 [POST-INSTALL]

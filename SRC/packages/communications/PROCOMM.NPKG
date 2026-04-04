@@ -26,7 +26,7 @@ Redirect=yes
 [INSTALL]
 InstallDir=C:\COMM\PROCOMM
 Extract=yes
-Extractor=unzip
+Extractor=pkzip
 SetPath=yes
 
 [POST-INSTALL]

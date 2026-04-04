@@ -28,7 +28,7 @@ Redirect=yes
 [INSTALL]
 InstallDir=C:\GAMES\TYRIAN
 Extract=yes
-Extractor=unzip
+Extractor=pkzip
 SetPath=no
 
 [POST-INSTALL]

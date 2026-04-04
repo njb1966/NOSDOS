@@ -29,6 +29,7 @@ __pycache__/
 /floppy.img
 /formats=ZIP
 /wget-log
+/PKUNZIP.IMG
 
 # Editor / OS noise
 *.swp

@@ -27,7 +27,7 @@ Redirect=yes
 [INSTALL]
 InstallDir=C:\APPS\FOXPRO
 Extract=yes
-Extractor=unzip
+Extractor=pkzip
 SetPath=yes
 
 [POST-INSTALL]

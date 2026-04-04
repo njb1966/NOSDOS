@@ -27,7 +27,7 @@ Redirect=yes
 [INSTALL]
 InstallDir=C:\DEV\TC3
 Extract=yes
-Extractor=unzip
+Extractor=pkzip
 SetPath=yes
 
 [POST-INSTALL]

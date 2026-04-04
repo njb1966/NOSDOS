@@ -45,7 +45,7 @@ VALID_LICENSES: set[str] = {
     "public domain",
 }
 
-VALID_EXTRACTORS: set[str] = {"unzip", "unarj", "lha", "pkzip", "copy"}
+VALID_EXTRACTORS: set[str] = {"pkzip", "unzip", "unarj", "lha", "copy"}
 
 VALID_CPU_PRESETS: set[str] = {
     "SLOW477", "SLOW10", "SLOW33", "SLOW66", "SLOW100", "OFF",

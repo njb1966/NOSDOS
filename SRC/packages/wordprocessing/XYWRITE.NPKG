@@ -26,7 +26,7 @@ Redirect=yes
 [INSTALL]
 InstallDir=C:\APPS\XYWRITE
 Extract=yes
-Extractor=unzip
+Extractor=pkzip
 SetPath=yes
 
 [POST-INSTALL]

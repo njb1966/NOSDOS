@@ -27,7 +27,7 @@ Redirect=yes
 [INSTALL]
 InstallDir=C:\UTILS\PCTOOLS
 Extract=yes
-Extractor=unzip
+Extractor=pkzip
 SetPath=yes
 
 [POST-INSTALL]

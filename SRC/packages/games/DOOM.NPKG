@@ -30,7 +30,7 @@ Redirect=yes
 [INSTALL]
 InstallDir=C:\GAMES\DOOM
 Extract=yes
-Extractor=unzip
+Extractor=pkzip
 SetPath=no
 SetVar=DOOMWADDIR=C:\GAMES\DOOM
 

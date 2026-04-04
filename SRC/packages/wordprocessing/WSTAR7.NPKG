@@ -26,7 +26,7 @@ Redirect=yes
 [INSTALL]
 InstallDir=C:\APPS\WSTAR7
 Extract=yes
-Extractor=unzip
+Extractor=pkzip
 SetPath=yes
 
 [POST-INSTALL]
