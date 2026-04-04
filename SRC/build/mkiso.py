@@ -436,6 +436,8 @@ def stage_iso_root(iso_root: Path) -> bool:
         DIST_DIR   / "config"  / "MTCP.TPL",
         DIST_DIR   / "utils"   / "MEM.EXE",
         DIST_DIR   / "utils"   / "CHKDSK.EXE",
+        DIST_DIR   / "utils"   / "PKUNZIP.EXE",
+        DIST_DIR   / "utils"   / "PKZIP.EXE",
     ]
     for src in required_sys:
         if src.exists():

@@ -146,6 +146,46 @@ always return to a clean state:
   Machine -> Take Snapshot -> Name it "Fresh install"
 
 ------------------------------------------------------------------------
+REINSTALLING NOS-DOS
+------------------------------------------------------------------------
+
+UPGRADE / REINSTALL OVER EXISTING INSTALLATION
+  You do NOT need a new blank disk. Simply:
+
+  1. In VM Settings -> Storage, re-attach nosdos.iso to the optical slot.
+  2. In System -> Boot Order, make sure Optical is first.
+  3. Start the VM and run the installer normally.
+
+  The installer detects that C: is already formatted and skips the
+  FORMAT step. All NOS-DOS system files are overwritten with the new
+  versions. Your files in APPS\, GAMES\, and USER\ are left untouched.
+
+FULL WIPE (start completely fresh)
+  If you want a completely clean disk with no trace of the previous
+  install, you need a new blank VMDK. Two options:
+
+  Option A -- Re-use nosdos-blank.vmdk from the release archive
+    Extract a fresh copy of nosdos-blank.vmdk from the release ZIP.
+    This is the easiest option for end users.
+
+  Option B -- Regenerate from the build system (developers)
+    Run the following commands on your Linux/macOS host:
+
+      python3 build/build.py --skip-fetch --skip-compile --only hdd
+
+    Then convert the raw image to VMDK:
+
+      VBoxManage convertfromraw out/nosdos-blank.hdd \
+        out/nosdos-blank.vmdk --format VMDK
+
+    In VirtualBox: detach the old VMDK, attach the new nosdos-blank.vmdk,
+    then run the installer as described in Step 3 above.
+
+  NOTE: Do NOT create a blank VDI/VMDK using VirtualBox's "Create new
+  virtual hard disk" wizard. A self-created blank disk has no partition
+  table or filesystem -- the installer requires a pre-formatted disk.
+
+------------------------------------------------------------------------
 TROUBLESHOOTING
 ------------------------------------------------------------------------
 
@@ -158,7 +198,7 @@ TROUBLESHOOTING
 
   Installer boots but cannot find the CD-ROM (no D: drive)
     The storage controller is SATA/AHCI instead of IDE. The CD-ROM
-    driver (GCDROM.SYS) requires an IDE controller.
+    driver (OAKCDROM.SYS) requires an IDE controller.
     Fix: Settings -> Storage -> remove SATA controller -> add IDE
     controller -> re-attach nosdos-blank.vmdk and nosdos.iso.
 
@@ -188,7 +228,7 @@ VM SPECIFICATIONS (for reference)
 
   CPU:        32-bit x86 (no PAE required)
   RAM:        64 MB
-  Disk:       ~32 MB (nosdos-blank.vmdk, FAT16)
+  Disk:       504 MB (nosdos-blank.vmdk, FAT16)
   CD-ROM:     IDE, ATAPI
   Sound:      SoundBlaster 16
   Network:    PCnet-FAST III, NAT
