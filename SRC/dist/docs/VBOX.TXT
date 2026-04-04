@@ -158,7 +158,7 @@ TROUBLESHOOTING
 
   Installer boots but cannot find the CD-ROM (no D: drive)
     The storage controller is SATA/AHCI instead of IDE. The CD-ROM
-    driver (OAKCDROM.SYS) requires an IDE controller.
+    driver (GCDROM.SYS) requires an IDE controller.
     Fix: Settings -> Storage -> remove SATA controller -> add IDE
     controller -> re-attach nosdos-blank.vmdk and nosdos.iso.
 

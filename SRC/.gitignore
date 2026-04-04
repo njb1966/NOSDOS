@@ -19,9 +19,11 @@ __pycache__/
 /JEMMEX.EXE
 /KERNEL.SYS
 /OAKCDROM.SYS
+/GCDROM.SYS
 /SHSUCDX.COM
 /SYS.COM
 /oakcdrom.sys
+/gcdrom.sys
 
 # Stray build artefacts in project root
 /floppy.img

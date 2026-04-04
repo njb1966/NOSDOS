@@ -10,6 +10,7 @@ All external tools called via subprocess; no third-party Python packages used.
 import configparser
 import hashlib
 import json
+import os
 import shutil
 import subprocess
 import sys
@@ -44,7 +45,7 @@ CHECKSUMS: dict[str, Optional[str]] = {
     "ctmouse.zip":        None,   # CuteMouse driver
     "JemmB_v586.zip":     None,   # JEMMEX memory manager
     "mTCP_2025-01-10.zip": None,  # mTCP networking suite
-    "oakcdrom.zip":       None,   # OAKCDROM IDE/ATAPI CD-ROM driver
+    "gcdrom.zip":         None,   # GCDROM IDE/ATAPI CD-ROM driver
     "shsucdx.zip":        None,   # SHSUCDX MSCDEX replacement
     "format.zip":         None,   # FreeDOS FORMAT utility
     "fdisk.zip":          None,   # FreeDOS FDISK utility
@@ -352,27 +353,31 @@ def fetch_jemmex(dest_dir: Path) -> bool:
 
 
 def fetch_oakcdrom(dest_dir: Path) -> bool:
-    """Download OAKCDROM.SYS — IDE/ATAPI CD-ROM driver for FreeDOS.
+    """Download GCDROM.SYS — FreeDOS generic IDE/ATAPI CD-ROM driver.
 
     Needed on the installer boot floppy so the CD-ROM is accessible as
-    a drive letter before the installer runs.
+    a drive letter before the installer runs. Uses same /D:MSCD001 syntax
+    as the older OAKCDROM.SYS driver. Fetched from the FreeDOS 1.3
+    drivers/ directory on ibiblio (not base/).
     """
     dest_dir.mkdir(parents=True, exist_ok=True)
-    archive = dest_dir / "oakcdrom.zip"
-    base_url = config["freedos"]["base_url"].rstrip("/")
-    url = f"{base_url}/{config['cdrom_drivers']['oakcdrom_pkg']}"
+    archive = dest_dir / "gcdrom.zip"
+    drivers_url = config["freedos"]["drivers_url"].rstrip("/")
+    url = f"{drivers_url}/{config['cdrom_drivers']['gcdrom_pkg']}"
 
-    if not download(url, archive, CHECKSUMS.get("oakcdrom.zip")):
+    if not download(url, archive, CHECKSUMS.get("gcdrom.zip")):
         return False
 
-    driver = find_in_zip(archive, "OAKCDROM.SYS")
+    driver = find_in_zip(archive, "BIN/GCDROM.SYS")
     if driver is None:
-        log("  ERROR: OAKCDROM.SYS not found inside oakcdrom.zip")
+        driver = find_in_zip(archive, "GCDROM.SYS")
+    if driver is None:
+        log("  ERROR: GCDROM.SYS not found inside gcdrom.zip")
         return False
 
-    out = dest_dir / "OAKCDROM.SYS"
+    out = dest_dir / "GCDROM.SYS"
     out.write_bytes(driver)
-    log(f"  extracted → OAKCDROM.SYS ({len(driver)} bytes)")
+    log(f"  extracted → GCDROM.SYS ({len(driver)} bytes)")
     return True
 
 
@@ -536,7 +541,7 @@ def main() -> int:
         ("JEMMEX",                            lambda: fetch_jemmex(DIST_DIR / "jemmex")),
         ("mTCP networking suite",             lambda: fetch_mtcp(DIST_DIR / "mtcp")),
         ("PCNTPK.COM (PCnet packet driver)",  lambda: check_pcntpk(DIST_DIR / "pcntpk")),
-        ("OAKCDROM.SYS (CD-ROM driver)",      lambda: fetch_oakcdrom(DIST_DIR / "cdrom")),
+        ("GCDROM.SYS (CD-ROM driver)",        lambda: fetch_oakcdrom(DIST_DIR / "cdrom")),
         ("SHSUCDX.EXE (CD-ROM extensions)",  lambda: fetch_shsucdx(DIST_DIR / "cdrom")),
         ("FORMAT.COM",                        lambda: fetch_format(DIST_DIR / "freedos")),
         ("FDISK.EXE",                         lambda: fetch_fdisk(DIST_DIR / "freedos")),

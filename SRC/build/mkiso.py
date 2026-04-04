@@ -8,7 +8,7 @@ onto a blank hard disk when booted in a virtual machine.
 Boot flow:
   1. BIOS loads the El Torito floppy image (out/install.img).
   2. FreeDOS kernel boots from the floppy.
-  3. CONFIG.SYS loads JEMMEX + OAKCDROM.SYS (CD-ROM hardware driver).
+  3. CONFIG.SYS loads JEMMEX + GCDROM.SYS (CD-ROM hardware driver).
   4. AUTOEXEC.BAT loads SHSUCDX.EXE (assigns drive letter D: to the CD).
   5. AUTOEXEC.BAT launches D:\\INSTALL.EXE (the TUI installer).
   6. The installer FORMATs C:, then copies D:\\INSTALL\\*.* to C:\\.
@@ -38,9 +38,9 @@ Installer floppy (install.img) contents:
   KERNEL.SYS      FreeDOS kernel
   COMMAND.COM     FreeCOM command interpreter
   JEMMEX.EXE      Memory manager (loaded by CONFIG.SYS for UMB/XMS)
-  OAKCDROM.SYS    IDE/ATAPI CD-ROM hardware driver
+  GCDROM.SYS    IDE/ATAPI CD-ROM hardware driver
   SHSUCDX.EXE     CD-ROM drive-letter extension (MSCDEX replacement)
-  CONFIG.SYS      Loads JEMMEX + OAKCDROM
+  CONFIG.SYS      Loads JEMMEX + GCDROM
   AUTOEXEC.BAT    Loads SHSUCDX, launches D:\\INSTALL.EXE
 
 Requires: nasm, genisoimage (or mkisofs), mtools (mformat, mcopy, mmd, mattrib)
@@ -83,7 +83,7 @@ FLOPPY_SPT     = 18
 
 INSTALLER_CONFIG_SYS = (
     "REM NOS-DOS Installer Boot\r\n"
-    "DEVICE=A:\\OAKCDROM.SYS /D:MSCD001\r\n"
+    "DEVICE=A:\\GCDROM.SYS /D:MSCD001\r\n"
     "FILES=30\r\n"
     "BUFFERS=10\r\n"
     "STACKS=9,256\r\n"
@@ -196,7 +196,7 @@ def build_installer_floppy() -> bool:
     sys_com     = FREEDOS_DIR / "SYS.COM"
     boot_asm    = FREEDOS_DIR / "boot.asm"
     jemmex_exe  = THIRDPARTY / "jemmex" / "JEMMEX.EXE"
-    oakcdrom    = CDROM_DIR / "OAKCDROM.SYS"
+    oakcdrom    = CDROM_DIR / "GCDROM.SYS"
 
     # SHSUCDX / MSCDEX: optional — build proceeds without it but will warn.
     cdex_path, cdex_name = find_cdex()
@@ -513,7 +513,7 @@ def create_iso(tool: str, iso_root: Path) -> bool:
             "-V", "NOS-DOS",         # volume label
             "-J",                    # Joliet (Windows/macOS compatibility)
             # NOTE: Rock Ridge (-r) intentionally omitted.
-            # DOS CD-ROM drivers (OAKCDROM.SYS / SHSUCDX) use only the primary
+            # DOS CD-ROM drivers (GCDROM.SYS / SHSUCDX) use only the primary
             # ISO 9660 descriptor and do not benefit from Rock Ridge.  Rock Ridge
             # adds System Use Area bytes to every directory record, making entries
             # longer and variable; some older DOS drivers mis-parse these extended

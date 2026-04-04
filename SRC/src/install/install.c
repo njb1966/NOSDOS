@@ -650,7 +650,7 @@ static void do_reboot(void)
     /* Pulse the keyboard controller reset line for a hardware-level cold
      * reset.  This forces a full BIOS POST which rebuilds the interrupt
      * vector table from scratch.  A plain INT 19h warm reset leaves the
-     * IVT intact; device drivers loaded in CONFIG.SYS (e.g. OAKCDROM.SYS)
+     * IVT intact; device drivers loaded in CONFIG.SYS (e.g. GCDROM.SYS)
      * chain new instances onto their own now-overwritten handlers on the
      * second boot, causing Invalid Opcode faults. */
     while (inp(0x64) & 0x02) {}   /* wait for KBC input buffer empty */
