@@ -18,10 +18,10 @@ CPUSpeed=any
 DiskKB=2000
 
 [SOURCE]
-URL1=https://archive.org/download/dbase-iii-plus-1.1/dbase3.zip
-URL2=https://archive.org/download/msdos_dBASE_III/dbase3.zip
+URL1=http://nosdos.njb1966.com/dist/DBASE3/DBASE3.ZIP
+URL2=https://archive.org/download/dbase-iii-plus-1.1/dbase3.zip
 Archive=DBASE3.ZIP
-Redirect=yes
+Redirect=no
 
 [INSTALL]
 InstallDir=C:\APPS\DBASE3
