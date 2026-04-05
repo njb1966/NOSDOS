@@ -28,7 +28,7 @@ dirs : .SYMBOLIC
 $(OBJDIR)/screen.obj : screen.c screen.h
 	$(CC) $(CFLAGS) screen.c -fo=$@
 
-$(OBJDIR)/install.obj : install.c screen.h
+$(OBJDIR)/install.obj : install.c screen.h boot16.h
 	$(CC) $(CFLAGS) install.c -fo=$@
 
 $(BINDIR)/INSTALL.EXE : $(OBJS)

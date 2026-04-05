@@ -140,6 +140,11 @@ def format_partition(img_path: Path) -> bool:
             "-s", str(HDD_SPT),
             "-c", "16",             # 16 sectors/cluster = 8 KB; keeps cluster
                                     # count within FAT16 limit at ~500 MB
+            "-H", str(PART_START_SECTOR),  # BPB_HiddSec = 63; without this
+                                           # mformat writes 0, causing the
+                                           # FreeDOS boot sector to compute the
+                                           # root-dir LBA without the partition
+                                           # offset and fail with .Error!
             "::",
         ],
         check=False,
@@ -228,7 +233,7 @@ def install_system_files(img_path: Path) -> bool:
         (ROOT_DIR / "dist" / "bat" / "NIRC.BAT",    "NOS/SHELL/"),
         (ROOT_DIR / "dist" / "bat" / "NTELNET.BAT", "NOS/SHELL/"),
         (ROOT_DIR / "dist" / "bat" / "NTIME.BAT",   "NOS/SHELL/"),
-        (ROOT_DIR / "dist" / "bat" / "ADDAPP.BAT",  "NOS/SHELL/"),
+        (ROOT_DIR / "src" / "shell" / "bin" / "ADDAPP.EXE", "NOS/SHELL/"),
     ]
     # Default launcher config — ships empty so F9 works from first boot
     launcher_cfg = ROOT_DIR / "dist" / "shell" / "LAUNCHER.CFG"

@@ -20,7 +20,104 @@
 #include <string.h>   /* strcpy, strcat, strlen */
 #include <stdio.h>    /* fopen, fread, fwrite, fclose */
 #include <conio.h>    /* inp, outp -- keyboard controller reset */
+#include <i86.h>      /* segread, int86x, union REGS, struct SREGS */
 #include "screen.h"
+#include "boot16.h"   /* FreeDOS FAT16 partition boot record (512 bytes) */
+
+/* -----------------------------------------------------------------------
+ * FAT16 partition boot record writer
+ * ----------------------------------------------------------------------- */
+
+/* Disk Address Packet used by INT 13h extended read/write (function 42h/43h).
+ * Must be packed: the BIOS interprets it as a flat 16-byte structure. */
+#pragma pack(push,1)
+typedef struct {
+    unsigned char  pkt_size;   /* always 16 */
+    unsigned char  rsvd;       /* always 0  */
+    unsigned short count;      /* sectors   */
+    unsigned short buf_off;    /* buffer offset  */
+    unsigned short buf_seg;    /* buffer segment */
+    unsigned long  lba_lo;     /* LBA (bits 0-31)  */
+    unsigned long  lba_hi;     /* LBA (bits 32-63) — always 0 here */
+} nos_dap_t;
+#pragma pack(pop)
+
+/* Sector buffer for PBR read-modify-write.  Declared static (bss) so its
+ * address is in DS — required for the INT 13h buffer segment field. */
+static unsigned char g_pbr_buf[512];
+
+/* Write the FreeDOS FAT16 PBR to LBA 63 (primary partition start).
+ *
+ * Strategy: read the existing sector, keep bytes 3-61 (OEM name + BPB —
+ * the geometry values FORMAT wrote), overlay bytes 0-2 (JMP) and 62-511
+ * (boot code) from boot16_code[], then write the patched sector back.
+ *
+ * Uses INT 13h extensions (LBA read/write, function 42h/43h).  VirtualBox,
+ * VMware, and QEMU all support INT 13h extensions on virtual hard disks.
+ *
+ * Returns 0 on success, -1 if INT 13h reports an error. */
+static int nos_write_fat16_pbr(void)
+{
+    nos_dap_t    dap;
+    union REGS   r;
+    struct SREGS sr;
+
+    segread(&sr);   /* sr.ds == sr.ss in Watcom small model */
+
+    /* ---- read current PBR so we can keep FORMAT's BPB ---- */
+    dap.pkt_size = sizeof(dap);
+    dap.rsvd     = 0;
+    dap.count    = 1;
+    dap.buf_off  = FP_OFF(g_pbr_buf);
+    dap.buf_seg  = sr.ds;
+    dap.lba_lo   = 63UL;
+    dap.lba_hi   = 0UL;
+
+    memset(&r, 0, sizeof(r));
+    r.h.ah  = 0x42;         /* INT 13h extended read */
+    r.h.dl  = 0x80;         /* first hard disk */
+    r.x.si  = FP_OFF(&dap);
+    sr.ds   = sr.ss;        /* DAP is on stack (SS segment) */
+    int86x(0x13, &r, &r, &sr);
+    if (r.x.cflag) return -1;
+
+    /* ---- patch: JMP (bytes 0-2) + boot code (bytes 62-511) from boot16 ---- */
+    g_pbr_buf[0] = boot16_code[0];
+    g_pbr_buf[1] = boot16_code[1];
+    g_pbr_buf[2] = boot16_code[2];
+    /* bytes 3-61: OEM name + BPB — already in g_pbr_buf from the read */
+    memcpy(g_pbr_buf + 62, boot16_code + 62, 450);
+
+    /* Fix BPB_HiddSec (bytes 28-31): mformat writes 0; FORMAT.EXE may also
+     * copy 0 from the old BPB.  The FreeDOS boot sector uses BPB_HiddSec to
+     * compute the absolute LBA of the root directory — a value of 0 causes
+     * the boot code to read the FAT area instead of the root directory, fail
+     * to find KERNEL.SYS, and print ".Error!".
+     * Our partition always starts at LBA 63; patch the field unconditionally. */
+    g_pbr_buf[28] = 63;
+    g_pbr_buf[29] = 0;
+    g_pbr_buf[30] = 0;
+    g_pbr_buf[31] = 0;
+
+    /* ---- write patched PBR ---- */
+    segread(&sr);
+    dap.pkt_size = sizeof(dap);
+    dap.rsvd     = 0;
+    dap.count    = 1;
+    dap.buf_off  = FP_OFF(g_pbr_buf);
+    dap.buf_seg  = sr.ds;
+    dap.lba_lo   = 63UL;
+    dap.lba_hi   = 0UL;
+
+    memset(&r, 0, sizeof(r));
+    r.h.ah  = 0x43;         /* INT 13h extended write */
+    r.h.al  = 0x00;         /* no write-verify */
+    r.h.dl  = 0x80;
+    r.x.si  = FP_OFF(&dap);
+    sr.ds   = sr.ss;
+    int86x(0x13, &r, &r, &sr);
+    return r.x.cflag ? -1 : 0;
+}
 
 /* -----------------------------------------------------------------------
  * Installer colour scheme
@@ -929,6 +1026,16 @@ int main(void)
              * INSTALL\ tree so copy_tree does not overwrite it). */
             remove("C:\\NOS\\SYSTEM\\WELCOMED");
 
+            /* Restore H+S attributes on KERNEL.SYS.
+             *
+             * copy_tree overwrites the KERNEL.SYS that FORMAT /S placed with
+             * correct hidden+system attributes.  The copy from INSTALL\ has
+             * only the Archive attribute, which prevents the FreeDOS partition
+             * boot record from locating and loading the kernel.
+             *
+             * ATTRIB.COM is now on C: (just copied), so use it directly. */
+            system("C:\\NOS\\SYSTEM\\ATTRIB.COM +S +H C:\\KERNEL.SYS");
+
             /*
              * Finalize C: so it boots reliably:
              *
@@ -998,18 +1105,21 @@ int main(void)
             {
                 char fdisk_cmd[64];
 
-                /* SYS.COM is intentionally skipped.
+                /* Write the FreeDOS FAT16 partition boot record directly via
+                 * INT 13h extended write.  This is more reliable than relying
+                 * on FORMAT /S or SYS.COM:
                  *
-                 * FreeDOS SYS.COM cannot handle FAT16 partitions larger than
-                 * 32 MB: it reads total_sectors_16 from the BPB, finds zero
-                 * (the 32-bit field is used instead at this size), computes a
-                 * corrupt FAT offset, and triggers an INT 24h critical error
-                 * dialog ("general failure reading DOS area") in the child
-                 * process — _harderr() in the parent cannot suppress it.
+                 * - FORMAT /S may not find KERNEL.SYS and writes an error
+                 *   stub PBR ("Non-system disk") instead of bootable code.
+                 * - SYS.COM fails on FAT16 partitions > 32 MB (total_sectors_16
+                 *   == 0 in the BPB) with an unsuppressable INT 24h dialog.
                  *
-                 * FORMAT /S (called earlier) already wrote the PBR and placed
-                 * KERNEL.SYS with correct hidden+system attributes, so the
-                 * volume is fully bootable without SYS.COM. */
+                 * nos_write_fat16_pbr() reads the existing sector (preserving
+                 * the BPB that FORMAT wrote), patches in the FreeDOS boot code
+                 * embedded in boot16_code[], and writes it back.  KERNEL.SYS
+                 * attributes were already set by ATTRIB above. */
+                nos_write_fat16_pbr();
+
                 _harderr(inst_crit_err);
 
                 /* FDISK reads/writes only the MBR (LBA 0) via CHS — no FAT

@@ -391,6 +391,17 @@ def stage_iso_root(iso_root: Path) -> bool:
         else:
             log(f"  WARNING: {iso_name} not found in dist/thirdparty/cdrom/")
 
+    # KERNEL.SYS at the ISO root so FORMAT.EXE /S can locate it.
+    # FreeDOS FORMAT searches the same directory as FORMAT.EXE (D:\) for
+    # system files when /S is specified.  Without this copy, FORMAT finds
+    # no kernel at D:\ and writes an error-stub PBR instead of the
+    # bootable FreeDOS partition boot record.
+    kernel_at_root = FREEDOS_DIR / "KERNEL.SYS"
+    if kernel_at_root.exists():
+        shutil.copy2(kernel_at_root, iso_root / "KERNEL.SYS")
+    else:
+        log("  WARNING: KERNEL.SYS not found — FORMAT /S may not write a valid PBR")
+
     # INSTALL.EXE (compiled by Open Watcom; warn if absent — non-fatal)
     install_exe = SRC_DIR / "install" / "bin" / "INSTALL.EXE"
     if install_exe.exists():
@@ -476,6 +487,12 @@ def stage_iso_root(iso_root: Path) -> bool:
         shutil.copy2(shell_exe, nos_sh / "SHELL.EXE")
     else:
         log("  INFO: SHELL.EXE not built (compile step needed)")
+
+    addapp_exe = SRC_DIR / "shell" / "bin" / "ADDAPP.EXE"
+    if addapp_exe.exists():
+        shutil.copy2(addapp_exe, nos_sh / "ADDAPP.EXE")
+    else:
+        log("  INFO: ADDAPP.EXE not built (compile step needed)")
 
     # Batch wrappers
     bat_dir = DIST_DIR / "bat"

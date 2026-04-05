@@ -19,7 +19,7 @@ BINDIR = bin
 
 OBJS = $(OBJDIR)/screen.obj $(OBJDIR)/input.obj $(OBJDIR)/panel.obj $(OBJDIR)/dialog.obj $(OBJDIR)/viewer.obj $(OBJDIR)/launcher.obj $(OBJDIR)/shellcfg.obj $(OBJDIR)/welcome.obj $(OBJDIR)/shell.obj
 
-all : dirs $(BINDIR)/SHELL.EXE .SYMBOLIC
+all : dirs $(BINDIR)/SHELL.EXE $(BINDIR)/ADDAPP.EXE .SYMBOLIC
 
 dirs : .SYMBOLIC
 	if not exist $(OBJDIR) mkdir $(OBJDIR)
@@ -55,6 +55,13 @@ $(OBJDIR)/shell.obj : shell.c screen.h input.h panel.h dialog.h viewer.h launche
 $(BINDIR)/SHELL.EXE : $(OBJS)
 	$(LINK) system dos name $@ file {$(OBJS)}
 
+$(OBJDIR)/addapp.obj : addapp.c
+	$(CC) $(CFLAGS) addapp.c -fo=$@
+
+$(BINDIR)/ADDAPP.EXE : $(OBJDIR)/addapp.obj
+	$(LINK) system dos name $@ file {$(OBJDIR)/addapp.obj}
+
 clean : .SYMBOLIC
 	if exist $(OBJDIR)/*.obj del $(OBJDIR)/*.obj
 	if exist $(BINDIR)/SHELL.EXE del $(BINDIR)/SHELL.EXE
+	if exist $(BINDIR)/ADDAPP.EXE del $(BINDIR)/ADDAPP.EXE
