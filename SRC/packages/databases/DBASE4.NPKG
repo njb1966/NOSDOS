@@ -1,0 +1,44 @@
+[PACKAGE]
+ID=DBASE4
+Name=dBASE IV
+Version=2.0
+Category=databases
+Description=Ashton-Tate xBase database system with SQL and networking
+Author=Ashton-Tate
+Year=1994
+License=commercial
+Tags=database xbase dbl programming records sql
+
+[HARDWARE]
+Memory=512
+Sound=none
+Mouse=no
+VGA=no
+CPUSpeed=any
+DiskKB=3000
+
+[SOURCE]
+URL1=http://nosdos.njb1966.com/dist/DBASE4/DBASE4.ZIP
+Archive=DBASE4.ZIP
+Redirect=no
+
+[INSTALL]
+InstallDir=C:\APPS\DBASE4
+Extract=yes
+Extractor=pkzip
+SetPath=yes
+
+[POST-INSTALL]
+MD %INSTALLDIR%\DATA
+ECHO dBASE IV 2.0 installed to %INSTALLDIR%.
+ECHO Run %INSTALLDIR%\DBASE.EXE to start.
+ECHO Type ASSIST at the dot prompt for menu mode.
+
+[LAUNCHER]
+Label=dBASE IV
+Exec=C:\APPS\DBASE4\DBASE.EXE
+Dir=C:\APPS\DBASE4
+Icon=254
+
+[REMOVE]
+DELTREE /Y %INSTALLDIR%
