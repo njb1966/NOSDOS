@@ -204,7 +204,7 @@ int nos_index_download(const char *url, const char *dest_path)
     int  rc;
 
     /* Create cache directory tree (mkdir returns -1 if already exists;     *
-     * that is fine — ignore return values).  Must create parents first     *
+     * that is fine - ignore return values).  Must create parents first     *
      * because DOS mkdir cannot create nested paths in one call.             */
     mkdir("C:\\NOS\\NPKG");
     mkdir(NOS_INDEX_CACHE_DIR);
@@ -221,7 +221,7 @@ int nos_index_download(const char *url, const char *dest_path)
     /* mTCP 2025 HTGET exits with the HTTP response class as errorlevel:
      *   0      = old-style success (pre-2025)
      *   20-29  = HTTP 2xx (success)
-     *   30-39  = HTTP 3xx (redirect — HTGET follows these automatically)
+     *   30-39  = HTTP 3xx (redirect - HTGET follows these automatically)
      *   40+    = HTTP 4xx/5xx (server/client error)
      *   1-19   = network/init error
      * Treat 0 and 20-29 as success; everything else is failure.          */
@@ -261,7 +261,7 @@ int nos_index_load(nos_index_t *idx, const char *path)
         /* Split by tab.                                                    */
         nfields = split_tabs(line, fields, FIELD_COUNT + 1);
         if (nfields < FIELD_COUNT) {
-            printf("NPKG: index line %d: expected %d fields, got %d — skipped\r\n",
+            printf("NPKG: index line %d: expected %d fields, got %d - skipped\r\n",
                    lineno, FIELD_COUNT, nfields);
             continue;
         }

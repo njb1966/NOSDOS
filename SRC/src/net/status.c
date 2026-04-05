@@ -89,7 +89,7 @@ void nos_status_show(void)
     if (pkt && have_ip) {
         printf("  >>> CONNECTED <<<\r\n");
     } else if (pkt && !have_ip) {
-        printf("  Driver present but no IP — run:  NNET DHCP\r\n");
+        printf("  Driver present but no IP - run:  NNET DHCP\r\n");
     } else {
         printf("  >>> NO NETWORK <<<\r\n");
         printf("\r\n");

@@ -170,7 +170,7 @@ int nos_fetch_verify_size(const char *path, long expected_bytes)
     }
 
     if (actual != expected_bytes) {
-        printf("NPKG: warning: size mismatch — expected %ld bytes, got %ld\r\n",
+        printf("NPKG: warning: size mismatch - expected %ld bytes, got %ld\r\n",
                expected_bytes, actual);
         printf("         (corrupt download or .npkg Bytes field is wrong)\r\n");
         return NOS_FETCH_ERR_SIZE;
@@ -241,7 +241,7 @@ int nos_fetch_archive(const nos_fetch_src_t *src,
                  * not an HTML throttle/error page from archive.org.        */
                 got = nos_fetch_file_size(dest);
                 if (got < NOS_FETCH_MIN_BYTES) {
-                    printf("  File too small (%ld bytes) — likely an error"
+                    printf("  File too small (%ld bytes) - likely an error"
                            " page, treating as failure\r\n", got);
                     rc = NOS_FETCH_ERR_SMALL;
                 } else {
@@ -267,7 +267,7 @@ int nos_fetch_archive(const nos_fetch_src_t *src,
         printf("NPKG: download failed after trying %d URL(s), %d attempt(s)"
                " each\r\n", src->url_count, NOS_FETCH_RETRIES);
         printf("  Check your network connection and try again later.\r\n");
-        printf("  (archive.org may be throttling — wait a few minutes)\r\n");
+        printf("  (archive.org may be throttling - wait a few minutes)\r\n");
         return rc;
     }
 

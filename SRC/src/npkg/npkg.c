@@ -193,7 +193,7 @@ static int cmd_update(void)
     }
 
     g_index_loaded = 1;
-    printf("NPKG: index updated — %d package(s) available.\r\n", g_index.count);
+    printf("NPKG: index updated - %d package(s) available.\r\n", g_index.count);
     return 0;
 }
 
@@ -287,7 +287,7 @@ static int cmd_info(int argc, char *argv[])
         printf("%s\r\n", entry->description);
         if (entry->size_kb)
             printf("Download: ~%u KB\r\n", entry->size_kb);
-        printf("\r\n(Full details unavailable — definition download failed.)\r\n");
+        printf("\r\n(Full details unavailable - definition download failed.)\r\n");
         return 0;
     }
 
