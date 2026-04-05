@@ -25,12 +25,17 @@ static int pkt_driver_present(unsigned char *intr_out)
     char                 sig[] = "PKT DRVR";
 
     for (n = 0x60; n <= 0x80; n++) {
+        unsigned char off;
         vec = _dos_getvect(n);
         if (FP_SEG(vec) == 0 && FP_OFF(vec) == 0) continue;
-        p = (unsigned char __far *)vec + 2;
-        if (_fmemcmp(p, sig, 8) == 0) {
-            if (intr_out) *intr_out = n;
-            return 1;
+        /* Crynwr drivers place "PKT DRVR" at offset 1 (0xFF marker variant)
+         * or offset 3 (short-jump variant).  Check both. */
+        for (off = 1; off <= 4; off++) {
+            p = (unsigned char __far *)vec + off;
+            if (_fmemcmp(p, sig, 8) == 0) {
+                if (intr_out) *intr_out = n;
+                return 1;
+            }
         }
     }
     return 0;
