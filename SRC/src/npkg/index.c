@@ -217,10 +217,15 @@ int nos_index_download(const char *url, const char *dest_path)
     strcat(cmd, " ");
     strcat(cmd, url);
 
-    printf("NPKG: running: %s\r\n", cmd);
     rc = system(cmd);
-    printf("NPKG: HTGET returned %d\r\n", rc);
-    if (rc != 0)
+    /* mTCP 2025 HTGET exits with the HTTP response class as errorlevel:
+     *   0      = old-style success (pre-2025)
+     *   20-29  = HTTP 2xx (success)
+     *   30-39  = HTTP 3xx (redirect — HTGET follows these automatically)
+     *   40+    = HTTP 4xx/5xx (server/client error)
+     *   1-19   = network/init error
+     * Treat 0 and 20-29 as success; everything else is failure.          */
+    if (rc != 0 && !(rc >= 20 && rc <= 29))
         return NOS_INDEX_ERR_DOWNLOAD;
 
     return NOS_INDEX_OK;

@@ -121,7 +121,9 @@ int nos_fetch_url(const char *url, const char *dest_path)
 
     printf("  Fetching: %s\r\n", url);
     rc = system(cmd);
-    if (rc != 0) {
+    /* mTCP 2025 HTGET exits with HTTP response class as errorlevel:
+     *   0 or 20-29 = success (HTTP 2xx);  anything else = failure.       */
+    if (rc != 0 && !(rc >= 20 && rc <= 29)) {
         printf("  HTGET returned error code %d\r\n", rc);
         return NOS_FETCH_ERR_HTGET;
     }
