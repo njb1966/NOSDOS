@@ -509,6 +509,11 @@ static int nos_do_extract(const nos_pkg_t *pkg, const char *archive_path)
         return NOS_INSTALL_ERR_EXTRACT;
     }
 
+    /* PKUNZIP exits 1 for warnings (e.g. W10: directory already exists),
+     * 2 for fatal errors.  Treat 0 and 1 as success.
+     * Other extractors (UNZIP, UNARJ, LHA): 0 = ok, anything else = error. */
+    if (nos_stricmp(pkg->extractor, "pkzip") == 0)
+        return (rc <= 1) ? NOS_INSTALL_OK : NOS_INSTALL_ERR_EXTRACT;
     return (rc == 0) ? NOS_INSTALL_OK : NOS_INSTALL_ERR_EXTRACT;
 }
 
