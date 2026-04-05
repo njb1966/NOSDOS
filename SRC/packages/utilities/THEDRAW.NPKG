@@ -3,7 +3,7 @@ ID=THEDRAW
 Name=TheDraw 4.63
 Version=4.63
 Category=utilities
-Description=Full-featured ANSI and ASCII art editor, released as freeware
+Description=ANSI and ASCII art editor for DOS, released as freeware
 Author=Ian E. Davis
 Year=1993
 License=freeware
@@ -18,10 +18,10 @@ CPUSpeed=any
 DiskKB=256
 
 [SOURCE]
-URL1=https://archive.org/download/thedraw-4.63/thedraw463.zip
-URL2=https://archive.org/download/msdos_TheDraw/thedraw463.zip
-Archive=THEDRAW463.ZIP
-Redirect=yes
+URL1=http://nosdos.njb1966.com/dist/THEDRAW/TDRAW463.ZIP
+Archive=TDRAW463.ZIP
+Bytes=303115
+Redirect=no
 
 [INSTALL]
 InstallDir=C:\APPS\THEDRAW

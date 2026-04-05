@@ -3,7 +3,7 @@ ID=ROGUE
 Name=Rogue
 Version=1.0
 Category=game
-Description=The original dungeon-crawler that defined the roguelike genre
+Description=Dungeon-crawler that defined the roguelike genre
 Author=Epyx
 Year=1983
 License=freeware
@@ -18,10 +18,10 @@ CPUSpeed=any
 DiskKB=128
 
 [SOURCE]
-URL1=https://archive.org/download/msdos_Rogue_1983/Rogue_1983.zip
-URL2=https://archive.org/download/Rogue_1983_Epyx/rogue.zip
+URL1=http://nosdos.njb1966.com/dist/ROGUE/ROGUE.ZIP
 Archive=ROGUE.ZIP
-Redirect=yes
+Bytes=47205
+Redirect=no
 
 [INSTALL]
 InstallDir=C:\GAMES\ROGUE

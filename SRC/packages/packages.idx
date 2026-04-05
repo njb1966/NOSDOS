@@ -16,8 +16,11 @@ PCTOOLS	utilities	PC Tools	9.0	Disk utilities, undelete, backup, and desktop man
 PRINCE	game	Prince of Persia	1.0	Cinematic platformer with fluid rotoscoped animation	0	commercial
 QBASIC	programming	QBasic	1.1	Microsoft BASIC interpreter and IDE with full-screen editor	0	freeware
 QUAKE	game	Quake Shareware	1.06	id Software's true 3D FPS, episode 1 shareware	0	shareware
+ROGUE	game	Rogue	1.0	Dungeon-crawler that defined the roguelike genre	46	freeware
+ROTT	game	Rise of the Triad Shareware	1.3	Apogee FPS: powerups, multi-level missiles, shareware ep.1	3649	shareware
 SC	spreadsheets	SC Spreadsheet Calculator	7.16	Curses-based spreadsheet calculator, minimal and fast	0	gpl
 TC30	programming	Turbo C	3.0	Borland's classic C IDE and compiler, released as freeware	0	freeware
+THEDRAW	utilities	TheDraw 4.63	4.63	ANSI and ASCII art editor for DOS, released as freeware	296	freeware
 TP70	programming	Turbo Pascal	7.0	Borland Pascal IDE and compiler, released as freeware	0	freeware
 TYRIAN	game	Tyrian 2000	2.1	Vertical scrolling shoot-em-up, released as freeware	0	freeware
 WOLF3D	game	Wolfenstein 3D	1.4	id Software's landmark 3D shooter, episode 1 shareware	0	shareware

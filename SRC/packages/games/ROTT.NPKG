@@ -3,7 +3,7 @@ ID=ROTT
 Name=Rise of the Triad Shareware
 Version=1.3
 Category=game
-Description=Apogee's fast-paced FPS with powerups and multi-level missiles, episode 1 shareware
+Description=Apogee FPS: powerups, multi-level missiles, shareware ep.1
 Author=Apogee Software / 3D Realms
 Year=1994
 License=shareware
@@ -20,10 +20,10 @@ CPUSpeed=fast
 DiskKB=6000
 
 [SOURCE]
-URL1=https://archive.org/download/rise-of-the-triad-shareware/rottsw13.zip
-URL2=https://archive.org/download/msdos_Rise_of_the_Triad/rottsw13.zip
+URL1=http://nosdos.njb1966.com/dist/ROTT/ROTTSW13.ZIP
 Archive=ROTTSW13.ZIP
-Redirect=yes
+Bytes=3737514
+Redirect=no
 
 [INSTALL]
 InstallDir=C:\GAMES\ROTT
