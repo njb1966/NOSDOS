@@ -207,13 +207,13 @@ int nos_index_download(const char *url, const char *dest_path)
      * that is fine — ignore the return value).                             */
     mkdir(NOS_INDEX_CACHE_DIR);
 
-    /* Build: C:\NOS\SYSTEM\HTGET.EXE <url> <dest_path>                    *
-     * mTCP HTGET syntax: HTGET [options] URL [local_filename]              */
+    /* Build: C:\NOS\SYSTEM\HTGET.EXE -o <dest_path> <url>                 *
+     * mTCP 2025 HTGET syntax: HTGET [options] <URL>  (-o writes to file)  */
     strcpy(cmd, SYS_PATH);
-    strcat(cmd, "HTGET.EXE ");
-    strcat(cmd, url);
-    strcat(cmd, " ");
+    strcat(cmd, "HTGET.EXE -o ");
     strcat(cmd, dest_path);
+    strcat(cmd, " ");
+    strcat(cmd, url);
 
     rc = system(cmd);
     if (rc != 0)

@@ -112,12 +112,12 @@ int nos_fetch_url(const char *url, const char *dest_path)
         return NOS_FETCH_ERR_BADURL;
     }
 
-    /* Assemble: HTGET.EXE <url> <dest_path>                               */
+    /* Assemble: HTGET.EXE -o <dest_path> <url>                            */
     strcpy(cmd, HTGET_EXE);
+    strcat(cmd, " -o ");
+    strcat(cmd, dest_path);
     strcat(cmd, " ");
     strcat(cmd, url);
-    strcat(cmd, " ");
-    strcat(cmd, dest_path);
 
     printf("  Fetching: %s\r\n", url);
     rc = system(cmd);
