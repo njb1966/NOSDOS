@@ -190,6 +190,7 @@ def install_system_files(img_path: Path) -> bool:
         (FREEDOS_DIR / "XCOPY.EXE",                "NOS/SYSTEM/"),
         (DIST_DIR   / "config"  / "CONFIG.TPL",    "NOS/SYSTEM/"),
         (DIST_DIR   / "config"  / "AUTOEXEC.TPL",  "NOS/SYSTEM/"),
+        (DIST_DIR   / "config"  / "MTCP.CFG",      "NOS/SYSTEM/"),
     ]
     # Optional — compiled by Open Watcom; absent when --skip-compile
     optional = [
