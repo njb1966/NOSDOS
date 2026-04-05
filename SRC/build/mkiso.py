@@ -430,14 +430,17 @@ def stage_iso_root(iso_root: Path) -> bool:
 
     # NOS directory skeleton
     for subdir in ["NOS", "NOS/SYSTEM", "NOS/SHELL", "NOS/DOCS",
+                   "NOS/NPKG", "NOS/NPKG/DEFS", "NOS/NPKG/CACHE",
                    "APPS", "GAMES", "USER", "TEMP"]:
         (inst_dir / subdir.replace("/", "\\").replace("\\", "/")).mkdir(
             parents=True, exist_ok=True
         )
 
-    nos_sys = inst_dir / "NOS" / "SYSTEM"
-    nos_sh  = inst_dir / "NOS" / "SHELL"
-    nos_doc = inst_dir / "NOS" / "DOCS"
+    nos_sys  = inst_dir / "NOS" / "SYSTEM"
+    nos_sh   = inst_dir / "NOS" / "SHELL"
+    nos_doc  = inst_dir / "NOS" / "DOCS"
+    nos_defs = inst_dir / "NOS" / "NPKG" / "DEFS"
+    nos_cache = inst_dir / "NOS" / "NPKG" / "CACHE"
 
     # Required system files
     required_sys = [
@@ -523,6 +526,23 @@ def stage_iso_root(iso_root: Path) -> bool:
     if docs_dir.is_dir():
         for doc in sorted(docs_dir.glob("*.TXT")):
             shutil.copy2(doc, nos_doc / doc.name.upper())
+
+    # NPKG package index and definitions
+    idx_src = ROOT_DIR / "packages" / "packages.idx"
+    if idx_src.exists():
+        shutil.copy2(idx_src, nos_cache / "PKGS.IDX")
+        log("  bundled packages.idx → NOS/NPKG/CACHE/PKGS.IDX")
+    else:
+        log("  WARNING: packages/packages.idx not found — NPKG UPDATE required")
+
+    pkg_count = 0
+    if (ROOT_DIR / "packages").is_dir():
+        for npkg in sorted((ROOT_DIR / "packages").rglob("*.NPKG")):
+            stem = npkg.stem[:8].upper()
+            shutil.copy2(npkg, nos_defs / f"{stem}.NPK")
+            pkg_count += 1
+        if pkg_count:
+            log(f"  bundled {pkg_count} .npkg definition(s) → NOS/NPKG/DEFS/")
 
     log(f"ISO data tree staged at {iso_root}")
     return True

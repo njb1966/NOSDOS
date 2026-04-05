@@ -203,8 +203,10 @@ int nos_index_download(const char *url, const char *dest_path)
     char cmd[320];
     int  rc;
 
-    /* Create cache directory (mkdir returns -1 if it already exists;       *
-     * that is fine — ignore the return value).                             */
+    /* Create cache directory tree (mkdir returns -1 if already exists;     *
+     * that is fine — ignore return values).  Must create parents first     *
+     * because DOS mkdir cannot create nested paths in one call.             */
+    mkdir("C:\\NOS\\NPKG");
     mkdir(NOS_INDEX_CACHE_DIR);
 
     /* Build: C:\NOS\SYSTEM\HTGET.EXE -o <dest_path> <url>                 *
@@ -215,7 +217,9 @@ int nos_index_download(const char *url, const char *dest_path)
     strcat(cmd, " ");
     strcat(cmd, url);
 
+    printf("NPKG: running: %s\r\n", cmd);
     rc = system(cmd);
+    printf("NPKG: HTGET returned %d\r\n", rc);
     if (rc != 0)
         return NOS_INDEX_ERR_DOWNLOAD;
 
