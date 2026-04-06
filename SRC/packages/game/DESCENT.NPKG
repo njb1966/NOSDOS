@@ -20,11 +20,10 @@ CPUSpeed=medium
 DiskKB=7000
 
 [SOURCE]
-URL1=https://archive.org/download/descent-shareware-1.4a/descent14a.zip
-URL2=https://archive.org/download/msdos_Descent/descent14a.zip
-Archive=DES14ASW.ZIP
-Redirect=yes
-
+URL1=http://nosdos.njb1966.com/dist/DESCENT/DESCENT.ZIP
+Archive=DESCENT.ZIP
+Bytes=0
+Redirect=no
 [INSTALL]
 InstallDir=C:\GAMES\DESCENT
 Extract=yes

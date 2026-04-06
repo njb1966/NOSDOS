@@ -20,11 +20,10 @@ CPUSpeed=fast
 DiskKB=10000
 
 [SOURCE]
-URL1=https://archive.org/download/duke-nukem-3d-shareware/duke3d_sw.zip
-URL2=https://archive.org/download/msdos_Duke_Nukem_3D/duke3d_sw.zip
-Archive=DUKE3DSW.ZIP
-Redirect=yes
-
+URL1=http://nosdos.njb1966.com/dist/DUKE3D/DUKE3D.ZIP
+Archive=DUKE3D.ZIP
+Bytes=0
+Redirect=no
 [INSTALL]
 InstallDir=C:\GAMES\DUKE3D
 Extract=yes

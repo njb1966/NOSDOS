@@ -20,11 +20,10 @@ CPUSpeed=any
 DiskKB=8000
 
 [SOURCE]
-URL1=https://archive.org/download/tyrian2000/tyrian21.zip
-URL2=https://archive.org/download/msdos_Tyrian_2000/tyrian21.zip
-Archive=TYRIAN21.ZIP
-Redirect=yes
-
+URL1=http://nosdos.njb1966.com/dist/TYRIAN/TYRIAN.ZIP
+Archive=TYRIAN.ZIP
+Bytes=0
+Redirect=no
 [INSTALL]
 InstallDir=C:\GAMES\TYRIAN
 Extract=yes

@@ -19,11 +19,10 @@ CPUSpeed=any
 DiskKB=2000
 
 [SOURCE]
-URL1=https://archive.org/download/lotus-1-2-3-dos/lotus24.zip
-URL2=https://archive.org/download/msdos_Lotus_123/lotus24.zip
-Archive=LOTUS24.ZIP
-Redirect=yes
-
+URL1=http://nosdos.njb1966.com/dist/LOTUS123/LOTUS123.ZIP
+Archive=LOTUS123.ZIP
+Bytes=0
+Redirect=no
 [INSTALL]
 InstallDir=C:\APPS\LOTUS
 Extract=yes

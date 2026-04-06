@@ -271,6 +271,22 @@ static void action_view(void)
     /* redraw_all() called by dispatch() after we return */
 }
 
+static void action_edit(void)
+{
+    nos_panel_t *ap = active_panel();
+    char path[128];
+
+    if (ap->file_count == 0) return;
+    if (ap->files[ap->cursor].is_dir) return;
+
+    cursor_path(ap, path);
+    set_text_mode();
+    spawnl(P_WAIT, "C:\\NOS\\SYSTEM\\EDIT.EXE", "EDIT.EXE", path, NULL);
+    nos_scr_init();
+    nos_scr_hide_cursor();
+    /* redraw_all() called by dispatch() after we return */
+}
+
 static void action_enter(void)
 {
     nos_panel_t *ap = active_panel();
@@ -489,6 +505,7 @@ static void dispatch(nos_event_t *evt)
         /* F-key actions */
         case NOS_KEY_F2:  action_config(); break;
         case NOS_KEY_F3:  action_view();   break;
+        case NOS_KEY_F4:  action_edit();   break;
         case NOS_KEY_F5:  action_copy();   break;
         case NOS_KEY_F6:  action_move();   break;
         case NOS_KEY_F7:  action_mkdir();  break;

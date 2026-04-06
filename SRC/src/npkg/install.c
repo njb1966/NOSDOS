@@ -324,15 +324,17 @@ int nos_install_fetch_def(const char *id, const char *category,
 
     printf("NPKG: fetching definition for %s...\r\n", id);
 
-    /* Download via HTGET.                                                  */
+    /* Download via HTGET.  mTCP 2025 syntax: HTGET -o <dest> <url>          */
     strcpy(cmd, SYS_PATH);
-    strcat(cmd, "HTGET.EXE ");
-    strcat(cmd, url);
-    strcat(cmd, " ");
+    strcat(cmd, "HTGET.EXE -o ");
     strcat(cmd, local);
+    strcat(cmd, " ");
+    strcat(cmd, url);
 
     rc = system(cmd);
-    if (rc != 0) {
+    /* mTCP 2025 HTGET exits with HTTP response class as errorlevel:
+     * 0 or 20-29 = success (HTTP 2xx); anything else = failure.      */
+    if (rc != 0 && !(rc >= 20 && rc <= 29)) {
         printf("NPKG: failed to download definition for %s\r\n", id);
         return NOS_INSTALL_ERR_DEFETCH;
     }

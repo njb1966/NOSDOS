@@ -20,13 +20,10 @@ CPUSpeed=medium
 DiskKB=6000
 
 [SOURCE]
-URL1=https://archive.org/download/doom-shareware-1.9/doom19s.zip
-URL2=https://archive.org/download/DoomShareware/doom19s.zip
-Archive=DOOM19S.ZIP
-Bytes=2397849
-MD5=90facab21eefe84cd43461896f9e6a97
-Redirect=yes
-
+URL1=http://nosdos.njb1966.com/dist/DOOM/DOOM.ZIP
+Archive=DOOM.ZIP
+Bytes=0
+Redirect=no
 [INSTALL]
 InstallDir=C:\GAMES\DOOM
 Extract=yes

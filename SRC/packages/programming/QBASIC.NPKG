@@ -18,11 +18,10 @@ CPUSpeed=any
 DiskKB=512
 
 [SOURCE]
-URL1=https://archive.org/download/msdos-qbasic-1.1/qbasic11.zip
-URL2=https://archive.org/download/msdos_QBasic_1.1/qbasic11.zip
-Archive=QBASIC11.ZIP
-Redirect=yes
-
+URL1=http://nosdos.njb1966.com/dist/QBASIC/QBASIC.ZIP
+Archive=QBASIC.ZIP
+Bytes=0
+Redirect=no
 [INSTALL]
 InstallDir=C:\DEV\QBASIC
 Extract=yes

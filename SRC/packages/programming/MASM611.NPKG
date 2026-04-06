@@ -18,11 +18,10 @@ CPUSpeed=any
 DiskKB=3500
 
 [SOURCE]
-URL1=https://archive.org/download/masm-6.11/masm611.zip
-URL2=https://archive.org/download/msdos_MASM_6.11/masm611.zip
+URL1=http://nosdos.njb1966.com/dist/MASM611/MASM611.ZIP
 Archive=MASM611.ZIP
-Redirect=yes
-
+Bytes=0
+Redirect=no
 [INSTALL]
 InstallDir=C:\DEV\MASM6
 Extract=yes

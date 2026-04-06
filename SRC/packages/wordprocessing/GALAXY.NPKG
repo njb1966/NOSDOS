@@ -18,11 +18,10 @@ CPUSpeed=any
 DiskKB=512
 
 [SOURCE]
-URL1=https://archive.org/download/galaxy-write-4/galaxy40.zip
-URL2=https://archive.org/download/msdos_galaxy_write/galaxy40.zip
-Archive=GALAXY40.ZIP
-Redirect=yes
-
+URL1=http://nosdos.njb1966.com/dist/GALAXY/GALAXY.ZIP
+Archive=GALAXY.ZIP
+Bytes=0
+Redirect=no
 [INSTALL]
 InstallDir=C:\APPS\GALAXY
 Extract=yes

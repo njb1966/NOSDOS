@@ -19,11 +19,10 @@ CPUSpeed=any
 DiskKB=4500
 
 [SOURCE]
-URL1=https://archive.org/download/foxpro-2.0-dos/foxpro20.zip
-URL2=https://archive.org/download/msdos_FoxPro_2/foxpro20.zip
-Archive=FOXPRO20.ZIP
-Redirect=yes
-
+URL1=http://nosdos.njb1966.com/dist/FOXPRO/FOXPRO.ZIP
+Archive=FOXPRO.ZIP
+Bytes=0
+Redirect=no
 [INSTALL]
 InstallDir=C:\APPS\FOXPRO
 Extract=yes

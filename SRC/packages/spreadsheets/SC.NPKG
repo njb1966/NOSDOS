@@ -18,11 +18,10 @@ CPUSpeed=any
 DiskKB=256
 
 [SOURCE]
-URL1=https://archive.org/download/sc-spreadsheet-716/sc716.zip
-URL2=https://archive.org/download/msdos_SC/sc716.zip
-Archive=SC716.ZIP
-Redirect=yes
-
+URL1=http://nosdos.njb1966.com/dist/SC/SC.ZIP
+Archive=SC.ZIP
+Bytes=0
+Redirect=no
 [INSTALL]
 InstallDir=C:\APPS\SC
 Extract=yes

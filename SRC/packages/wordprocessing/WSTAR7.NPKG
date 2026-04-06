@@ -18,11 +18,10 @@ CPUSpeed=any
 DiskKB=2800
 
 [SOURCE]
-URL1=https://archive.org/download/wordstar-7.0-dos/wstar70.zip
-URL2=https://archive.org/download/msdos_WordStar_7/wstar70.zip
-Archive=WSTAR70.ZIP
-Redirect=yes
-
+URL1=http://nosdos.njb1966.com/dist/WSTAR7/WSTAR7.ZIP
+Archive=WSTAR7.ZIP
+Bytes=0
+Redirect=no
 [INSTALL]
 InstallDir=C:\APPS\WSTAR7
 Extract=yes

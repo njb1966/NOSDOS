@@ -18,11 +18,10 @@ CPUSpeed=any
 DiskKB=800
 
 [SOURCE]
-URL1=https://archive.org/download/xtree-gold-2.5/xtreegld.zip
-URL2=https://archive.org/download/msdos_XTree_Gold/xtreegld.zip
-Archive=XTREEGLD.ZIP
-Redirect=yes
-
+URL1=http://nosdos.njb1966.com/dist/XTREE/XTREE.ZIP
+Archive=XTREE.ZIP
+Bytes=0
+Redirect=no
 [INSTALL]
 InstallDir=C:\UTILS\XTREE
 Extract=yes

@@ -20,11 +20,10 @@ CPUSpeed=slow
 DiskKB=1000
 
 [SOURCE]
-URL1=https://archive.org/download/prince-of-persia-1/prince.zip
-URL2=https://archive.org/download/msdos_Prince_of_Persia/prince.zip
+URL1=http://nosdos.njb1966.com/dist/PRINCE/PRINCE.ZIP
 Archive=PRINCE.ZIP
-Redirect=yes
-
+Bytes=0
+Redirect=no
 [INSTALL]
 InstallDir=C:\GAMES\PRINCE
 Extract=yes

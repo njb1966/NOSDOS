@@ -43,6 +43,24 @@ static nos_game_profile_t g_profile;
 static nos_game_list_t    g_games;
 
 /* -----------------------------------------------------------------------
+ * vcpi_present -- returns 1 if a VCPI server (JEMMEX / EMM386) is loaded.
+ *
+ * THROTTLE.COM hooks INT 08h directly from real/V86 mode.  Under a VCPI
+ * host this triggers a protection fault (JEMMEX exception 0Eh).  We detect
+ * the VCPI server via INT 67h AH=DEh AL=00h: AH=00h on return means a VCPI
+ * server responded and THROTTLE must not be installed.
+ * ----------------------------------------------------------------------- */
+
+static int vcpi_present(void)
+{
+    union REGS r;
+    r.h.ah = 0xDE;
+    r.h.al = 0x00;
+    int86(0x67, &r, &r);
+    return (r.h.ah == 0x00);
+}
+
+/* -----------------------------------------------------------------------
  * preset_to_level -- map CPUPreset name to THROTTLE level 0-5
  * ----------------------------------------------------------------------- */
 
@@ -74,6 +92,28 @@ static int throttle_installed(void)
 }
 
 /* -----------------------------------------------------------------------
+ * active_mem_profile -- read current profile name from PROFILE.DAT.
+ * Writes profile name into buf (up to buf_max-1 chars) and NUL-terminates.
+ * Returns 1 if found, 0 if file missing or unreadable.
+ * ----------------------------------------------------------------------- */
+
+#define PATH_PROFILE "C:\\NOS\\SYSTEM\\PROFILE.DAT"
+
+static int active_mem_profile(char *buf, int buf_max)
+{
+    FILE *f;
+    int   i;
+
+    f = fopen(PATH_PROFILE, "r");
+    if (!f) return 0;
+    if (!fgets(buf, buf_max, f)) { fclose(f); buf[0] = '\0'; return 0; }
+    fclose(f);
+    for (i = 0; buf[i] && buf[i] != '\r' && buf[i] != '\n'; i++) ;
+    buf[i] = '\0';
+    return (buf[0] != '\0');
+}
+
+/* -----------------------------------------------------------------------
  * apply_profile -- set up environment before launching the game
  * Returns 1 if we installed THROTTLE (so we know to remove it on exit).
  * ----------------------------------------------------------------------- */
@@ -81,22 +121,38 @@ static int throttle_installed(void)
 static int apply_profile(const nos_game_profile_t *p)
 {
     char   cmd[128];
+    char   cur_prof[16];
     int    level;
     int    we_installed_throttle = 0;
 
-    /* Step 1: Memory profile */
+    /* Step 1: Memory profile — skip if already active to avoid reboot. */
     if (p->mem_profile[0]) {
-        printf("NOSPLAY: applying memory profile %s...\r\n", p->mem_profile);
-        strcpy(cmd, NOSMEM_EXE);
-        strcat(cmd, " /");
-        strcat(cmd, p->mem_profile);
-        system(cmd);
+        if (active_mem_profile(cur_prof, sizeof(cur_prof)) &&
+            strcmp(cur_prof, p->mem_profile) == 0) {
+            printf("NOSPLAY: memory profile %s already active.\r\n",
+                   p->mem_profile);
+        } else {
+            printf("NOSPLAY: applying memory profile %s...\r\n",
+                   p->mem_profile);
+            strcpy(cmd, NOSMEM_EXE);
+            strcat(cmd, " /");
+            strcat(cmd, p->mem_profile);
+            system(cmd);
+            /* NOSMEM reboots — execution does not continue past here
+             * unless /NOREBOOT was used.  Game will not launch this run. */
+            return 0;
+        }
     }
 
-    /* Step 2: CPU throttle */
+    /* Step 2: CPU throttle.
+     * Skip if a VCPI server (JEMMEX/EMM386) is loaded -- THROTTLE.COM hooks
+     * INT 08h directly from V86 mode which triggers a protection fault. */
     level = preset_to_level(p->cpu_preset);
     if (level > 0) {
-        if (!throttle_installed()) {
+        if (vcpi_present()) {
+            printf("NOSPLAY: VCPI/JEMMEX detected -- skipping THROTTLE"
+                   " (INT 08h unsafe in V86 mode).\r\n");
+        } else if (!throttle_installed()) {
             printf("NOSPLAY: installing THROTTLE at level %d (%s)...\r\n",
                    level, p->cpu_preset);
             sprintf(cmd, "%s /L%d", THROTTLE_EXE, level);

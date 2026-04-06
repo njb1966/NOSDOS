@@ -19,29 +19,23 @@ for arg in "$@"; do
     [[ "$arg" == "--skip-compile" ]] && SKIP_COMPILE=1
 done
 
-# ---- Step 1: compile (in retrodev) ----
+# ---- Step 1: compile (local — no distrobox) ----
 if [[ $SKIP_COMPILE -eq 0 ]]; then
-    echo "[rebuild] Compiling in retrodev..."
-    distrobox enter retrodev -- bash -c '
-        export WATCOM=~/dos/tools/WATCOM
-        export PATH=$WATCOM/binl64:$PATH
-        export INCLUDE=$WATCOM/h
-        cd ~/projects/retro/NOSDOS/SRC
-        for makefile in src/*/Makefile; do
-            dir=$(dirname "$makefile")
-            echo "  [wmake] $dir"
-            (cd "$dir" && wmake -f Makefile 2>&1) || true
-        done
-    '
+    echo "[rebuild] Compiling..."
+    export WATCOM="${WATCOM:-$HOME/dos/tools/WATCOM}"
+    export PATH="$WATCOM/binl64:$PATH"
+    export INCLUDE="$WATCOM/h"
+    for makefile in "$SCRIPT_DIR"/src/*/Makefile; do
+        dir=$(dirname "$makefile")
+        echo "  [wmake] $dir"
+        (cd "$dir" && wmake -f Makefile 2>&1) || true
+    done
 fi
 
-# ---- Step 2: build disk images (in retrodev) ----
+# ---- Step 2: build disk images ----
 echo "[rebuild] Building disk images..."
-distrobox enter retrodev -- bash -c '
-    cd ~/projects/retro/NOSDOS/SRC
-    python3 build/mkhdd.py
-    python3 build/mkiso.py
-'
+python3 "$SCRIPT_DIR/build/mkhdd.py"
+python3 "$SCRIPT_DIR/build/mkiso.py"
 
 # ---- Step 3: preserve VMDK UUID ----
 # If VirtualBox already has a VMDK registered at this path, capture its

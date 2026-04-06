@@ -18,11 +18,10 @@ CPUSpeed=any
 DiskKB=1800
 
 [SOURCE]
-URL1=https://archive.org/download/norton-commander-5.0/nc50.zip
-URL2=https://archive.org/download/msdos_Norton_Commander_5/nc50.zip
-Archive=NC50.ZIP
-Redirect=yes
-
+URL1=http://nosdos.njb1966.com/dist/NORTON/NORTON.ZIP
+Archive=NORTON.ZIP
+Bytes=0
+Redirect=no
 [INSTALL]
 InstallDir=C:\UTILS\NC5
 Extract=yes

@@ -20,11 +20,10 @@ CPUSpeed=fast
 DiskKB=30000
 
 [SOURCE]
-URL1=https://archive.org/download/quake-shareware-1.06/quake106.zip
-URL2=https://archive.org/download/msdos_Quake/quake106.zip
-Archive=QUAKE106.ZIP
-Redirect=yes
-
+URL1=http://nosdos.njb1966.com/dist/QUAKE/QUAKE.ZIP
+Archive=QUAKE.ZIP
+Bytes=0
+Redirect=no
 [INSTALL]
 InstallDir=C:\GAMES\QUAKE
 Extract=yes

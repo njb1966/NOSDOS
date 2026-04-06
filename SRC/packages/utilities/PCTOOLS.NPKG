@@ -19,11 +19,10 @@ CPUSpeed=any
 DiskKB=6000
 
 [SOURCE]
-URL1=https://archive.org/download/pc-tools-9.0/pctools90.zip
-URL2=https://archive.org/download/msdos_PC_Tools_9/pctools90.zip
-Archive=PCTOOL9.ZIP
-Redirect=yes
-
+URL1=http://nosdos.njb1966.com/dist/PCTOOLS/PCTOOLS.ZIP
+Archive=PCTOOLS.ZIP
+Bytes=0
+Redirect=no
 [INSTALL]
 InstallDir=C:\UTILS\PCTOOLS
 Extract=yes

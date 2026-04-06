@@ -20,11 +20,10 @@ CPUSpeed=medium
 DiskKB=6500
 
 [SOURCE]
-URL1=https://archive.org/download/heretic-shareware/heretic13.zip
-URL2=https://archive.org/download/msdos_Heretic/heretic13.zip
-Archive=HERET13.ZIP
-Redirect=yes
-
+URL1=http://nosdos.njb1966.com/dist/HERETIC/HERETIC.ZIP
+Archive=HERETIC.ZIP
+Bytes=0
+Redirect=no
 [INSTALL]
 InstallDir=C:\GAMES\HERETIC
 Extract=yes

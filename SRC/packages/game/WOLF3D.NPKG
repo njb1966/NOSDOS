@@ -20,11 +20,10 @@ CPUSpeed=medium
 DiskKB=2500
 
 [SOURCE]
-URL1=https://archive.org/download/wolf3d-shareware/wl6v14.zip
-URL2=https://archive.org/download/Wolfenstein3D/wl6v14.zip
-Archive=WL6V14.ZIP
-Redirect=yes
-
+URL1=http://nosdos.njb1966.com/dist/WOLF3D/WOLF3D.ZIP
+Archive=WOLF3D.ZIP
+Bytes=0
+Redirect=no
 [INSTALL]
 InstallDir=C:\GAMES\WOLF3D
 Extract=yes

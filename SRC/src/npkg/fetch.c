@@ -112,9 +112,9 @@ int nos_fetch_url(const char *url, const char *dest_path)
         return NOS_FETCH_ERR_BADURL;
     }
 
-    /* Assemble: HTGET.EXE -o <dest_path> <url>                            */
+    /* Assemble: HTGET.EXE -v -o <dest_path> <url>                         */
     strcpy(cmd, HTGET_EXE);
-    strcat(cmd, " -o ");
+    strcat(cmd, " -v -o ");
     strcat(cmd, dest_path);
     strcat(cmd, " ");
     strcat(cmd, url);
@@ -213,6 +213,18 @@ int nos_fetch_archive(const nos_fetch_src_t *src,
         printf("NPKG: destination path too long for archive '%s'\r\n",
                src->archive);
         return NOS_FETCH_ERR_BADURL;
+    }
+
+    /* Print file size warning so the user knows what to expect.            */
+    if (src->expected_bytes > 0L) {
+        if (src->expected_bytes >= 1048576L)
+            printf("  Size: %ld MB -- large download, please stand by...\r\n",
+                   src->expected_bytes / 1048576L);
+        else if (src->expected_bytes >= 1024L)
+            printf("  Size: %ld KB\r\n",
+                   src->expected_bytes / 1024L);
+        else
+            printf("  Size: %ld bytes\r\n", src->expected_bytes);
     }
 
     ok = 0;

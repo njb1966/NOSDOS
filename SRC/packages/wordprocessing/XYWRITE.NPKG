@@ -18,11 +18,10 @@ CPUSpeed=any
 DiskKB=1600
 
 [SOURCE]
-URL1=https://archive.org/download/xywrite-iii-plus/xywrite.zip
-URL2=https://archive.org/download/msdos_XyWrite/xywrite.zip
+URL1=http://nosdos.njb1966.com/dist/XYWRITE/XYWRITE.ZIP
 Archive=XYWRITE.ZIP
-Redirect=yes
-
+Bytes=0
+Redirect=no
 [INSTALL]
 InstallDir=C:\APPS\XYWRITE
 Extract=yes
